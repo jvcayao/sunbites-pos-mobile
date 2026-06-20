@@ -8,7 +8,7 @@ Key colors used in References:
 - Status: OK=#22C55E, LOW=#EAB308, OUT=#EF4444, OVER=#3B82F6
 - Role badges: admin=#7C3AED, manager=#2563EB, supervisor=#0891B2, cashier=#059669
 - Meal categories: Ulam=#F97316, Vegetables=#22C55E, Fruit=#3B82F6, Soup=#0EA5E9, Snacks=#A855F7
-- Feedback categories: Food Quality=#F97316, Service=#3B82F6, Pricing=#22C55E, Cleanliness=#0891B2, Other=#71717A
+- Feedback categories: Food Quality=#F97316, Service=#3B82F6, Portion Size=#22C55E, Cleanliness=#0891B2, General=#71717A
 
 ---
 
@@ -17,7 +17,7 @@ Key colors used in References:
 ```
 app/(app)/references/
   _layout.tsx                    ← Stack navigator; header with back + title
-  index.tsx                      ← References menu (7 section cards)
+  index.tsx                      ← References menu (8 section cards)
   inventory.tsx                  ← Tabs: Inventory List | Log History
   meal-planner.tsx               ← Month/Week navigator + editable grid
   users/
@@ -28,8 +28,9 @@ app/(app)/references/
   subscription-config.tsx        ← Month × Branch matrix
   parents/
     index.tsx                    ← Parent list + search
-    [id].tsx                     ← Parent detail + resend activation
+    [id].tsx                     ← Parent detail + actions
   feedback.tsx                   ← Feedback list + detail sheet
+  system-settings.tsx            ← System config list + edit sheet
 ```
 
 ---
@@ -37,7 +38,7 @@ app/(app)/references/
 ## Shared Components (`src/components/references/`)
 
 ### `SectionCard`
-Card used on `references/index.tsx` to navigate to sub-sections. Props: `title`, `description`, `icon`, `onPress`, `visible` (hides if false).
+Card used on `references/index.tsx` to navigate to sub-sections. Props: `title`, `description`, `icon`, `onPress`, `visible` (hides if false), `badgeCount` (optional — shows unread/pending count).
 
 ### `FormBottomSheet`
 Wrapper around `react-native-paper` `<Modal>` presented as a bottom sheet. Props: `visible`, `onDismiss`, `title`, `children`, action buttons. Used for all create/edit forms in References.
@@ -68,7 +69,6 @@ export const referencesApi = {
     destroy:   (id)                        => client.delete(`/references/inventory/${id}`),
     archive:   (id)                        => client.patch(`/references/inventory/${id}/archive`),
     unarchive: (id)                        => client.patch(`/references/inventory/${id}/unarchive`),
-    logs:      (id)                        => client.get(`/references/inventory/${id}/logs`),
     history:   (params)                    => client.get('/references/inventory/history', { params }),
   },
 
@@ -86,8 +86,8 @@ export const referencesApi = {
     show:           (id)                   => client.get(`/users/${id}`),
     create:         (data)                 => client.post('/users', data),
     update:         (id, data)             => client.put(`/users/${id}`, data),
-    deactivate:     (id)                   => client.post(`/users/${id}/deactivate`),
-    reactivate:     (id)                   => client.post(`/users/${id}/reactivate`),
+    deactivate:     (id)                   => client.patch(`/users/${id}/deactivate`),
+    reactivate:     (id)                   => client.patch(`/users/${id}/reactivate`),
     resetPassword:  (id)                   => client.post(`/users/${id}/reset-password`),
   },
 
@@ -103,7 +103,6 @@ export const referencesApi = {
     getMonthlyAmounts: (year)         => client.get('/branch-monthly-amounts', { params: { year } }),
     createAmount:      (data)         => client.post('/branch-monthly-amounts', data),
     updateAmount:      (id, data)     => client.put(`/branch-monthly-amounts/${id}`, data),
-    getSystemMealRate: ()             => client.get('/references/subscription-config'),
   },
 
   // Parents
@@ -111,13 +110,23 @@ export const referencesApi = {
     list:             (params)   => client.get('/references/parents', { params }),
     show:             (id)       => client.get(`/references/parents/${id}`),
     resendActivation: (id)       => client.post(`/references/parents/${id}/resend-activation`),
+    disable:          (id)       => client.post(`/references/parents/${id}/disable`),
+    enable:           (id)       => client.post(`/references/parents/${id}/enable`),
+    destroy:          (id)       => client.delete(`/references/parents/${id}`),
+    restore:          (id)       => client.post(`/references/parents/${id}/restore`),
   },
 
   // Feedback
   feedback: {
-    list:    (params)       => client.get('/references/feedback', { params }),
-    update:  (id, data)     => client.patch(`/references/feedback/${id}`, data),
-    destroy: (id)           => client.delete(`/references/feedback/${id}`),
+    list:     (params)       => client.get('/references/feedback', { params }),
+    markRead: (id)           => client.patch(`/references/feedback/${id}/mark-read`),
+    reply:    (id, message)  => client.post(`/references/feedback/${id}/reply`, { message }),
+  },
+
+  // System Settings
+  systemSettings: {
+    list:   ()             => client.get('/system-configurations'),
+    update: (key, data)    => client.put(`/system-configurations/${key}`, data),
   },
 }
 ```
@@ -130,7 +139,6 @@ export const referencesApi = {
 // Inventory
 export function useInventoryList()
 export function useInventoryHistory(params)
-export function useInventoryLogs(id)
 
 // Meal Planner
 export function useMealPlanner(month: SchoolMonth, week: 1|2|3|4)
@@ -151,6 +159,11 @@ export function useParentDetail(id)
 
 // Feedback
 export function useFeedbackList(params)
+export function useMarkFeedbackRead()     // mutation → invalidates feedback list
+export function useReplyToFeedback()      // mutation → invalidates feedback list
+
+// System Settings
+export function useSystemSettings()
 ```
 
 Mutation hooks (e.g., `useCreateInventoryItem`, `useUpdateUser`, etc.) invalidate the relevant list query key on success.
@@ -183,12 +196,19 @@ interface BranchMonthlyAmount { id, branch_id, school_month: SchoolMonth,
 
 // Parents
 interface Parent { id, first_name, last_name, full_name, email,
-  activation_status: 'active'|'pending', students: Array<{id, full_name, grade_level}> }
+  activation_status: 'active'|'pending', disabled_at: string|null,
+  deleted_at: string|null, students: Array<{id, full_name, grade_level}> }
 
 // Feedback
-interface FeedbackItem { id, category: FeedbackCategory, student_name, message,
-  created_at, is_resolved: boolean }
-type FeedbackCategory = 'food_quality'|'service'|'pricing'|'cleanliness'|'other'
+type FeedbackCategory = 'food_quality'|'service'|'portion_size'|'cleanliness'|'general'
+interface FeedbackItem {
+  id, category: FeedbackCategory, student_name, rating: number,
+  message: string|null, admin_reply: string|null, replied_at: string|null,
+  created_at, is_read: boolean
+}
+
+// System Settings
+interface SystemConfig { key: string, value: string, type: 'integer'|'decimal'|'string', label: string, description: string|null }
 ```
 
 ---
@@ -215,9 +235,22 @@ type FeedbackCategory = 'food_quality'|'service'|'pricing'|'cleanliness'|'other'
 
 ### Subscription Config (`references/subscription-config.tsx`)
 - Horizontal `ScrollView` wrapping the month × branch matrix.
-- Each cell is a `<TouchableRipple>` that opens the edit `FormBottomSheet`.
+- Each cell is a `<Pressable>` that opens the edit `FormBottomSheet`.
 - Shows computed amount `= school_days × daily_rate` below the days input in real time.
+- Daily rate fetched via `referencesApi.systemSettings.list()` → find key `daily_meal_rate`.
 
 ### Feedback (`references/feedback.tsx`)
-- Row items show category chip + truncated message.
+- Row items show category chip + truncated message + unread dot.
+- "Unread only" toggle chip to filter list.
 - Full detail opens in a `Modal` bottom sheet (not a new screen — avoids navigation for quick review).
+- Detail sheet includes: rating stars, message, existing admin reply (if any), reply textarea, Mark as Read button.
+- Mark as Read: calls `PATCH /references/feedback/{id}/mark-read` via `referencesApi.feedback.markRead(id)`.
+- Reply: calls `POST /references/feedback/{id}/reply` via `referencesApi.feedback.reply(id, message)`.
+- No delete action — endpoint does not exist on the API.
+
+### System Settings (`references/system-settings.tsx`)
+- `FlatList` of config rows with label, description, value.
+- Decimal/integer values shown with ₱ prefix.
+- Each row has an Edit button opening a `FormBottomSheet`.
+- On save, calls `referencesApi.systemSettings.update(key, { value: '...' })`.
+- Inline "Saved ✓" green text on the row that fades after 2s on success.

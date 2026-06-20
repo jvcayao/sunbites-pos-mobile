@@ -17,6 +17,7 @@
 | QR generation | react-native-qr-svg | SVG-based, no bitmaps |
 | Icons | @expo/vector-icons (MaterialCommunityIcons) | Matches react-native-paper icon set |
 | Date handling | date-fns | Matches web app |
+| WebSocket | laravel-echo + pusher-js | Reverb WebSocket client; initialized by EchoProvider on login |
 
 ---
 
@@ -49,21 +50,34 @@ sunbites-pos-mobile/
 │   │   │   ├── credits.tsx
 │   │   │   ├── activity.tsx
 │   │   │   └── daily-summary.tsx
-│   │   └── references/
-│   │       ├── _layout.tsx
-│   │       ├── inventory.tsx
-│   │       ├── meal-planner.tsx
-│   │       ├── users/
-│   │       │   ├── index.tsx
-│   │       │   ├── create.tsx
-│   │       │   └── [id].tsx
-│   │       ├── branches.tsx
-│   │       ├── subscription-config.tsx
-│   │       ├── parents/
-│   │       │   ├── index.tsx
-│   │       │   └── [id].tsx
-│   │       └── feedback.tsx
-│   └── _layout.tsx              # Root layout — auth guard + QueryClient
+│   │   ├── references/
+│   │   │   ├── _layout.tsx
+│   │   │   ├── inventory.tsx
+│   │   │   ├── meal-planner.tsx
+│   │   │   ├── users/
+│   │   │   │   ├── index.tsx
+│   │   │   │   ├── create.tsx
+│   │   │   │   └── [id].tsx
+│   │   │   ├── branches.tsx
+│   │   │   ├── subscription-config.tsx
+│   │   │   ├── parents/
+│   │   │   │   ├── index.tsx
+│   │   │   │   └── [id].tsx
+│   │   │   ├── feedback.tsx
+│   │   │   └── system-settings.tsx
+│   │   ├── notifications/
+│   │   │   └── index.tsx        # Staff notifications page (MagicBell design)
+│   │   ├── reminders/
+│   │   │   ├── index.tsx        # Payment reminders list
+│   │   │   └── [id].tsx         # Reminder parent detail
+│   │   ├── announcements/
+│   │   │   ├── index.tsx        # Announcements list
+│   │   │   ├── create.tsx       # Create announcement form
+│   │   │   └── [id].tsx         # Announcement detail
+│   │   └── pre-registrations/
+│   │       ├── index.tsx        # Pre-registrations list (status tabs)
+│   │       └── [id].tsx         # Pre-registration detail / process
+│   └── _layout.tsx              # Root layout — auth guard + QueryClient + EchoProvider
 ├── src/
 │   ├── api/
 │   │   ├── client.ts            # Axios instance, interceptors
@@ -72,7 +86,11 @@ sunbites-pos-mobile/
 │   │   ├── pos.ts
 │   │   ├── reports.ts
 │   │   ├── references.ts
-│   │   └── dashboard.ts
+│   │   ├── dashboard.ts
+│   │   ├── notifications.ts     # Staff notifications endpoints
+│   │   ├── reminders.ts         # Payment reminders endpoints
+│   │   ├── announcements.ts     # Announcements endpoints
+│   │   └── pre-registrations.ts # Pre-registrations endpoints
 │   ├── store/
 │   │   ├── auth.ts              # Zustand: token, user, activeBranch
 │   │   └── cart.ts              # Zustand: POS cart (in-memory only)
@@ -84,20 +102,26 @@ sunbites-pos-mobile/
 │   │   ├── menu.ts
 │   │   ├── inventory.ts
 │   │   ├── user.ts
-│   │   └── common.ts
+│   │   ├── common.ts
+│   │   ├── staff-notification.ts  # Discriminated union for staff notification types
+│   │   ├── reminder.ts
+│   │   ├── announcement.ts
+│   │   └── pre-registration.ts
 │   ├── components/
 │   │   ├── ui/                  # Generic: Button, Card, Badge, Input, etc.
 │   │   ├── pos/                 # POS-specific: CartItem, MenuCard, StudentCard
 │   │   ├── students/
+│   │   ├── notifications/       # NotificationBell, NotificationRow
 │   │   └── shared/              # PageHeader, EmptyState, LoadingScreen, etc.
 │   ├── lib/
 │   │   ├── constants.ts         # Role lists, payment methods, grade levels
 │   │   ├── permissions.ts       # Role-based access helpers
-│   │   └── formatters.ts        # Currency (PHP ₱), date, phone formatters
+│   │   ├── formatters.ts        # Currency (PHP ₱), date, phone formatters
+│   │   └── relative-time.ts     # Human-readable relative timestamps ("2m ago")
 │   └── theme/
 │       └── index.ts             # react-native-paper theme config
 ├── assets/                      # Icons, splash, adaptive-icon
-├── specs/                       # All Kiro spec folders
+├── .kiro/specs/                 # All Kiro spec folders
 ├── app.json
 ├── eas.json
 ├── tsconfig.json
@@ -119,6 +143,7 @@ App launch
               └── 200  → check activeBranch in Zustand
                     ├── No branch → navigate to /(auth)/branch
                     └── Has branch → navigate to /(app)
+                                      └── EchoProvider initializes WebSocket
 ```
 
 ### Auth Store (Zustand)
@@ -129,7 +154,7 @@ interface AuthState {
   user: AuthUser | null
   activeBranch: Branch | null
   login: (token: string, user: AuthUser) => Promise<void>  // persists token to SecureStore
-  logout: () => Promise<void>                              // clears SecureStore + resets state
+  logout: () => Promise<void>                              // clears SecureStore + resets state + disconnects Echo
   setActiveBranch: (branch: Branch) => void
 }
 ```
@@ -153,11 +178,26 @@ client.interceptors.response.use(
 
 ---
 
+## EchoProvider (Real-Time Notifications)
+
+`EchoProvider` is a component mounted in `app/_layout.tsx` (root layout), inside the authenticated guard. It initializes `laravel-echo` with Reverb config and the staff Bearer token. On logout, the echo connection is disconnected.
+
+```typescript
+// Mounted in root layout inside authenticated section
+// Reads token from useAuthStore
+// Connects to Reverb at EXPO_PUBLIC_REVERB_* env vars
+// Cleans up on logout via useEffect return
+```
+
+The `NotificationBell` component (single instance in POS screen header) subscribes to the `staff.{userId}` private channel and invalidates the unread-count query on each WebSocket event. See spec `11_notifications` for full detail.
+
+---
+
 ## Navigation Architecture
 
 ### Root Layout (`app/_layout.tsx`)
 
-Wraps the entire app with `QueryClientProvider` and `PaperProvider`. Reads auth state to render either the `(auth)` group or `(app)` group. No tabs visible on auth screens.
+Wraps the entire app with `QueryClientProvider` and `PaperProvider`. Reads auth state to render either the `(auth)` group or `(app)` group. `EchoProvider` is mounted here within the authenticated guard. No tabs visible on auth screens.
 
 ### App Layout — Bottom Tabs (`app/(app)/_layout.tsx`)
 
@@ -169,6 +209,11 @@ Wraps the entire app with `QueryClientProvider` and `PaperProvider`. Reads auth 
 | Students | account-group | admin, manager, supervisor |
 | Reports | chart-bar | admin, manager |
 | References | cog | admin, manager, supervisor |
+| Reminders | bell-ring | admin, manager, supervisor (with pending count badge) |
+| Announcements | bullhorn | admin, manager, supervisor |
+| Pre-Registrations | clipboard-check | admin, manager, supervisor (with pending count badge) |
+
+> **Note:** Notifications are accessed via the `NotificationBell` in the POS header — not as a bottom tab.
 
 ### Screen Patterns
 
@@ -186,14 +231,22 @@ Wraps the entire app with `QueryClientProvider` and `PaperProvider`. Reads auth 
 
 ```typescript
 export const ROLE_PERMISSIONS = {
-  dashboard:           ['admin', 'manager', 'supervisor'],
-  pos:                 ['admin', 'manager', 'supervisor', 'cashier'],
-  enrollment:          ['admin', 'manager'],
-  students:            ['admin', 'manager', 'supervisor'],
-  reports:             ['admin', 'manager'],
-  references:          ['admin', 'manager', 'supervisor'],
-  references_branches: ['admin'],
-  references_users:    ['admin', 'manager'],
+  dashboard:              ['admin', 'manager', 'supervisor'],
+  pos:                    ['admin', 'manager', 'supervisor', 'cashier'],
+  enrollment:             ['admin', 'manager'],
+  students:               ['admin', 'manager', 'supervisor'],
+  reports:                ['admin', 'manager'],
+  references:             ['admin', 'manager', 'supervisor'],
+  references_branches:    ['admin'],
+  references_users:       ['admin', 'manager'],
+  reminders_view:         ['admin', 'manager', 'supervisor'],
+  reminders_send:         ['admin', 'manager'],
+  announcements_view:     ['admin', 'manager', 'supervisor'],
+  announcements_create:   ['admin', 'manager', 'supervisor'],
+  pre_registrations_view: ['admin', 'manager', 'supervisor'],
+  pre_registrations_approve: ['admin', 'manager'],
+  pre_registrations_reject:  ['admin', 'manager'],
+  pre_registrations_reactivate: ['admin', 'manager', 'supervisor'],
 } as const
 
 export function usePermission(key: keyof typeof ROLE_PERMISSIONS): boolean
@@ -246,12 +299,24 @@ All API modules (`auth.ts`, `students.ts`, `pos.ts`, etc.) import this single `c
 ```bash
 # .env.development  (shares staging backend — no local API)
 EXPO_PUBLIC_API_URL=https://api-staging.sunbites.com.ph/api/v1
+EXPO_PUBLIC_REVERB_HOST=api-staging.sunbites.com.ph
+EXPO_PUBLIC_REVERB_PORT=443
+EXPO_PUBLIC_REVERB_SCHEME=https
+EXPO_PUBLIC_REVERB_APP_KEY=sunbites-reverb
 
 # .env.staging
 EXPO_PUBLIC_API_URL=https://api-staging.sunbites.com.ph/api/v1
+EXPO_PUBLIC_REVERB_HOST=api-staging.sunbites.com.ph
+EXPO_PUBLIC_REVERB_PORT=443
+EXPO_PUBLIC_REVERB_SCHEME=https
+EXPO_PUBLIC_REVERB_APP_KEY=sunbites-reverb
 
 # .env.production
 EXPO_PUBLIC_API_URL=https://api.sunbites.com.ph/api/v1
+EXPO_PUBLIC_REVERB_HOST=api.sunbites.com.ph
+EXPO_PUBLIC_REVERB_PORT=443
+EXPO_PUBLIC_REVERB_SCHEME=https
+EXPO_PUBLIC_REVERB_APP_KEY=sunbites-reverb
 ```
 
 ---
@@ -325,6 +390,10 @@ export function useLayout() {
 | Dashboard | single-column widgets | 2-column widget grid | 3-column widget grid |
 | Reports | card list | wider table, more columns | table with all columns visible |
 | References | single-column list | list + detail side by side | list + detail side by side |
+| Notifications | single-column list | wider list | wider list |
+| Reminders | single-column list | wider list | wider list |
+| Announcements | single-column | wider | wider |
+| Pre-Registrations | single-column list | wider list | 2-column grid |
 
 ### Rule
 Every screen that renders a list, form, or multi-section layout **must** call `useLayout()` and conditionally render the appropriate layout. Never hardcode pixel widths — always derive from `useWindowDimensions`.

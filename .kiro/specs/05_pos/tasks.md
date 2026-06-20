@@ -55,6 +55,6 @@
 ### 10. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] QR scan + student lookup — verify on device
-- [ ] Cart + checkout + receipt — verify on staging
-- [ ] Tablet split-pane — verify on tablet/landscape
+- [x] QR scan + student lookup — verify on device
+- [x] Cart + checkout + receipt — verify on staging
+- [x] Tablet split-pane — verify on tablet/landscape

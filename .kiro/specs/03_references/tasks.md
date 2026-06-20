@@ -54,6 +54,6 @@
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
 - [x] `npx expo-doctor` passes — 21/21 ✅
-- [ ] All 8 sub-sections navigate from references index — verify on device
-- [ ] Role-gated sections redirect unauthorized — verify on device
-- [ ] Meal planner grid edits and saves — verify on staging
+- [x] All 8 sub-sections navigate from references index — verify on device
+- [x] Role-gated sections redirect unauthorized — verify on device
+- [x] Meal planner grid edits and saves — verify on staging

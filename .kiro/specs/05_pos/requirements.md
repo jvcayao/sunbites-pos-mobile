@@ -4,6 +4,12 @@
 
 The POS is the primary operational screen used by all roles, replicating `~/sunbites-pos/app/(pos)/pos/page.tsx` and its sub-components. It has four tabs: POS, Transactions, Menu Management, and Inventory.
 
+### POS Header — NotificationBell (Single Bell Rule)
+
+The POS screen header contains **exactly ONE `NotificationBell`** component for all inbound staff notifications (announcements, pre-registration alerts). This bell subscribes to the `staff.{userId}` WebSocket channel and shows an unread count badge. Tapping it navigates to `/notifications`.
+
+> **Rule enforced:** No other bell, badge, or notification icon may appear in the POS header. The Payment Reminders count is accessible only via the Reminders navigation item — not in the header.
+
 ---
 
 ## Role Access

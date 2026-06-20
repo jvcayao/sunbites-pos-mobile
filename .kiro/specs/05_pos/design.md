@@ -9,6 +9,20 @@ app/(app)/pos/
 
 POS uses a single screen with `SegmentedButtons` to switch between 4 tabs rendered as conditional `View` blocks — **not** separate route files. This avoids state loss when switching tabs (cart state must persist).
 
+## POS Appbar Header Layout
+
+```
+┌─────────────────────────────────────────────────┐
+│  [Branch Name]                    [🔔] [⋮ Menu] │
+│  ← exactly ONE NotificationBell (staff.{userId}) │
+└─────────────────────────────────────────────────┘
+```
+
+- `NotificationBell` subscribes to `staff.{userId}` private channel
+- Badge hidden when unread count = 0
+- Tapping bell → `router.push('/(app)/notifications')`
+- **No** ReminderBell in the header — reminders accessed via the Reminders bottom tab
+
 ## Cart Store (already implemented in foundation)
 
 `src/store/cart.ts` — already has `items`, `student`, `isWalkIn`, `paymentMethod`, `notes` + all actions.
@@ -19,7 +33,7 @@ POS uses a single screen with `SegmentedButtons` to switch between 4 tabs render
 export const posApi = {
   // Students
   lookupStudent: (params: { type: 'qr' | 'search'; value: string }) =>
-    client.get('/pos/students/lookup', { params }),
+    client.post('/pos/students/lookup', params),
   getStudent: (id: number) =>
     client.get(`/pos/students/${id}`),
 
@@ -39,9 +53,9 @@ export const posApi = {
   checkout: (payload: CheckoutPayload) =>
     client.post<Order>('/pos/checkout', payload),
   transactions: (params: TransactionParams) =>
-    client.get('/pos/transactions', { params }),
+    client.get('/orders', { params }),
   voidOrder: (id: number, reason: string) =>
-    client.post(`/pos/transactions/${id}/void`, { reason }),
+    client.post(`/orders/${id}/void`, { reason }),
 
   // Inline reload (top-up from POS)
   inlineReload: (data: InlineReloadDto) =>

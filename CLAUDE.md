@@ -207,7 +207,7 @@ Read the relevant spec before implementing. Each folder has `requirements.md`, `
 
 | # | Spec | Status |
 |---|---|---|
-| 00 | api-cross-reference | ✅ All breaking mismatches fixed in src/api/ |
+| 00 | api-cross-reference | ✅ All breaking mismatches fixed in src/api/ — updated 2026-06-20 |
 | 01 | project-foundation | ✅ Implemented |
 | 02 | reports | ✅ Implemented — 8 report screens |
 | 03 | references | ✅ Implemented — 8 sub-sections incl. system settings |
@@ -218,8 +218,14 @@ Read the relevant spec before implementing. Each folder has `requirements.md`, `
 | 08 | branch-switcher | ✅ Implemented — Post-login + in-app switch |
 | 09 | shared-components | ✅ Implemented |
 | 10 | auth-login | ✅ Implemented |
+| 11 | notifications | ✅ Implemented — Reverb WebSocket, EchoProvider, NotificationBell, staff notifications page |
+| 12 | payment-reminders | 🔲 Planned — ReminderBell, eligible parents list, send reminders, parent detail |
+| 13 | announcements | 🔲 Planned — Announcements list/create/detail, nav item, NotificationBell routing |
+| 14 | pre-registrations | 🔲 Planned — Pre-reg queue: list, detail, approve/reject/reactivate, pending badge |
 
-**Build order:** `09` → `10` → `04` → `05` → `06` → `07` → `02` → `03` → `08`
+**Build order (implemented):** `09` → `10` → `04` → `05` → `06` → `07` → `02` → `03` → `08` → `11`
+
+**Build order (planned):** `12` → `13` → `14`
 
 ---
 

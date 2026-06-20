@@ -38,10 +38,10 @@
 ### 7. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] Failed login shows inline error message — verify on staging
-- [ ] 429 shows rate-limit message — verify on staging
-- [ ] Network-offline shows offline message — verify on staging
-- [ ] Single-branch user skips branch screen — verify on device
-- [ ] Admin branch screen shows all branches — verify on staging
-- [ ] Logout clears storage and returns to login — verify on device
-- [ ] 401 on any subsequent API call auto-logs out — verify on staging
+- [x] Failed login shows inline error message — verify on staging
+- [x] 429 shows rate-limit message — verify on staging
+- [x] Network-offline shows offline message — verify on staging
+- [x] Single-branch user skips branch screen — verify on device
+- [x] Admin branch screen shows all branches — verify on staging
+- [x] Logout clears storage and returns to login — verify on device
+- [x] 401 on any subsequent API call auto-logs out — verify on staging

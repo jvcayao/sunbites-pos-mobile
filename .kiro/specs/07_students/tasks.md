@@ -47,7 +47,7 @@
 ### 12. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] Student list filters — verify on staging
-- [ ] Wallet top-up + balance update — verify on staging
-- [ ] Monthly payment badges toggle — verify on staging
-- [ ] QR code display and regenerate — verify on staging
+- [x] Student list filters — verify on staging
+- [x] Wallet top-up + balance update — verify on staging
+- [x] Monthly payment badges toggle — verify on staging
+- [x] QR code display and regenerate — verify on staging

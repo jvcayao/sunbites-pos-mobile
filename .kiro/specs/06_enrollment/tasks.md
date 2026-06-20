@@ -34,7 +34,7 @@
 ### 5. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] PH phone validation — verify in app
-- [ ] Age validation — verify in app
-- [ ] Subscription fields conditional — verify in app
-- [ ] Success QR displays — verify on staging
+- [x] PH phone validation — verify in app
+- [x] Age validation — verify in app
+- [x] Subscription fields conditional — verify in app
+- [x] Success QR displays — verify on staging
