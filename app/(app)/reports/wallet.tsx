@@ -8,6 +8,8 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { DatePresetPicker, type DateRange } from '@/components/shared/DatePresetPicker'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { SummaryCard } from '@/components/reports/SummaryCard'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { WalletReportItem } from '@/types/reports'
 
@@ -23,7 +25,7 @@ export default function WalletReportScreen() {
   const renderItem = useCallback(({ item }: { item: WalletReportItem }) => {
     const isLow = item.wallet_balance < 100
     return (
-      <View style={styles.row}>
+      <View style={[listCardStyle, styles.row]}>
         <View style={styles.left}>
           <Text variant="bodyMedium" style={styles.name}>{item.full_name}</Text>
           <Text variant="bodySmall" style={styles.meta}>{item.grade_level}</Text>
@@ -40,6 +42,7 @@ export default function WalletReportScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Wallet Report" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <>
           {summary !== undefined && (
@@ -76,7 +79,7 @@ export default function WalletReportScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   summaryRow: { flexDirection: 'row', padding: 16, gap: 8 },
-  row: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12 },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 2 },
   name: { color: palette.zinc950 },

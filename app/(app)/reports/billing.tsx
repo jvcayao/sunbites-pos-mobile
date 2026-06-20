@@ -8,7 +8,9 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { SummaryCard } from '@/components/reports/SummaryCard'
 import { StatusBadge } from '@/components/reports/StatusBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { SCHOOL_MONTHS } from '@/lib/constants'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { BillingReportItem } from '@/types/reports'
 
@@ -25,7 +27,7 @@ export default function BillingReportScreen() {
   const items = data?.pages.flatMap((p: any) => p.data ?? []) ?? []
 
   const renderItem = useCallback(({ item }: { item: BillingReportItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="bodyMedium" style={styles.name}>{item.full_name}</Text>
         <Text variant="bodySmall" style={styles.meta}>{item.grade_level} · {item.school_month}</Text>
@@ -39,6 +41,7 @@ export default function BillingReportScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Billing Report" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <>
           {summary !== undefined && (
@@ -75,7 +78,7 @@ export default function BillingReportScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   summaryRow: { flexDirection: 'row', padding: 16, gap: 8 },
-  row: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12 },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 4 },
   name: { color: palette.zinc950 },

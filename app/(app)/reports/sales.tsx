@@ -9,7 +9,9 @@ import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { DatePresetPicker, type DateRange } from '@/components/shared/DatePresetPicker'
 import { SummaryCard } from '@/components/reports/SummaryCard'
 import { StatusBadge } from '@/components/reports/StatusBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { useLayout } from '@/hooks/useLayout'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { SalesReportItem } from '@/types/reports'
 import type { OrderPaymentMethod } from '@/types/order'
@@ -37,7 +39,7 @@ export default function SalesReportScreen() {
   const numCols = isTablet || isLandscape ? 3 : 2
 
   const renderItem = useCallback(({ item }: { item: SalesReportItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="labelSmall" style={styles.receipt}>{item.receipt_number}</Text>
         <Text variant="bodySmall" style={styles.meta}>{item.student_name ?? 'Walk-in'} · {item.item_count} items</Text>
@@ -52,6 +54,7 @@ export default function SalesReportScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Sales Report" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <>
           {summary !== undefined && (
@@ -104,9 +107,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.zinc200,
-    backgroundColor: palette.white,
   },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 4 },

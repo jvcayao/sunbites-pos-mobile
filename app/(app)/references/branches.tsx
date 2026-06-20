@@ -9,6 +9,8 @@ import { getApiError } from '@/lib/errors'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import { useEffect } from 'react'
 
@@ -49,7 +51,7 @@ export default function BranchesScreen() {
   }
 
   const renderItem = useCallback(({ item }: { item: any }) => (
-    <Surface style={styles.card} elevation={1}>
+    <Surface style={[listCardStyle, styles.card]} elevation={1}>
       <View style={styles.cardHeader}>
         <View style={styles.cardInfo}>
           <Text variant="titleMedium" style={styles.name}>{item.name}</Text>
@@ -72,6 +74,7 @@ export default function BranchesScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Branches" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <FlatList
           data={branches}
@@ -111,7 +114,7 @@ export default function BranchesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   list: { padding: 16, gap: 12 },
-  card: { borderRadius: 12, padding: 16, backgroundColor: palette.white },
+  card: { padding: 16 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
   cardInfo: { flex: 1 },
   name: { color: palette.zinc950, fontWeight: '700' },

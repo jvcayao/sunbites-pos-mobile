@@ -37,10 +37,11 @@ const BADGE_MAP: Record<string, { bg: string; text: string }> = {
 }
 
 interface StatusBadgeProps {
-  variant: string
+  variant: string | undefined | null
 }
 
 export function StatusBadge({ variant }: StatusBadgeProps) {
+  if (!variant) return null
   const style = BADGE_MAP[variant.toLowerCase()] ?? { bg: palette.zinc100, text: palette.zinc500 }
   return (
     <Text

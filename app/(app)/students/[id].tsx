@@ -28,6 +28,7 @@ import { ContactCard } from '@/components/students/ContactCard'
 import { AddSubscriptionPeriodSheet } from '@/components/students/AddSubscriptionPeriodSheet'
 import { EditPaymentAmountSheet } from '@/components/students/EditPaymentAmountSheet'
 import { MonthPaymentBadge } from '@/components/students/MonthPaymentBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { SCHOOL_MONTHS } from '@/lib/constants'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { palette } from '@/theme'
@@ -128,22 +129,25 @@ export default function StudentDetailScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => router.back()} />
-        <Appbar.Content title={student.full_name} subtitle={student.grade_level} />
-        <Menu
-          visible={menuOpen}
-          onDismiss={() => setMenuOpen(false)}
-          anchor={
-            <Appbar.Action icon="dots-vertical" onPress={() => setMenuOpen(true)} accessibilityLabel="More actions" />
-          }
-        >
-          {canManageStatus && <Menu.Item onPress={() => { setMenuOpen(false); setShowStatusPicker(true) }} title="Change Status" />}
-          <Menu.Item onPress={() => { setMenuOpen(false); setShowTopUp(true) }} title="Top Up Wallet" />
-          <Menu.Item onPress={() => { setMenuOpen(false); setShowPrintQr(true) }} title="Print QR Code" />
-          {canDeleteStudent && <Menu.Item onPress={() => { setMenuOpen(false); setShowDeleteConfirm(true) }} title="Remove Student" titleStyle={{ color: palette.red500 }} />}
-        </Menu>
-      </Appbar.Header>
+      <AppHeader
+        title={student.full_name}
+        subtitle={student.grade_level}
+        showBack
+        right={
+          <Menu
+            visible={menuOpen}
+            onDismiss={() => setMenuOpen(false)}
+            anchor={
+              <Appbar.Action icon="dots-vertical" onPress={() => setMenuOpen(true)} accessibilityLabel="More actions" />
+            }
+          >
+            {canManageStatus && <Menu.Item onPress={() => { setMenuOpen(false); setShowStatusPicker(true) }} title="Change Status" />}
+            <Menu.Item onPress={() => { setMenuOpen(false); setShowTopUp(true) }} title="Top Up Wallet" />
+            <Menu.Item onPress={() => { setMenuOpen(false); setShowPrintQr(true) }} title="Print QR Code" />
+            {canDeleteStudent && <Menu.Item onPress={() => { setMenuOpen(false); setShowDeleteConfirm(true) }} title="Remove Student" titleStyle={{ color: palette.red500 }} />}
+          </Menu>
+        }
+      />
 
       {/* Quick stats */}
       <Surface style={styles.statsBar} elevation={1}>
@@ -427,7 +431,6 @@ export default function StudentDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 16,

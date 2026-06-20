@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native'
 import { Button, Text } from 'react-native-paper'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontFamily } from '@/theme/fonts'
 import { palette } from '@/theme'
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name']
@@ -63,10 +64,12 @@ const styles = StyleSheet.create({
     color: palette.zinc900,
     textAlign: 'center',
     marginTop: 8,
+    fontFamily: FontFamily.grotesk.semibold,
   },
   subtitle: {
     color: palette.zinc500,
     textAlign: 'center',
+    fontFamily: FontFamily.sans.regular,
   },
   button: {
     marginTop: 16,

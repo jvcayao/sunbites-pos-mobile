@@ -3,6 +3,7 @@ import { FlatList } from 'react-native'
 import { Surface, Text, TouchableRipple } from 'react-native-paper'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name']
@@ -28,36 +29,40 @@ const REPORTS: ReportCard[] = [
 
 export default function ReportsIndexScreen() {
   return (
-    <FlatList
-      data={REPORTS}
-      keyExtractor={(r) => r.route}
-      numColumns={2}
-      contentContainerStyle={styles.grid}
-      columnWrapperStyle={styles.row}
-      renderItem={({ item }) => (
-        <Surface style={styles.card} elevation={1}>
-          <TouchableRipple
-            onPress={() => router.push(`/(app)/reports/${item.route}` as any)}
-            borderless
-            style={styles.ripple}
-            accessibilityRole="button"
-            accessibilityLabel={`${item.title} report`}
-          >
-            <View style={styles.cardContent}>
-              <View style={[styles.iconBg, { backgroundColor: item.color + '20' }]}>
-                <MaterialCommunityIcons name={item.icon} size={28} color={item.color} accessibilityElementsHidden />
+    <View style={styles.screen}>
+      <AppHeader title="Reports" />
+      <FlatList
+        data={REPORTS}
+        keyExtractor={(r) => r.route}
+        numColumns={2}
+        contentContainerStyle={styles.grid}
+        columnWrapperStyle={styles.row}
+        renderItem={({ item }) => (
+          <Surface style={styles.card} elevation={1}>
+            <TouchableRipple
+              onPress={() => router.push(`/(app)/reports/${item.route}` as any)}
+              borderless
+              style={styles.ripple}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.title} report`}
+            >
+              <View style={styles.cardContent}>
+                <View style={[styles.iconBg, { backgroundColor: item.color + '20' }]}>
+                  <MaterialCommunityIcons name={item.icon} size={28} color={item.color} accessibilityElementsHidden />
+                </View>
+                <Text variant="titleSmall" style={styles.title}>{item.title}</Text>
+                <Text variant="bodySmall" style={styles.desc}>{item.desc}</Text>
               </View>
-              <Text variant="titleSmall" style={styles.title}>{item.title}</Text>
-              <Text variant="bodySmall" style={styles.desc}>{item.desc}</Text>
-            </View>
-          </TouchableRipple>
-        </Surface>
-      )}
-    />
+            </TouchableRipple>
+          </Surface>
+        )}
+      />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: palette.zinc100 },
   grid: { padding: 16, backgroundColor: palette.zinc100 },
   row: { gap: 12, marginBottom: 12 },
   card: { flex: 1, borderRadius: 12, overflow: 'hidden', backgroundColor: palette.white },

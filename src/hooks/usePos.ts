@@ -104,3 +104,35 @@ export function useAdjustStock() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['pos-inventory'] }),
   })
 }
+
+export function useLinkedStock(menuItemId: number) {
+  return useQuery({
+    queryKey: ['pos-linked-stock', menuItemId],
+    queryFn: () => posApi.getLinkedStock(menuItemId).then((r) => r.data),
+    enabled: menuItemId > 0,
+  })
+}
+
+export function useAttachLinkedStock() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ menuItemId, data }: { menuItemId: number; data: Parameters<typeof posApi.attachLinkedStock>[1] }) =>
+      posApi.attachLinkedStock(menuItemId, data),
+    onSuccess: (_data, vars) => {
+      void qc.invalidateQueries({ queryKey: ['pos-linked-stock', vars.menuItemId] })
+      void qc.invalidateQueries({ queryKey: ['pos-menu-items'] })
+    },
+  })
+}
+
+export function useDetachLinkedStock() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ menuItemId, inventoryItemId }: { menuItemId: number; inventoryItemId: number }) =>
+      posApi.detachLinkedStock(menuItemId, inventoryItemId),
+    onSuccess: (_data, vars) => {
+      void qc.invalidateQueries({ queryKey: ['pos-linked-stock', vars.menuItemId] })
+      void qc.invalidateQueries({ queryKey: ['pos-menu-items'] })
+    },
+  })
+}

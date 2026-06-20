@@ -5,6 +5,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters'
 import { SCHOOL_MONTHS } from '@/lib/constants'
 import { usePermission } from '@/lib/permissions'
 import { MonthPaymentBadge } from './MonthPaymentBadge'
+import { MonoText } from '@/components/shared/MonoText'
 import { palette } from '@/theme'
 import type { Student } from '@/types/student'
 import type { SchoolMonth } from '@/types/student'
@@ -85,9 +86,11 @@ export function StudentCard({
                 Enrolled: {formatDate(student.enrollment_date)}
               </Text>
             )}
-            <Text variant="bodySmall" style={styles.wallet}>
-              Wallet: {formatCurrency(student.wallet_balance ?? 0)} · {student.points ?? 0} pts
-            </Text>
+            <View style={styles.walletRow}>
+              <Text variant="bodySmall" style={styles.walletLabel}>Wallet: </Text>
+              <MonoText size="sm" color={palette.green500}>{formatCurrency(student.wallet_balance ?? 0)}</MonoText>
+              <Text variant="bodySmall" style={styles.walletLabel}> · {student.points ?? 0} pts</Text>
+            </View>
 
             {student.student_type === 'subscription' && (student.monthly_payments ?? []).length > 0 && (
               <View style={styles.monthsRow}>
@@ -175,7 +178,8 @@ const styles = StyleSheet.create({
   name: { color: palette.zinc950 },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
   meta: { color: palette.zinc500 },
-  wallet: { color: palette.green500, marginTop: 4 },
+  walletLabel: { color: palette.green500 },
+  walletRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap' },
   monthsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 8 },
   creditChip: { backgroundColor: '#FEE2E2', height: 22 },
   creditText: { color: palette.red500, fontSize: 10 },

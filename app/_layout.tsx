@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Stack, router } from 'expo-router'
+import { useFonts } from 'expo-font'
 import { SplashScreen } from '@/components/shared/SplashScreen'
+import { fontAssets } from '@/theme/fonts'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/queryClient'
 import { PaperProvider } from 'react-native-paper'
@@ -10,9 +12,11 @@ import { useAuthStore, TOKEN_KEY } from '@/store/auth'
 import { authApi } from '@/api/auth'
 import { lightTheme } from '@/theme'
 import { ErrorToast } from '@/components/shared/ErrorToast'
+import { EchoProvider } from '@/components/notifications/EchoProvider'
 
 function AppBootstrap() {
   const [ready, setReady] = useState(false)
+  const [fontsLoaded] = useFonts(fontAssets)
   const { logout } = useAuthStore()
 
   useEffect(() => {
@@ -37,11 +41,16 @@ function AppBootstrap() {
     bootstrap()
   }, [logout])
 
-  if (!ready) {
+  if (!ready || !fontsLoaded) {
     return <SplashScreen />
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return (
+    <>
+      <EchoProvider />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
+  )
 }
 
 export default function RootLayout() {

@@ -7,6 +7,7 @@ const makeItem = (overrides: Partial<PosMenuItem> = {}): PosMenuItem => ({
   price: 65,
   category: 'meal',
   is_available: true,
+  is_subscription_item: false,
   sort_order: 1,
   inventory_status: 'OK',
   has_inventory_mapping: true,

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native'
-import { Appbar, Button, Text, TextInput } from 'react-native-paper'
+import { Button, Text, TextInput } from 'react-native-paper'
 import { router } from 'expo-router'
 import { useCreateUser } from '@/hooks/useReferences'
 import { useBranchList } from '@/hooks/useReferences'
@@ -8,6 +8,7 @@ import { useToast } from '@/components/shared/ErrorToast'
 import { getApiError } from '@/lib/errors'
 import { SectionCard } from '@/components/shared/SectionCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 import type { UserRole } from '@/types/auth'
 
@@ -44,10 +45,7 @@ export default function CreateUserScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => router.back()} />
-        <Appbar.Content title="Create Staff Account" />
-      </Appbar.Header>
+      <AppHeader title="Create Staff Account" showBack />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <SectionCard>
@@ -91,7 +89,6 @@ export default function CreateUserScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   flex: { flex: 1 },
-  appbar: { backgroundColor: palette.white },
   scroll: { padding: 16, gap: 16 },
   sectionTitle: { fontWeight: '700', color: palette.zinc950, marginBottom: 12 },
   fieldLabel: { color: palette.zinc500, textTransform: 'uppercase', marginBottom: 4, marginTop: 8 },

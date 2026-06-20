@@ -23,6 +23,14 @@ export function useInventoryHistory(params?: object) {
   })
 }
 
+export function useInventoryItemLogs(id: number) {
+  return useQuery({
+    queryKey: ['references', 'inventory-item-logs', id],
+    queryFn: () => referencesApi.inventory.logs(id).then((r) => r.data),
+    enabled: id > 0,
+  })
+}
+
 export function useCreateInventoryItem() {
   const qc = useQueryClient()
   return useMutation({
@@ -226,18 +234,18 @@ export function useFeedbackList(params?: object) {
   })
 }
 
-export function useUpdateFeedback() {
+export function useMarkFeedbackRead() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: object }) => referencesApi.feedback.update(id, data),
+    mutationFn: (id: number) => referencesApi.feedback.markRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['references', 'feedback'] }),
   })
 }
 
-export function useDeleteFeedback() {
+export function useReplyToFeedback() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => referencesApi.feedback.destroy(id),
+    mutationFn: ({ id, message }: { id: number; message: string }) => referencesApi.feedback.reply(id, message),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['references', 'feedback'] }),
   })
 }

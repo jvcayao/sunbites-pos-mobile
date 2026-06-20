@@ -63,9 +63,9 @@ export const referencesApi = {
 
   // Feedback
   feedback: {
-    list:    (params?: object)            => client.get('/references/feedback', { params }),
-    update:  (id: number, data: object)   => client.patch(`/references/feedback/${id}`, data),
-    destroy: (id: number)                 => client.delete(`/references/feedback/${id}`),
+    list:     (params?: object)            => client.get('/references/feedback', { params }),
+    markRead: (id: number)                 => client.patch(`/references/feedback/${id}/mark-read`),
+    reply:    (id: number, message: string) => client.post(`/references/feedback/${id}/reply`, { message }),
   },
 
   // System configurations — NOTE: path is /system-configurations not /references/system-settings

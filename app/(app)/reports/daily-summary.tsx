@@ -8,6 +8,7 @@ import { DatePresetPicker, type DateRange } from '@/components/shared/DatePreset
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { SummaryCard } from '@/components/reports/SummaryCard'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 import { useState } from 'react'
 
@@ -35,11 +36,16 @@ export default function DailySummaryScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title={`Summary: ${date}`} />
-        <Appbar.Action icon="calendar" onPress={() => setShowDate(true)} accessibilityLabel="Select date" />
-        <Appbar.Action icon="share-variant" onPress={handleShare} accessibilityLabel="Share summary" />
-      </Appbar.Header>
+      <AppHeader
+        title={`Daily Summary`}
+        subtitle={date}
+        right={
+          <>
+            <Appbar.Action icon="calendar" onPress={() => setShowDate(true)} accessibilityLabel="Select date" />
+            <Appbar.Action icon="share-variant" onPress={handleShare} accessibilityLabel="Share summary" />
+          </>
+        }
+      />
 
       {isLoading ? <SkeletonCard count={3} /> : summary === undefined ? <EmptyState icon="calendar-today" title="No data for this date" /> : (
         <ScrollView>
@@ -118,7 +124,6 @@ export default function DailySummaryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   totalRow: { padding: 16 },
   section: { margin: 16, borderRadius: 12, backgroundColor: palette.white, overflow: 'hidden' },
   sectionTitle: { padding: 16, fontWeight: '700', color: palette.zinc950 },

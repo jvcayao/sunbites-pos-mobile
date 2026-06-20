@@ -9,6 +9,8 @@ import { getApiError } from '@/lib/errors'
 import { formatCurrency } from '@/lib/formatters'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { SystemConfig } from '@/types/references'
 
@@ -43,7 +45,7 @@ export default function SystemSettingsScreen() {
   }
 
   const renderItem = ({ item }: { item: SystemConfig }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="bodyMedium" style={styles.label}>{item.label}</Text>
         {item.description !== null && (
@@ -59,6 +61,7 @@ export default function SystemSettingsScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="System Settings" />
       {isLoading ? <SkeletonCard count={4} /> : configs.length === 0 ? (
         <EmptyState icon="cog" title="No system settings" />
       ) : (
@@ -104,7 +107,7 @@ export default function SystemSettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
   left: { flex: 1 },
   label: { color: palette.zinc950, fontWeight: '600' },
   meta: { color: palette.zinc500, marginTop: 2 },

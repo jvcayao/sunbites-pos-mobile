@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import { Text, Surface, TouchableRipple, Button, ActivityIndicator } from 'react-native-paper'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -8,6 +8,7 @@ import { authApi } from '@/api/auth'
 import { queryClient } from '@/lib/queryClient'
 import { performLogout } from '@/lib/logout'
 import client from '@/api/client'
+import { AppLogo } from '@/components/shared/AppLogo'
 import { palette } from '@/theme'
 import type { Branch } from '@/types/auth'
 
@@ -18,46 +19,42 @@ export default function BranchScreen() {
   const { user, activeBranch, setActiveBranch } = useAuthStore()
   const isAdmin = user?.roles.includes('admin') ?? false
 
-  const [branches, setBranches] = useState<Branch[]>(user?.branches ?? [])
-  const [loading, setLoading] = useState(false)
+  // For admin: fetch all branches; null means still loading / use fallback
+  const [adminBranches, setAdminBranches] = useState<Branch[] | null>(null)
+  const [loading, setLoading] = useState(isAdmin)
+  // Non-admin derives branches directly from the login response (no extra fetch)
+  const branches = adminBranches ?? (user?.branches ?? [])
+
+  async function handleSelect(branch: Branch): Promise<void> {
+    try {
+      await authApi.setBranch(branch.id, activeBranch?.id)
+    } catch {
+      // branch context set server-side is best-effort;
+      // API still enforces authorization per request
+    }
+    setActiveBranch(branch)
+    // Clear stale data and cart from previous branch session
+    queryClient.clear()
+    useCartStore.getState().clearCart()
+    router.replace('/(app)/pos')
+  }
 
   useEffect(() => {
-    if (isAdmin) {
-      setLoading(true)
-      client
-        .get<Branch[]>('/branches')
-        .then((res) => setBranches(res.data))
-        .catch(() => setBranches(user?.branches ?? []))
-        .finally(() => setLoading(false))
-    } else {
-      setBranches(user?.branches ?? [])
-    }
-  }, [isAdmin, user?.branches])
+    if (!isAdmin) return
+    client
+      .get<Branch[]>('/branches')
+      .then((res) => setAdminBranches(res.data))
+      .catch(() => setAdminBranches(null))  // null → falls back to user?.branches
+      .finally(() => setLoading(false))
+  }, [isAdmin])
 
   // Auto-select single branch (only on login flow, not switch mode)
   useEffect(() => {
     if (!isSwitchMode && branches.length === 1) {
-      handleSelect(branches[0])
+      void handleSelect(branches[0])
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branches, isSwitchMode])
-
-  const handleSelect = useCallback(
-    async (branch: Branch) => {
-      try {
-        await authApi.setBranch(branch.id, activeBranch?.id)
-      } catch {
-        // branch context set server-side is best-effort;
-        // API still enforces authorization per request
-      }
-      setActiveBranch(branch)
-      // Clear stale data and cart from previous branch session
-      queryClient.clear()
-      useCartStore.getState().clearCart()
-      router.replace('/(app)/pos')
-    },
-    [activeBranch, setActiveBranch],
-  )
 
   const handleLogout = (): Promise<void> => performLogout()
 
@@ -87,6 +84,7 @@ export default function BranchScreen() {
       )}
 
       <View style={styles.header}>
+        <AppLogo variant="compact" />
         <Text variant="headlineSmall" style={styles.title}>
           {isSwitchMode ? 'Switch Branch' : 'Select Branch'}
         </Text>
@@ -165,7 +163,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 8,
   },
-  header: { marginBottom: 32 },
+  header: { marginBottom: 32, gap: 12 },
   title: { color: palette.zinc950, fontWeight: 'bold' },
   subtitle: { color: palette.zinc500, marginTop: 4 },
   list: { gap: 12 },

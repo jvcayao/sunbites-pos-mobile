@@ -8,8 +8,10 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { SummaryCard } from '@/components/reports/SummaryCard'
 import { StatusBadge } from '@/components/reports/StatusBadge'
-import { palette } from '@/theme'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { GRADE_LEVELS } from '@/lib/constants'
+import { listCardStyle } from '@/lib/constants'
+import { palette } from '@/theme'
 import type { StudentsReportItem } from '@/types/reports'
 
 export default function StudentsReportScreen() {
@@ -28,7 +30,7 @@ export default function StudentsReportScreen() {
   const items = data?.pages.flatMap((p: any) => p.data ?? []) ?? []
 
   const renderItem = useCallback(({ item }: { item: StudentsReportItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="bodyMedium" style={styles.name}>{item.full_name}</Text>
         <Text variant="bodySmall" style={styles.meta}>{item.student_number} · {item.grade_level}</Text>
@@ -42,6 +44,7 @@ export default function StudentsReportScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Students Report" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <>
           {summary !== undefined && (
@@ -82,9 +85,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: palette.zinc200,
-    backgroundColor: palette.white,
   },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 4 },

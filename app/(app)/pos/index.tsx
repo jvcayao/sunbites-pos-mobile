@@ -14,7 +14,6 @@ import {
   Text,
 } from 'react-native-paper'
 import { router } from 'expo-router'
-import { AppLogo } from '@/components/shared/AppLogo'
 import { useAuthStore } from '@/store/auth'
 import { useCartStore } from '@/store/cart'
 import { performLogout } from '@/lib/logout'
@@ -35,6 +34,7 @@ import { TransactionRow } from '@/components/pos/TransactionRow'
 import { VoidOrderSheet } from '@/components/pos/VoidOrderSheet'
 import { MenuMgmtTab } from '@/components/pos/MenuMgmtTab'
 import { PosInventoryTab } from '@/components/pos/PosInventoryTab'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 import type { PosMenuItem } from '@/types/menu'
 import type { PosStudent } from '@/types/student'
@@ -107,9 +107,15 @@ export default function PosScreen() {
   }, [setStudent, setIsWalkIn])
 
   const handleCheckout = (payload: CheckoutPayload): void => {
+    const receiptItems = cartItems.map((ci) => ({
+      pos_menu_item_id: ci.menuItem.id,
+      name: ci.menuItem.name,
+      price: ci.menuItem.price,
+      quantity: ci.quantity,
+    }))
     checkout(payload, {
       onSuccess: (res) => {
-        setCompletedOrder(res.data)
+        setCompletedOrder({ ...res.data, items: res.data.items ?? receiptItems })
         clearCart()
       },
       onError: (err) => toast.error(getApiError(err)),
@@ -154,31 +160,26 @@ export default function PosScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        {/* Logo — matches ~/sunbites-pos sidebar top-left */}
-        <View style={styles.logoArea}>
-          <AppLogo variant="full" />
-          {activeBranch !== null && (
-            <View style={styles.branchPill}>
-              <Text variant="labelSmall" style={styles.branchText}>
-                {activeBranch.name}
-              </Text>
-            </View>
-          )}
-        </View>
-        <Appbar.Action
-          icon="swap-horizontal"
-          onPress={handleSwitchBranch}
-          accessibilityLabel="Switch branch"
-          accessibilityRole="button"
-        />
-        <Appbar.Action
-          icon="logout"
-          onPress={handleLogout}
-          accessibilityLabel="Sign out"
-          accessibilityRole="button"
-        />
-      </Appbar.Header>
+      <AppHeader
+        title="Point of Sale"
+        subtitle={activeBranch?.name}
+        right={
+          <>
+            <Appbar.Action
+              icon="swap-horizontal"
+              onPress={handleSwitchBranch}
+              accessibilityLabel="Switch branch"
+              accessibilityRole="button"
+            />
+            <Appbar.Action
+              icon="logout"
+              onPress={handleLogout}
+              accessibilityLabel="Sign out"
+              accessibilityRole="button"
+            />
+          </>
+        }
+      />
 
       <SegmentedButtons
         value={tab}
@@ -292,23 +293,6 @@ export default function PosScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar:    { backgroundColor: palette.white },
-  logoArea:  {
-    flex:           1,
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            12,
-    paddingLeft:    16,
-  },
-  branchPill: {
-    paddingHorizontal: 10,
-    paddingVertical:   3,
-    borderRadius:      12,
-    borderWidth:       1,
-    borderColor:       palette.zinc200,
-    backgroundColor:   palette.zinc100,
-  },
-  branchText: { color: palette.zinc500 },
   tabs: { marginHorizontal: 16, marginVertical: 8 },
   tabContent: { flex: 1 },
   posLeft: { flex: 1 },

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native'
-import { ActivityIndicator, Appbar, Button, Text, TextInput } from 'react-native-paper'
+import { ActivityIndicator, Button, Text, TextInput } from 'react-native-paper'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthStore } from '@/store/auth'
@@ -18,11 +18,14 @@ import { useToast } from '@/components/shared/ErrorToast'
 import { SectionCard } from '@/components/shared/SectionCard'
 import { InlineError } from '@/components/shared/InlineError'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
+import { SelectInput } from '@/components/shared/SelectInput'
+import { DatePickerInput } from '@/components/shared/DatePickerInput'
 import { EnrollmentTypeSelector } from '@/components/enrollment/EnrollmentTypeSelector'
 import { SubscriptionPeriodForm } from '@/components/enrollment/SubscriptionPeriodForm'
 import { ContactForm } from '@/components/enrollment/ContactForm'
 import { PermissionsSection } from '@/components/enrollment/PermissionsSection'
 import { EnrollmentSuccess } from '@/components/enrollment/EnrollmentSuccess'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { GRADE_LEVELS } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { EnrolledStudentResponse } from '@/types/enrollment'
@@ -68,9 +71,7 @@ export default function EnrollmentScreen() {
   if (enrolled !== null) {
     return (
       <View style={styles.container}>
-        <Appbar.Header style={styles.appbar}>
-          <Appbar.Content title="Enrollment" />
-        </Appbar.Header>
+        <AppHeader title="Enrollment" />
         <EnrollmentSuccess student={enrolled} onEnrollAnother={() => { setEnrolled(null); reset() }} />
       </View>
     )
@@ -86,9 +87,7 @@ export default function EnrollmentScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Student Enrollment" />
-      </Appbar.Header>
+      <AppHeader title="Student Enrollment" />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -140,63 +139,73 @@ export default function EnrollmentScreen() {
           {/* Student Information */}
           <SectionCard>
             <Text variant="titleSmall" style={styles.sectionTitle}>Student Information</Text>
-            <View style={styles.fieldGroup}>
+            <View style={styles.fieldStack}>
+              <View style={styles.fieldGroup}>
+                <Controller
+                  control={control}
+                  name="first_name"
+                  render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                    <View style={styles.halfField}>
+                      <TextInput label="First Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="First name" />
+                      <InlineError message={fieldState.error?.message} />
+                    </View>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="last_name"
+                  render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                    <View style={styles.halfField}>
+                      <TextInput label="Last Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="Last name" />
+                      <InlineError message={fieldState.error?.message} />
+                    </View>
+                  )}
+                />
+              </View>
+
               <Controller
                 control={control}
-                name="first_name"
-                render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                  <View style={styles.halfField}>
-                    <TextInput label="First Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="First name" />
+                name="grade_level"
+                render={({ field: { value, onChange }, fieldState }) => (
+                  <View>
+                    <SelectInput
+                      label="Grade Level *"
+                      value={value}
+                      options={GRADE_LEVELS}
+                      onChange={onChange}
+                      error={!!fieldState.error}
+                      accessibilityLabel="Grade level"
+                    />
                     <InlineError message={fieldState.error?.message} />
                   </View>
                 )}
               />
+
               <Controller
                 control={control}
-                name="last_name"
-                render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                  <View style={styles.halfField}>
-                    <TextInput label="Last Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="Last name" />
+                name="birthday"
+                render={({ field: { onChange, value }, fieldState }) => (
+                  <View>
+                    <DatePickerInput
+                      label="Birthday *"
+                      value={value}
+                      onChange={onChange}
+                      error={!!fieldState.error}
+                      accessibilityLabel="Birthday"
+                    />
                     <InlineError message={fieldState.error?.message} />
                   </View>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="allergies"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput label="Allergies (optional)" mode="outlined" value={value ?? ''} onChangeText={onChange} onBlur={onBlur} multiline style={styles.input} accessibilityLabel="Allergies" />
                 )}
               />
             </View>
-
-            <Controller
-              control={control}
-              name="grade_level"
-              render={({ field: { value, onChange }, fieldState }) => (
-                <View>
-                  <Text variant="labelSmall" style={styles.fieldLabel}>Grade Level *</Text>
-                  <FilterChipRow>
-                    {GRADE_LEVELS.map((g) => (
-                      <FilterChip key={g} label={g} active={value === g} onPress={() => onChange(g)} />
-                    ))}
-                  </FilterChipRow>
-                  <InlineError message={fieldState.error?.message} />
-                </View>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="birthday"
-              render={({ field: { onChange, onBlur, value }, fieldState }) => (
-                <View>
-                  <TextInput label="Birthday * (YYYY-MM-DD)" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} keyboardType="numeric" maxLength={10} error={!!fieldState.error} style={styles.input} accessibilityLabel="Birthday" />
-                  <InlineError message={fieldState.error?.message} />
-                </View>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="allergies"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput label="Allergies (optional)" mode="outlined" value={value ?? ''} onChangeText={onChange} onBlur={onBlur} multiline style={styles.input} accessibilityLabel="Allergies" />
-              )}
-            />
           </SectionCard>
 
           {/* Contacts */}
@@ -254,10 +263,10 @@ export default function EnrollmentScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   flex: { flex: 1 },
-  appbar: { backgroundColor: palette.white },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 16, gap: 16 },
   sectionTitle: { fontWeight: '700', color: palette.zinc950, marginBottom: 12 },
+  fieldStack: { gap: 12 },
   fieldGroup: { flexDirection: 'row', gap: 12 },
   halfField: { flex: 1 },
   fieldLabel: { color: palette.zinc500, textTransform: 'uppercase', marginBottom: 4, marginTop: 8 },

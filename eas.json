@@ -7,18 +7,22 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
+        "APP_VARIANT": "development",
         "EXPO_PUBLIC_API_URL": "https://api-staging.sunbites.com.ph/api/v1"
       }
     },
     "staging": {
       "distribution": "internal",
+      "APP_VARIANT": "staging",
       "channel": "staging",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api-staging.sunbites.com.ph/api/v1"
       }
     },
     "production": {
-      "distribution": "store",
+      "distribution": "internal",
+      "autoIncrement": true,
+      "environment": "production",
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.sunbites.com.ph/api/v1"

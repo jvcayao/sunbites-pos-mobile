@@ -5,6 +5,7 @@ import { formatCurrency } from '@/lib/formatters'
 import { usePermission } from '@/lib/permissions'
 import { useCartStore } from '@/store/cart'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { MonoText } from '@/components/shared/MonoText'
 import { CartItemRow } from './CartItemRow'
 import { PaymentMethodSelector } from './PaymentMethodSelector'
 import { CashInput } from './CashInput'
@@ -142,18 +143,18 @@ export function CartPanel({ onCheckout, loading = false }: CartPanelProps) {
         {computedDiscount > 0 && (
           <View style={styles.totalRow}>
             <Text variant="bodyMedium" style={styles.totalLabel}>Subtotal</Text>
-            <Text variant="bodyMedium">{formatCurrency(subtotal)}</Text>
+            <MonoText size="md">{formatCurrency(subtotal)}</MonoText>
           </View>
         )}
         {computedDiscount > 0 && (
           <View style={styles.totalRow}>
             <Text variant="bodyMedium" style={styles.discountLabel}>Discount</Text>
-            <Text variant="bodyMedium" style={styles.discountLabel}>−{formatCurrency(computedDiscount)}</Text>
+            <MonoText size="md" color={palette.orange500}>−{formatCurrency(computedDiscount)}</MonoText>
           </View>
         )}
         <View style={styles.totalRow}>
           <Text variant="titleMedium" style={styles.totalBold}>Total</Text>
-          <Text variant="titleMedium" style={styles.totalValue}>{formatCurrency(total)}</Text>
+          <MonoText size="lg" weight="bold" color={palette.orange500}>{formatCurrency(total)}</MonoText>
         </View>
 
         <PaymentMethodSelector
@@ -181,12 +182,12 @@ export function CartPanel({ onCheckout, loading = false }: CartPanelProps) {
         {paymentMethod === 'wallet' && student !== null && (
           <View style={styles.walletRow}>
             <Text variant="bodySmall" style={styles.walletLabel}>Balance</Text>
-            <Text
-              variant="bodyMedium"
-              style={student.wallet_balance >= total ? styles.walletOk : styles.walletLow}
+            <MonoText
+              size="md"
+              color={student.wallet_balance >= total ? palette.green500 : palette.red500}
             >
               {formatCurrency(student.wallet_balance)}
-            </Text>
+            </MonoText>
           </View>
         )}
 
@@ -237,11 +238,8 @@ const styles = StyleSheet.create({
   totalLabel: { color: palette.zinc500 },
   discountLabel: { color: palette.orange500 },
   totalBold: { fontWeight: '700', color: palette.zinc950 },
-  totalValue: { fontWeight: '700', color: palette.orange500 },
   walletRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
   walletLabel: { color: palette.zinc500 },
-  walletOk: { color: palette.green500, fontWeight: '600' },
-  walletLow: { color: palette.red500, fontWeight: '600' },
   confirmBtn: { marginTop: 8 },
   confirmContent: { paddingVertical: 6 },
 })

@@ -10,6 +10,11 @@ export const ROLE_PERMISSIONS = {
   references: ['admin', 'manager', 'supervisor'] as UserRole[],
   references_branches: ['admin'] as UserRole[],
   references_users: ['admin', 'manager'] as UserRole[],
+  reminders: ['admin', 'manager', 'supervisor'] as UserRole[],
+  reminders_send: ['admin', 'manager'] as UserRole[],
+  announcements: ['admin', 'manager', 'supervisor'] as UserRole[],
+  pre_registrations: ['admin', 'manager', 'supervisor'] as UserRole[],
+  pre_registrations_action: ['admin', 'manager'] as UserRole[],
 } as const
 
 export function usePermission(key: keyof typeof ROLE_PERMISSIONS): boolean {

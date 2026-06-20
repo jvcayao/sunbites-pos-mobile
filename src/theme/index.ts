@@ -1,5 +1,6 @@
 import { MD3LightTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
+import { FontFamily } from './fonts'
 
 /**
  * Color palette — Sunbites brand colors.
@@ -87,5 +88,18 @@ export const lightTheme: MD3Theme = {
       level4: palette.zinc100,
       level5: palette.zinc100,
     },
+  },
+  fonts: {
+    ...MD3LightTheme.fonts,
+    headlineLarge:  { ...MD3LightTheme.fonts.headlineLarge,  fontFamily: FontFamily.grotesk.bold },
+    headlineMedium: { ...MD3LightTheme.fonts.headlineMedium, fontFamily: FontFamily.grotesk.semibold },
+    headlineSmall:  { ...MD3LightTheme.fonts.headlineSmall,  fontFamily: FontFamily.grotesk.semibold },
+    titleLarge:     { ...MD3LightTheme.fonts.titleLarge,     fontFamily: FontFamily.grotesk.bold },
+    bodyLarge:   { ...MD3LightTheme.fonts.bodyLarge,   fontFamily: FontFamily.sans.regular },
+    bodyMedium:  { ...MD3LightTheme.fonts.bodyMedium,  fontFamily: FontFamily.sans.regular },
+    bodySmall:   { ...MD3LightTheme.fonts.bodySmall,   fontFamily: FontFamily.sans.regular },
+    labelLarge:  { ...MD3LightTheme.fonts.labelLarge,  fontFamily: FontFamily.sans.medium },
+    labelMedium: { ...MD3LightTheme.fonts.labelMedium, fontFamily: FontFamily.sans.medium },
+    labelSmall:  { ...MD3LightTheme.fonts.labelSmall,  fontFamily: FontFamily.sans.medium },
   },
 }

@@ -7,6 +7,8 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { SummaryCard } from '@/components/reports/SummaryCard'
 import { StatusBadge } from '@/components/reports/StatusBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { InventoryReportItem, InventoryLogItem } from '@/types/reports'
 
@@ -20,7 +22,7 @@ export default function InventoryReportScreen() {
   const summary  = (data as any)?.summary
 
   const renderSnapshot = useCallback(({ item }: { item: InventoryReportItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="bodyMedium" style={styles.name}>{item.name}</Text>
         <Text variant="bodySmall" style={styles.meta}>{item.quantity} {item.unit}</Text>
@@ -30,7 +32,7 @@ export default function InventoryReportScreen() {
   ), [])
 
   const renderLog = useCallback(({ item }: { item: InventoryLogItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.left}>
         <Text variant="bodyMedium" style={styles.name}>{item.item_name}</Text>
         <Text variant="bodySmall" style={styles.meta}>{item.adjusted_by}</Text>
@@ -46,6 +48,7 @@ export default function InventoryReportScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Inventory Report" />
       {isLoading ? <SkeletonCard count={3} /> : (
         <>
           {summary !== undefined && (
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   summaryRow: { flexDirection: 'row', padding: 16, gap: 8 },
   tabs: { marginHorizontal: 16, marginVertical: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white, gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 4 },
   name: { color: palette.zinc950 },

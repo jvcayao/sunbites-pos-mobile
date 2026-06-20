@@ -30,24 +30,24 @@ export function StockAdjustSheet({
   onConfirm,
   onDismiss,
 }: StockAdjustSheetProps) {
-  const [type, setType] = useState<AdjustType>('restock')
+  const [type, setType]     = useState<AdjustType>('restock')
   const [quantity, setQuantity] = useState('')
-  const [notes, setNotes] = useState('')
+  const [reason, setReason]     = useState('')
 
   const handleConfirm = (): void => {
-    onConfirm({ type, quantity: parseInt(quantity, 10), notes: notes || undefined })
+    onConfirm({ type, quantity: parseInt(quantity, 10), reason })
     setQuantity('')
-    setNotes('')
+    setReason('')
   }
 
   const handleDismiss = (): void => {
     setQuantity('')
-    setNotes('')
+    setReason('')
     onDismiss()
   }
 
   const qty = parseInt(quantity || '0', 10)
-  const canSubmit = qty > 0 && !loading
+  const canSubmit = qty > 0 && reason.trim().length > 0 && !loading
 
   return (
     <Portal>
@@ -78,11 +78,11 @@ export function StockAdjustSheet({
             />
             <TextInput
               mode="outlined"
-              label="Notes (optional)"
-              value={notes}
-              onChangeText={setNotes}
+              label="Reason *"
+              value={reason}
+              onChangeText={setReason}
               style={styles.input}
-              accessibilityLabel="Adjustment notes"
+              accessibilityLabel="Adjustment reason"
             />
           </View>
           <View style={styles.actions}>

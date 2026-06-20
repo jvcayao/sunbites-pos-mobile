@@ -52,3 +52,40 @@ export const STAFF_STATUSES = [
   'Emergency',
   'OnBreak',
 ] as const
+
+export const listCardStyle = {
+  marginHorizontal: 12,
+  marginBottom:     8,
+  borderRadius:     10,
+  backgroundColor:  '#FFFFFF',
+  elevation:        2,
+  shadowColor:      '#000000',
+  shadowOffset:     { width: 0, height: 1 },
+  shadowOpacity:    0.07,
+  shadowRadius:     3,
+} as const
+
+export const listCardStyleGrid = {
+  ...listCardStyle,
+  marginHorizontal: 6,
+} as const
+
+export const spacing = {
+  space1:  4,
+  space2:  8,
+  space3:  12,
+  space4:  16,
+  space5:  20,
+  space6:  24,
+  space8:  32,
+  space10: 40,
+  space12: 48,
+} as const
+
+export const radius = {
+  sm:   6,
+  md:   10,
+  lg:   16,
+  xl:   24,
+  full: 9999,
+} as const

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native'
 import { Appbar, Button, DataTable, Menu, SegmentedButtons, Surface, Text } from 'react-native-paper'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { z } from 'zod'
 import { useUserDetail, useDeactivateUser, useReactivateUser } from '@/hooks/useReferences'
 import { usePermission } from '@/lib/permissions'
@@ -11,6 +11,7 @@ import { AvatarInitials } from '@/components/references/AvatarInitials'
 import { RoleBadge } from '@/components/references/RoleBadge'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 import { useState } from 'react'
 import type { UserRole } from '@/types/auth'
@@ -38,19 +39,22 @@ export default function UserDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => router.back()} />
-        <Appbar.Content title={u.full_name} subtitle={u.position} />
-        {isAdmin && (
-          <Menu
-            visible={menuOpen}
-            onDismiss={() => setMenuOpen(false)}
-            anchor={<Appbar.Action icon="dots-vertical" onPress={() => setMenuOpen(true)} />}
-          >
-            <Menu.Item onPress={() => { setMenuOpen(false); setShowDeactivate(true) }} title={u.is_active ? 'Deactivate' : 'Reactivate'} />
-          </Menu>
-        )}
-      </Appbar.Header>
+      <AppHeader
+        title={u.full_name}
+        subtitle={u.position}
+        showBack
+        right={
+          isAdmin ? (
+            <Menu
+              visible={menuOpen}
+              onDismiss={() => setMenuOpen(false)}
+              anchor={<Appbar.Action icon="dots-vertical" onPress={() => setMenuOpen(true)} />}
+            >
+              <Menu.Item onPress={() => { setMenuOpen(false); setShowDeactivate(true) }} title={u.is_active ? 'Deactivate' : 'Reactivate'} />
+            </Menu>
+          ) : undefined
+        }
+      />
 
       <Surface style={styles.header} elevation={1}>
         <AvatarInitials name={u.full_name} size={56} />
@@ -122,7 +126,6 @@ export default function UserDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   header: { flexDirection: 'row', padding: 20, gap: 16, alignItems: 'center', backgroundColor: palette.white },
   headerInfo: { flex: 1 },
   name: { color: palette.zinc950, fontWeight: '700' },

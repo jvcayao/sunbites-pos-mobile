@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { StatusBadge } from '@/components/reports/StatusBadge'
 import { StockAdjustSheet } from '@/components/pos/StockAdjustSheet'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import { Pressable } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -37,7 +38,7 @@ export function PosInventoryTab() {
   }
 
   const renderItem = useCallback(({ item }: { item: PosInventoryItem }) => (
-    <View style={styles.row}>
+    <View style={[listCardStyle, styles.row]}>
       <View style={styles.info}>
         <Text variant="bodyMedium" style={styles.name}>{item.name}</Text>
         <View style={styles.metaRow}>
@@ -114,7 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: palette.white,
     minHeight: 56,
     gap: 12,
   },

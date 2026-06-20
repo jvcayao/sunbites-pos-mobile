@@ -10,6 +10,8 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { DatePresetPicker, type DateRange } from '@/components/shared/DatePresetPicker'
 import { StatusBadge } from '@/components/reports/StatusBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { ActivityItem } from '@/types/reports'
 
@@ -32,7 +34,7 @@ export default function ActivityLogScreen() {
     const isExpanded = expanded.has(item.id)
     const props = Object.entries(item.properties ?? {})
     return (
-      <Pressable onPress={() => toggleExpand(item.id)} style={styles.row} accessibilityRole="button" accessibilityLabel={item.subject} accessibilityState={{ expanded: isExpanded }}>
+      <Pressable onPress={() => toggleExpand(item.id)} style={[listCardStyle, styles.row]} accessibilityRole="button" accessibilityLabel={item.subject} accessibilityState={{ expanded: isExpanded }}>
         <View style={styles.rowHeader}>
           <View style={styles.left}>
             <Text variant="bodyMedium" style={styles.subject}>{item.subject}</Text>
@@ -59,6 +61,7 @@ export default function ActivityLogScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Activity Log" />
       {isLoading ? <SkeletonCard count={4} /> : (
         <>
           <TextInput mode="outlined" placeholder="Search activity…" value={search} onChangeText={setSearch} left={<TextInput.Icon icon="magnify" />} style={styles.search} accessibilityLabel="Search activity" />
@@ -86,7 +89,7 @@ export default function ActivityLogScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   search: { marginHorizontal: 16, marginTop: 8, backgroundColor: palette.white },
-  row: { paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row: { paddingHorizontal: 16, paddingVertical: 12 },
   rowHeader: { flexDirection: 'row', gap: 8 },
   left: { flex: 1 },
   right: { alignItems: 'flex-end', gap: 4 },

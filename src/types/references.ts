@@ -3,7 +3,40 @@ import type { SchoolMonth } from './student'
 
 // ── Inventory ─────────────────────────────────────────────────────────────────
 
-export interface InventoryItemCreate {
+export type InventoryStatus = 'OK' | 'LOW' | 'OUT' | 'OVER'
+export type InventoryLogType = 'restock' | 'waste' | 'manual' | 'sale'
+
+export interface InventoryItem {
+  id: number
+  branch_id: number
+  name: string
+  quantity: number
+  unit: string
+  restock_threshold: number
+  overstock_threshold: number | null
+  cost_per_unit: number | null
+  is_archived: boolean
+  status: InventoryStatus
+}
+
+export interface InventoryLog {
+  id: number
+  inventory_item_id: number
+  order_id: number | null
+  adjusted_by: number
+  adjusted_by_name: string
+  type: InventoryLogType
+  quantity_change: number
+  stock_after: number
+  item_name_snapshot: string
+  reason: string
+  created_at: string
+}
+
+/** @deprecated Use CreateInventoryDto */
+export type InventoryItemCreate = CreateInventoryDto
+
+export interface CreateInventoryDto {
   name: string
   unit: string
   quantity: number
@@ -111,18 +144,23 @@ export interface Parent {
   full_name: string
   email: string
   activation_status: 'active' | 'pending'
+  disabled_at: string | null
+  deleted_at: string | null
   students: Array<{ id: number; full_name: string; grade_level: string }>
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
 
-export type FeedbackCategory = 'food_quality' | 'service' | 'pricing' | 'cleanliness' | 'other'
+export type FeedbackCategory = 'food_quality' | 'service' | 'portion_size' | 'cleanliness' | 'general'
 
 export interface FeedbackItem {
   id: number
   category: FeedbackCategory
   student_name: string
-  message: string
+  rating: number
+  message: string | null
+  admin_reply: string | null
+  replied_at: string | null
   created_at: string
-  is_resolved: boolean
+  is_read: boolean
 }

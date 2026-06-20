@@ -6,6 +6,8 @@ import { useParentList } from '@/hooks/useReferences'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { AvatarInitials } from '@/components/references/AvatarInitials'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 
 export default function ParentsScreen() {
@@ -16,7 +18,7 @@ export default function ParentsScreen() {
 
   const renderItem = useCallback(({ item }: { item: any }) => (
     <TouchableRipple onPress={() => router.push(`/(app)/references/parents/${item.id}`)} accessibilityRole="button" accessibilityLabel={item.full_name}>
-      <View style={styles.row}>
+      <View style={[listCardStyle, styles.row]}>
         <AvatarInitials name={item.full_name} size={40} backgroundColor={palette.blue100} textColor={palette.blue500} />
         <View style={styles.info}>
           <Text variant="bodyMedium" style={styles.name}>{item.full_name}</Text>
@@ -32,6 +34,7 @@ export default function ParentsScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Parents" />
       <TextInput mode="outlined" placeholder="Search parents…" value={search} onChangeText={setSearch} left={<TextInput.Icon icon="magnify" />} style={styles.search} accessibilityLabel="Search parents" />
       {isLoading ? <SkeletonCard count={5} /> : (
         <FlatList
@@ -52,7 +55,7 @@ export default function ParentsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   search: { marginHorizontal: 16, marginTop: 8, backgroundColor: palette.white },
-  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   info: { flex: 1 },
   name: { color: palette.zinc950 },
   meta: { color: palette.zinc500 },

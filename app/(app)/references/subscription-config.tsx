@@ -6,6 +6,7 @@ import { referencesApi } from '@/api/references'
 import { useToast } from '@/components/shared/ErrorToast'
 import { getApiError } from '@/lib/errors'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { SCHOOL_MONTHS } from '@/lib/constants'
 import { formatCurrency } from '@/lib/formatters'
 import { palette } from '@/theme'
@@ -57,6 +58,7 @@ export default function SubscriptionConfigScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title="Subscription Config" />
       <FilterChipRow>{YEARS.map((y) => <FilterChip key={y} label={String(y)} active={year === y} onPress={() => setYear(y)} />)}</FilterChipRow>
 
       <ScrollView horizontal>

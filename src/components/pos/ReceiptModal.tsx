@@ -1,6 +1,8 @@
 import { Share, StyleSheet, View } from 'react-native'
 import { Appbar, Button, DataTable, Divider, Surface, Text } from 'react-native-paper'
 import { formatCurrency, formatDate } from '@/lib/formatters'
+import { AppLogo } from '@/components/shared/AppLogo'
+import { MonoText } from '@/components/shared/MonoText'
 import { palette } from '@/theme'
 import type { Order } from '@/types/order'
 
@@ -46,11 +48,14 @@ export function ReceiptModal({ order, onNewOrder }: ReceiptModalProps) {
       </Appbar.Header>
 
       <Surface style={styles.receipt} elevation={1}>
+        <View style={styles.logo}>
+          <AppLogo variant="receipt" />
+        </View>
         <Text variant="headlineSmall" style={styles.brand}>Sunbites POS</Text>
-        <Text variant="bodySmall" style={styles.meta}>
+        <MonoText size="sm" color={palette.zinc500} style={styles.meta}>
           {formatDate(order.created_at, 'MMM d, yyyy  h:mm a')}
-        </Text>
-        <Text variant="bodySmall" style={styles.meta}>#{order.receipt_number}</Text>
+        </MonoText>
+        <MonoText size="sm" color={palette.zinc500} style={styles.meta}>#{order.receipt_number}</MonoText>
         <Divider style={styles.divider} />
 
         <DataTable>
@@ -67,33 +72,33 @@ export function ReceiptModal({ order, onNewOrder }: ReceiptModalProps) {
         {order.discount_amount > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium">Subtotal</Text>
-            <Text variant="bodyMedium">{formatCurrency(order.subtotal)}</Text>
+            <MonoText size="md">{formatCurrency(order.subtotal)}</MonoText>
           </View>
         )}
         {order.discount_amount > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium" style={styles.discountLabel}>Discount</Text>
-            <Text variant="bodyMedium" style={styles.discountLabel}>
+            <MonoText size="md" color={palette.orange500}>
               −{formatCurrency(order.discount_amount)}
-            </Text>
+            </MonoText>
           </View>
         )}
         <View style={[styles.summaryRow, styles.totalRow]}>
           <Text variant="titleMedium" style={styles.totalLabel}>Total</Text>
-          <Text variant="titleMedium" style={styles.totalVal}>{formatCurrency(order.total)}</Text>
+          <MonoText size="lg" weight="bold" color={palette.orange500}>{formatCurrency(order.total)}</MonoText>
         </View>
         <View style={styles.summaryRow}>
           <Text variant="bodyMedium" style={styles.method}>{order.payment_method.toUpperCase()}</Text>
           {order.amount_tendered !== null && (
-            <Text variant="bodySmall" style={styles.tender}>
+            <MonoText size="sm" color={palette.zinc500}>
               Tendered {formatCurrency(order.amount_tendered)}
-            </Text>
+            </MonoText>
           )}
         </View>
         {order.change_amount !== null && order.change_amount > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium">Change</Text>
-            <Text variant="bodyMedium" style={styles.change}>{formatCurrency(order.change_amount)}</Text>
+            <MonoText size="md" color={palette.green500}>{formatCurrency(order.change_amount)}</MonoText>
           </View>
         )}
       </Surface>
@@ -121,6 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: palette.white,
   },
+  logo: { alignItems: 'center', marginBottom: 8 },
   brand: { textAlign: 'center', fontWeight: '700', color: palette.orange500, marginBottom: 4 },
   meta: { textAlign: 'center', color: palette.zinc500 },
   divider: { marginVertical: 12 },
@@ -138,10 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   totalLabel: { fontWeight: '700', color: palette.zinc950 },
-  totalVal: { fontWeight: '700', color: palette.orange500 },
   method: { color: palette.zinc500, textTransform: 'uppercase' },
-  tender: { color: palette.zinc500 },
-  change: { color: palette.green500, fontWeight: '600' },
   newOrderBtn: { margin: 16 },
   newOrderContent: { paddingVertical: 8 },
 })

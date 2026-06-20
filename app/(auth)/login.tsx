@@ -1,14 +1,22 @@
-import { useState } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { useState, useRef, useEffect } from 'react'
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput as NativeTextInput,
+} from 'react-native'
 import { Text, TextInput, Button, HelperText } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { router } from 'expo-router'
-import axios from 'axios'
+import { isAxiosError } from 'axios'
 import { useAuthStore } from '@/store/auth'
 import { authApi } from '@/api/auth'
 import { getApiError } from '@/lib/errors'
+import { AppLogo } from '@/components/shared/AppLogo'
 import { palette } from '@/theme'
 
 const schema = z.object({
@@ -27,6 +35,8 @@ export default function LoginScreen() {
   const [failCount, setFailCount]       = useState(0)
   const { login } = useAuthStore()
 
+  const passwordRef = useRef<NativeTextInput>(null)
+
   const isLocked = failCount >= MAX_ATTEMPTS
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -44,9 +54,12 @@ export default function LoginScreen() {
       await login(res.data.token, res.data.user)
       router.replace('/(auth)/branch')
     } catch (err: unknown) {
+      if (__DEV__) {
+        console.log('[Login] error:', isAxiosError(err) ? `code=${err.code} status=${err.response?.status} url=${err.config?.baseURL}${err.config?.url}` : String(err))
+      }
       setFailCount((n) => n + 1)
       // Use generic message for 401/422 to prevent email enumeration
-      if (axios.isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 422)) {
+      if (isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 422)) {
         setServerError('Incorrect email or password.')
       } else {
         setServerError(getApiError(err))
@@ -57,13 +70,16 @@ export default function LoginScreen() {
   }
 
   return (
+    // On Android, behavior="height" causes a layout shift when the keyboard
+    // dismisses on button tap, making the touch land on the email input instead.
+    // Disabling the behavior on Android avoids the shift entirely.
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={styles.title}>Sunbites POS</Text>
+          <AppLogo variant="login" />
           <Text variant="bodyMedium" style={styles.subtitle}>Sign in to your account</Text>
         </View>
 
@@ -85,6 +101,9 @@ export default function LoginScreen() {
                   onBlur={onBlur}
                   error={!!errors.email}
                   accessibilityLabel="Email address"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => passwordRef.current?.focus()}
                 />
                 <HelperText type="error" visible={!!errors.email}>
                   {errors.email?.message}
@@ -109,6 +128,11 @@ export default function LoginScreen() {
                   onBlur={onBlur}
                   error={!!errors.password}
                   accessibilityLabel="Password"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onSubmit)}
+                  render={(props) => (
+                    <NativeTextInput {...props} ref={passwordRef} />
+                  )}
                   right={
                     <TextInput.Icon
                       icon={passwordVisible ? 'eye-off' : 'eye'}
@@ -164,8 +188,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
-  header: { alignItems: 'center', marginBottom: 40 },
-  title: { color: palette.orange500, fontWeight: 'bold' },
+  header: { alignItems: 'center', marginBottom: 40, gap: 8 },
   subtitle: { color: palette.zinc500, marginTop: 4 },
   form: { gap: 4 },
   serverError: { fontSize: 14 },

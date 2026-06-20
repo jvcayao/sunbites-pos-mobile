@@ -45,3 +45,24 @@
 - [x] Admin branch screen shows all branches — verify on staging
 - [x] Logout clears storage and returns to login — verify on device
 - [x] 401 on any subsequent API call auto-logs out — verify on staging
+
+### 8. TDD Test Suite (added 2026-06-20)
+
+- [x] `src/store/__tests__/auth.test.ts` — 7 tests: login stores token in SecureStore, updates Zustand state; logout clears all; setActiveBranch updates state ✅
+- [x] `src/lib/__tests__/logout.test.ts` — 7 tests: manual logout calls API + clears state/cart/cache/nav; 401-triggered skips API call ✅
+- [x] `src/api/__tests__/auth.test.ts` — 6 tests: login/logout/me/setBranch call correct endpoints with correct payloads ✅
+- [x] `app/(auth)/__tests__/login.test.tsx` — 10 tests: renders, email/password validation, 401/429/network error states, loading disabled state, rate-limit lock ✅
+- [x] `app/(auth)/__tests__/branch.test.tsx` — 13 tests: branch list, auto-select, admin fetch, branch selection + nav, switch mode (title/back/active badge/no auto-select), sign-out ✅
+- [x] Full suite: 97/97 tests pass, 9 suites — `npx jest --passWithNoTests` ✅
+- [x] ESLint 0 errors on all auth-login files ✅
+- [x] Fixed `branch.tsx` lint errors: moved `handleSelect` before effects, removed `useCallback`, refactored loading state to avoid synchronous `setState` in effect body ✅
+
+### 9. Maestro QA (2026-06-20, Android Pixel Tablet emulator)
+
+- [x] `.maestro/auth_login.yaml` — 12 assertions all PASSED ✅
+  - Login screen renders (4 elements visible) ✅
+  - Empty form submit → "Enter a valid email address" ✅
+  - Invalid email → "Enter a valid email address" ✅
+  - Short password → "Password must be at least 8 characters" ✅
+  - Network error state → "No internet connection. Check your network and try again." ✅
+  - Note: API unreachable from dev build on emulator (SSL/network security config); success path verified via unit tests

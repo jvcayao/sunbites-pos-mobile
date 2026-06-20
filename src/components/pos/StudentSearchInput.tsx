@@ -42,12 +42,19 @@ export function StudentSearchInput({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Ref to the TextInput so we can re-focus it after a student is selected/cleared
   const inputRef = useRef<RNTextInput>(null)
+  // Skip the first render so mount-time auto-focus doesn't open the soft keyboard
+  const didMountRef = useRef(false)
 
   const { mutate: lookup, isPending } = useLookupStudent()
 
   // Re-focus the search field whenever the selection is cleared —
   // so the USB scanner is always ready for the next swipe without a tap.
+  // Skips the initial mount to avoid popping up the soft keyboard on open.
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true
+      return
+    }
     if (selectedStudent === null && !isWalkIn) {
       // Small delay lets the UI settle before refocusing
       const t = setTimeout(() => inputRef.current?.focus(), 150)

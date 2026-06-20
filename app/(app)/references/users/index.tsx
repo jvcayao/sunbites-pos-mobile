@@ -9,15 +9,16 @@ import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
 import { AvatarInitials } from '@/components/references/AvatarInitials'
 import { RoleBadge } from '@/components/references/RoleBadge'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { UserRole } from '@/types/auth'
 import type { ViewStyle, TextStyle } from 'react-native'
 
 const viewStyles = StyleSheet.create<Record<string, ViewStyle>>({
   container:  { flex: 1, backgroundColor: palette.zinc100 },
-  appbar:     { backgroundColor: palette.white },
   search:     { marginHorizontal: 16, marginTop: 8, backgroundColor: palette.white } as any,
-  row:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.zinc200, backgroundColor: palette.white },
+  row:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   info:       { flex: 1 },
   badges:     { flexDirection: 'row', gap: 4, marginTop: 4, flexWrap: 'wrap' },
   dot:        { width: 10, height: 10, borderRadius: 5 },
@@ -49,7 +50,7 @@ export default function UsersScreen() {
       accessibilityRole="button"
       accessibilityLabel={item.full_name}
     >
-      <View style={viewStyles.row}>
+      <View style={[listCardStyle, viewStyles.row]}>
         <AvatarInitials name={item.full_name} size={40} />
         <View style={viewStyles.info}>
           <Text variant="bodyMedium" style={textStyles.name}>{item.full_name}</Text>
@@ -64,16 +65,18 @@ export default function UsersScreen() {
 
   return (
     <View style={viewStyles.container}>
-      <Appbar.Header style={viewStyles.appbar}>
-        <Appbar.Content title="Users" />
-        {canCreate && (
-          <Appbar.Action
-            icon="account-plus"
-            onPress={() => router.push('/(app)/references/users/create')}
-            accessibilityLabel="Add user"
-          />
-        )}
-      </Appbar.Header>
+      <AppHeader
+        title="Users"
+        right={
+          canCreate ? (
+            <Appbar.Action
+              icon="account-plus"
+              onPress={() => router.push('/(app)/references/users/create')}
+              accessibilityLabel="Add user"
+            />
+          ) : undefined
+        }
+      />
       <TextInput
         mode="outlined"
         placeholder="Search users…"

@@ -1,6 +1,8 @@
 import type { OrderPaymentMethod } from './order'
 import type { MenuCategory } from './menu'
 
+export type InventoryStatus = 'OK' | 'LOW' | 'OUT' | 'OVER'
+
 export interface CheckoutPayload {
   student_id?: number
   payment_method: OrderPaymentMethod
@@ -10,7 +12,6 @@ export interface CheckoutPayload {
   discount_reason?: string
   amount_tendered?: number
   reference_number?: string
-  is_credit?: boolean
   use_credit?: boolean
 }
 
@@ -28,6 +29,7 @@ export interface CreateMenuItemDto {
   name: string
   price: number
   category: MenuCategory
+  is_subscription_item: boolean | null
   sort_order?: number
 }
 
@@ -36,7 +38,7 @@ export type UpdateMenuItemDto = Partial<CreateMenuItemDto>
 export interface StockAdjustDto {
   type: 'restock' | 'waste' | 'manual'
   quantity: number
-  notes?: string
+  reason: string
 }
 
 export interface InlineReloadDto {
@@ -52,5 +54,18 @@ export interface PosInventoryItem {
   name: string
   unit: string
   quantity: number
-  status: 'OK' | 'LOW' | 'OUT' | 'OVER'
+  restock_threshold: number
+  status: InventoryStatus
+}
+
+export interface LinkedStockItem {
+  id: number
+  name: string
+  unit: string
+  quantity_used: number
+}
+
+export interface AttachLinkedStockDto {
+  inventory_item_id: number
+  quantity_used: number
 }

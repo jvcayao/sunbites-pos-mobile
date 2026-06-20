@@ -6,7 +6,8 @@ export interface PosMenuItem {
   price: number
   category: MenuCategory
   is_available: boolean
+  is_subscription_item: boolean | null
   sort_order: number
-  inventory_status: string | null
+  inventory_status: 'OK' | 'LOW' | 'OUT' | 'OVER' | null
   has_inventory_mapping: boolean
 }

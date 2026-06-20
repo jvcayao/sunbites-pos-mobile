@@ -51,7 +51,9 @@ Tab visible to all roles. Individual tabs within POS are role-gated:
 - Cart quantity badge shown top-right on each item card if the item is in the cart.
 - Low Stock badge (yellow) shown if inventory is LOW.
 - Out of Stock badge (red) shown if inventory is OUT.
-- "Not linked" badge (orange) if item has no inventory mapping.
+- "Not linked" badge (orange) if item has no inventory mapping (`has_inventory_mapping = false`).
+- Items with `is_subscription_item = null` (not configured) are **greyed out and not selectable** for any customer — mandatory setup required before the item can be sold.
+- Items with `is_subscription_item = true` display a blue **"Subscription"** badge on the card.
 
 ## REQ-POS-003 — Cart Panel
 
@@ -92,22 +94,40 @@ Tab visible to all roles. Individual tabs within POS are role-gated:
 
 ## REQ-POS-006 — Menu Management Tab (admin/manager only)
 
-- Display all menu items (including unavailable) in a list.
-- Per item: name, price, category badge, availability toggle, inventory status.
-- **Add Item** button: bottom sheet form with name*, price*, category*, sort order.
-- **Edit Item**: bottom sheet with same fields pre-filled.
-- **Toggle Availability**: switches `is_available` via `POST /pos/menu-items/{id}/toggle`.
-- **Delete Item**: confirmation dialog.
-- Items sorted by category then sort_order.
+- **Layout:** "Add New Item" inline form is shown at the **top**; item card grid is displayed below it — so staff can add without scrolling past a long list.
+- Display all menu items (including unavailable) as cards in a grid.
+- Per item card: name (bold), price (large), category badge, availability toggle (Switch), "Link Stock" button, delete button (with confirmation).
+- **"Not linked" badge** (orange) displayed on card when `has_inventory_mapping = false` — item cannot be sold until stock is linked.
+- **Add Item inline form** (dashed-border card at top): name, price (₱), category select, **Subscription Eligible select** (Not configured / Yes — covered by subscription / No — regular only), Add button with inline validation.
+  - "Subscription Eligible" maps to `is_subscription_item`: `null` = Not configured, `true` = Yes, `false` = No.
+- **Toggle Availability**: instant API call via `POST /pos/menu-items/{id}/toggle` — no page reload.
+- **Delete Item**: confirmation dialog; no edit — delete and re-add if name/price needs changing.
+- **Link Stock** button on each card: opens a **Linked Stock panel** (modal/bottom sheet on mobile) for configuring which inventory items are deducted per sale of that menu item.
+
+### Linked Stock Panel (REQ-POS-006a)
+
+Accessed via the "Link Stock" button on each menu item card. Admin/Manager only.
+
+- Panel title: **"Linked Stock: {Menu Item Name}"**
+- Table of currently linked inventory items: columns — Inventory Item, Qty Deducted per Sale, Remove button.
+- **"Add Link"** form: inventory item selector (dropdown of active inventory items) + quantity input (default 1) + "Add Link" button.
+- **"Remove"** button per row with inline confirmation before detaching.
+- Warning notice: *"All menu items must have at least one stock item linked before they can be sold at checkout."*
+- API calls:
+  - `GET /references/menu-items/{id}/ingredients` — list linked items
+  - `POST /references/menu-items/{id}/ingredients` — attach (body: `inventory_item_id`, `quantity_used`)
+  - `DELETE /references/menu-items/{id}/ingredients/{inventoryItemId}` — detach
 
 ## REQ-POS-007 — Inventory Tab (admin/manager/supervisor)
 
 - Display inventory items with current stock levels.
-- Per row: Item name, Unit, Current Qty, Status badge (OK/LOW/OUT/OVER).
+- Per row: Item name, Qty, Unit, **Restock Threshold**, Status badge (OK/LOW/OUT/OVER).
+  - OVER badge: orange (`bg-orange-100 text-orange-700`).
 - **Adjust Stock** button per row: opens a bottom sheet form with:
-  - Adjustment type: Restock, Waste, Manual.
-  - Quantity (number).
-  - Notes (optional).
+  - Adjustment type: Restock, Waste, Manual (no Sale — that is system-only, auto-generated at checkout).
+  - Quantity * (required, positive number).
+  - Reason * (required — e.g. "Delivery", "Spoilage", "Correction").
+  - Live "New Total" preview (current qty ± entered qty).
   - Calls `POST /pos/inventory/{id}/adjust`.
 - Pull-to-refresh.
 

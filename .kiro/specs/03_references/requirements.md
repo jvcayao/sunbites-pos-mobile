@@ -27,16 +27,18 @@ Access varies per sub-section (see role column below).
 
 ### Inventory List Tab
 - Display a list of active inventory items with: Name, Unit, Current Qty (color if LOW/OUT), Low Alert threshold, Overstock threshold, Cost/Unit, Status badge, actions.
-- Status badges: OK=green, LOW=yellow, OUT=red, OVER=blue.
-- Add New Item form (bottom sheet): Name*, Unit*, Initial Qty*, Low Alert Qty*, Overstock Qty (optional), Cost/Unit (optional).
-- Edit Item (bottom sheet, same fields minus initial qty, plus current qty display).
+- Status badges: OK=green, LOW=yellow, OUT=red, OVER=orange.
+- **Add New Item inline form** (shown at the **top** of the Inventory tab, above the item list, with a dashed border): Name*, Unit*, Initial Qty* (0 default), Low Alert Qty*, Overstock Qty (optional), Cost/Unit (optional). No FAB — the form is always visible.
+- **Edit Item** (bottom sheet, same fields minus Initial Qty, plus current qty display).
+- **Per-item log history**: each item row has a History action button that opens a modal showing that item's stock movement log (Date/Time, Type, Qty Change, Stock After, Reason, Adjusted By).
 - Delete item: if the item has no log history, delete immediately; if it has logs, offer Archive instead.
 - Unarchive button for archived items (shown in collapsed "Archived" section at bottom).
 
 ### Log History Tab
 - Display cross-item log history: Date/Time, Item Name, Log Type badge, Qty Change (± with color), Qty After, Reason, Adjusted By.
 - Filter by date range (from/to), log type (All, Restock, Waste, Manual, Sale), and item selector.
-- Pull-to-refresh; load-more pagination.
+- Pull-to-refresh; load-more pagination (25 per page).
+- **Row color coding:** green (`bg-green-50`) for Restock (stock added); red (`bg-red-50`) for Sale, Waste, or any deduction; gray (`bg-muted/30`) for Manual adjustments.
 
 ### Validation
 - Name: required, max 100 chars.

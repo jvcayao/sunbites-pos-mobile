@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native'
 import { Surface, Text } from 'react-native-paper'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MonoText } from '@/components/shared/MonoText'
 import { palette } from '@/theme'
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name']
@@ -18,7 +19,7 @@ export function KpiCard({ label, value, icon, iconColor = palette.orange500 }: K
       <View style={styles.row}>
         <View style={styles.text}>
           <Text variant="labelSmall" style={styles.label}>{label}</Text>
-          <Text variant="headlineSmall" style={styles.value}>{value}</Text>
+          <MonoText size="lg" weight="bold" color={palette.zinc950}>{String(value)}</MonoText>
         </View>
         {icon !== undefined && (
           <View style={[styles.iconBg, { backgroundColor: iconColor + '20' }]}>
@@ -53,10 +54,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  value: {
-    color: palette.zinc950,
-    fontWeight: '700',
   },
   iconBg: {
     width: 44,

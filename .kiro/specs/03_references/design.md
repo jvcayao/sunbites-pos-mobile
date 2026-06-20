@@ -5,7 +5,7 @@
 Same palette as Reports (inherited from `~/sunbites-pos`). See `src/theme/index.ts` for full token map.
 
 Key colors used in References:
-- Status: OK=#22C55E, LOW=#EAB308, OUT=#EF4444, OVER=#3B82F6
+- Status: OK=#22C55E, LOW=#EAB308, OUT=#EF4444, OVER=orange (bg-orange-100 text-orange-700 border-orange-300)
 - Role badges: admin=#7C3AED, manager=#2563EB, supervisor=#0891B2, cashier=#059669
 - Meal categories: Ulam=#F97316, Vegetables=#22C55E, Fruit=#3B82F6, Soup=#0EA5E9, Snacks=#A855F7
 - Feedback categories: Food Quality=#F97316, Service=#3B82F6, Portion Size=#22C55E, Cleanliness=#0891B2, General=#71717A
@@ -69,7 +69,8 @@ export const referencesApi = {
     destroy:   (id)                        => client.delete(`/references/inventory/${id}`),
     archive:   (id)                        => client.patch(`/references/inventory/${id}/archive`),
     unarchive: (id)                        => client.patch(`/references/inventory/${id}/unarchive`),
-    history:   (params)                    => client.get('/references/inventory/history', { params }),
+    logs:      (id)                        => client.get(`/references/inventory/${id}/logs`),     // per-item history
+    history:   (params)                    => client.get('/references/inventory/history', { params }), // cross-item history
   },
 
   // Meal Planner
@@ -137,8 +138,9 @@ export const referencesApi = {
 
 ```typescript
 // Inventory
-export function useInventoryList()
-export function useInventoryHistory(params)
+export function useInventoryList()                    // queryKey: ['inventory-list']
+export function useInventoryItemLogs(id: number)      // queryKey: ['inventory-item-logs', id] — per-item history modal
+export function useInventoryHistory(params)           // queryKey: ['inventory-history', params] — cross-item History tab
 
 // Meal Planner
 export function useMealPlanner(month: SchoolMonth, week: 1|2|3|4)
@@ -174,7 +176,44 @@ Mutation hooks (e.g., `useCreateInventoryItem`, `useUpdateUser`, etc.) invalidat
 
 ```typescript
 // Inventory
-interface InventoryItemCreate { name, unit, quantity, restock_threshold, overstock_threshold?, cost_per_unit? }
+export type InventoryStatus = 'OK' | 'LOW' | 'OUT' | 'OVER'
+export type InventoryLogType = 'restock' | 'waste' | 'manual' | 'sale'
+
+export interface InventoryItem {
+  id: number
+  branch_id: number
+  name: string
+  quantity: number
+  unit: string
+  restock_threshold: number
+  overstock_threshold: number | null
+  cost_per_unit: number | null
+  is_archived: boolean
+  status: InventoryStatus            // computed by API: OUT | LOW | OVER | OK
+}
+
+export interface InventoryLog {
+  id: number
+  inventory_item_id: number
+  order_id: number | null            // set when auto-created by checkout (Sale type)
+  adjusted_by: number                // user id
+  adjusted_by_name: string           // user display name (included by API relation)
+  type: InventoryLogType
+  quantity_change: number            // positive = add, negative = deduct
+  stock_after: number
+  item_name_snapshot: string         // item name at time of log (preserved if renamed)
+  reason: string
+  created_at: string
+}
+
+export interface CreateInventoryDto {
+  name: string
+  unit: string
+  quantity: number                   // initial stock; if > 0, a Restock log is auto-created
+  restock_threshold: number
+  overstock_threshold?: number
+  cost_per_unit?: number
+}
 
 // Meal Planner
 interface MealPlannerWeek {
@@ -217,16 +256,39 @@ interface SystemConfig { key: string, value: string, type: 'integer'|'decimal'|'
 
 ### Inventory (`references/inventory.tsx`)
 - `SegmentedButtons` at top to switch between List and History tabs.
-- List tab: `FlatList` of items; swipe-left on a row reveals Edit and Delete actions (via `react-native-swipeable` or long-press menu).
-- "Add Item" FAB (floating action button) in bottom-right, opens `FormBottomSheet`.
-- Archived items: collapsible section at the bottom of the list.
+- **List tab layout (top to bottom):**
+  1. **Add New Item inline form** (always visible at top, dashed-border card): Name, Unit, Initial Qty, Low Alert Qty, Overstock Qty (optional), Cost/Unit (optional) — no FAB.
+  2. Active items `FlatList` — each row shows: Name, Qty, Unit, Low Alert, Overstock, Cost/Unit, Status badge, and three action buttons: **[Edit] [History] [✕]**.
+     - Edit → opens `FormBottomSheet` with current values (no Initial Qty).
+     - History → opens a modal with that item's per-item log: Date/Time, Type, Qty Change, Stock After, Reason, Adjusted By.
+     - Delete `[✕]` → blocked if item has log history (offer Archive instead); otherwise confirmation + delete.
+  3. Archived items: collapsible section at the bottom with Unarchive button per row.
+- Status badge colors: OK=green, LOW=yellow, OUT=red, OVER=orange (`bg-orange-100 text-orange-700 border-orange-300`).
 
 ### Meal Planner (`references/meal-planner.tsx`)
 - Month selector: horizontal scrollable tab bar of 10 month chips.
 - Week selector: 4-button `SegmentedButtons` row below months.
+- **Week visibility row** (between week selector and grid): `── [Month] — Week [N] ──── [● Visible to Parents]`
+  - Admin/Manager: badge is interactive → tapping opens confirmation dialog
+  - Supervisor/Cashier: badge is read-only
+  - Published badge: `bg-green-100 text-green-700 border-green-300` — "● Visible to Parents"
+  - Unpublished badge: `bg-muted text-muted-foreground` — "○ Hidden from Parents"
+  - **Confirmation dialog when toggling visibility:**
+    - Publishing: title "Publish {Month} — Week {N} to Parents?", body "Parents will be able to see this week's meal plan.", confirm button primary color, label "Yes, Publish It"
+    - Hiding: title "Hide {Month} — Week {N} from Parents?", body "Parents will no longer see this week's meal plan.", confirm button destructive red, label "Yes, Hide It"
 - Grid: `ScrollView` with a `View`-based table (not FlatList — fixed 5 days × 5 categories = 25 cells).
-- Edit mode toggled by a pencil button in the header; in view mode cells are plain text, in edit mode they become `TextInput`.
-- Color-coded column headers matching web app.
+- Admin/Manager: cells are editable `TextInput`; Save Week + Reset buttons shown.
+- Supervisor/Cashier: cells are plain text; no Save/Reset buttons.
+- **Column header colors:** `bg-primary text-primary-foreground text-sm font-semibold` — same for all 5 columns (Day, Ulam, Vegetables, Fruit, Soup, Snacks). No per-column eye icons.
+- **Cell background colors (per column):**
+  - Day column: `bg-muted text-primary font-bold` — non-editable
+  - Ulam cells: `bg-orange-50`
+  - Vegetables cells: `bg-green-50`
+  - Fruit cells: `bg-blue-50`
+  - Soup cells: `bg-sky-50`
+  - Snacks cells: `bg-purple-50`
+- Table must horizontal-scroll on small screens (min-width: 700px equivalent).
+- Toast on save: *"Week {N} of {Month} menu saved."*
 
 ### Users (`references/users/`)
 - List: `FlatList` with `AvatarInitials` + `RoleBadge`.

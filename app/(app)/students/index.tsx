@@ -14,6 +14,8 @@ import { StudentCard } from '@/components/students/StudentCard'
 import { WalletTopUpSheet } from '@/components/students/WalletTopUpSheet'
 import { PrintQrSheet } from '@/components/students/PrintQrSheet'
 import { useLayout } from '@/hooks/useLayout'
+import { AppHeader } from '@/components/shared/AppHeader'
+import { listCardStyle, listCardStyleGrid } from '@/lib/constants'
 import { palette } from '@/theme'
 import type { Student, StudentType, TopUpDto } from '@/types/student'
 import type { EnrollmentStatus } from '@/types/student'
@@ -73,7 +75,7 @@ export default function StudentsScreen() {
   }
 
   const renderItem = useCallback(({ item }: { item: Student }) => (
-    <View style={numCols > 1 ? styles.gridItem : styles.listItem}>
+    <View style={numCols > 1 ? [listCardStyleGrid, styles.gridItem] : [listCardStyle, styles.listItem]}>
       <StudentCard
         student={item}
         selected={selectedIds.has(item.id)}
@@ -89,15 +91,17 @@ export default function StudentsScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Students" />
-        <Appbar.Action
-          icon="account-plus"
-          onPress={() => router.push('/(app)/enrollment')}
-          accessibilityLabel="Enroll student"
-          accessibilityRole="button"
-        />
-      </Appbar.Header>
+      <AppHeader
+        title="Students"
+        right={
+          <Appbar.Action
+            icon="account-plus"
+            onPress={() => router.push('/(app)/enrollment')}
+            accessibilityLabel="Enroll student"
+            accessibilityRole="button"
+          />
+        }
+      />
 
       <SegmentedButtons
         value={typeFilter}
@@ -211,7 +215,6 @@ export default function StudentsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   tabs: { marginHorizontal: 16, marginVertical: 8 },
   search: { marginHorizontal: 16, marginBottom: 4, backgroundColor: palette.white },
   list: { padding: 16 },

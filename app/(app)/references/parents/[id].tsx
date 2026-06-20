@@ -10,6 +10,7 @@ import { getApiError } from '@/lib/errors'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { AvatarInitials } from '@/components/references/AvatarInitials'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 
 export default function ParentDetailScreen() {
@@ -37,6 +38,7 @@ export default function ParentDetailScreen() {
 
   return (
     <View style={styles.container}>
+      <AppHeader title={parent.full_name} showBack />
       <Surface style={styles.header} elevation={1}>
         <AvatarInitials name={parent.full_name} size={56} backgroundColor={palette.blue100} textColor={palette.blue500} />
         <View style={styles.info}>

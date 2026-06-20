@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form'
 import type { Control } from 'react-hook-form'
 import { TextInput } from 'react-native-paper'
 import { InlineError } from '@/components/shared/InlineError'
-import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
+import { SelectInput } from '@/components/shared/SelectInput'
 import { palette } from '@/theme'
 import type { EnrollFormData } from '@/lib/schemas/enrollment'
 
@@ -64,12 +64,14 @@ export function ContactForm({ index, control, canRemove, onRemove }: ContactForm
         name={`contacts.${index}.relationship`}
         render={({ field: { value, onChange }, fieldState }) => (
           <View>
-            <Text variant="labelSmall" style={styles.fieldLabel}>Relationship *</Text>
-            <FilterChipRow>
-              {RELATIONSHIPS.map((r) => (
-                <FilterChip key={r} label={r} active={value === r} onPress={() => onChange(r)} />
-              ))}
-            </FilterChipRow>
+            <SelectInput
+              label="Relationship *"
+              value={value}
+              options={RELATIONSHIPS}
+              onChange={onChange}
+              error={!!fieldState.error}
+              accessibilityLabel="Contact relationship"
+            />
             <InlineError message={fieldState.error?.message} />
           </View>
         )}

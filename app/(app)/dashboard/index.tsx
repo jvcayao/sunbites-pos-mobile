@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native'
-import { Appbar, Surface, Text } from 'react-native-paper'
+import { Surface, Text } from 'react-native-paper'
 import { router } from 'expo-router'
 import { formatDistanceToNow } from 'date-fns'
 import { useDashboard, useUpdateStaffStatus } from '@/hooks/useDashboard'
@@ -16,6 +16,7 @@ import { AlertRow } from '@/components/dashboard/AlertRow'
 import { SkeletonKpi } from '@/components/shared/SkeletonKpi'
 import { SkeletonCard } from '@/components/shared/SkeletonCard'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { palette } from '@/theme'
 import type { StaffMember, StaffStatus } from '@/types/dashboard'
 
@@ -39,9 +40,7 @@ export default function DashboardScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Appbar.Header style={styles.appbar}>
-          <Appbar.Content title="Dashboard" />
-        </Appbar.Header>
+        <AppHeader title="Dashboard" />
         <SkeletonKpi count={6} columns={kpiColumns} />
         <SkeletonCard count={4} />
       </View>
@@ -50,9 +49,7 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Dashboard" subtitle={updatedLabel} />
-      </Appbar.Header>
+      <AppHeader title="Dashboard" subtitle={updatedLabel} />
 
       <ScrollView
         refreshControl={
@@ -178,7 +175,6 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   kpiGrid: { padding: 16 },
   kpiRow: { flexDirection: 'row', gap: 12 },
   section: {
