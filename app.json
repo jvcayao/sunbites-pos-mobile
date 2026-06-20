@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Sunbites POS",
+    "slug": "sunbites-pos-mobile",
+    "version": "1.0.0",
+    "scheme": "sunbites-pos",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.sunbites.pos.mobile",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.sunbites.pos.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#F97316"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      "expo-updates",
+      "./plugins/withGradleVersion"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "updates": {
+      "url": "https://u.expo.dev/sunbites-pos-mobile",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "sunbites-pos-mobile"
+      }
+    }
+  }
+}

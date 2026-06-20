@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 10.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api-staging.sunbites.com.ph/api/v1"
+      }
+    },
+    "staging": {
+      "distribution": "internal",
+      "channel": "staging",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api-staging.sunbites.com.ph/api/v1"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.sunbites.com.ph/api/v1"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -1,0 +1,54 @@
+export const GRADE_LEVELS = [
+  'Nursery',
+  'Kinder 1',
+  'Kinder 2',
+  'Grade 1',
+  'Grade 2',
+  'Grade 3',
+  'Grade 4',
+  'Grade 5',
+  'Grade 6',
+  'Grade 7',
+  'Grade 8',
+  'Grade 9',
+  'Grade 10',
+  'Grade 11',
+  'Grade 12',
+] as const
+
+export const PAYMENT_METHODS = ['cash', 'gcash', 'wallet', 'subscription'] as const
+
+export const ENROLLMENT_STATUSES = [
+  'enrolled',
+  'paused',
+  'unenrolled',
+  'banned',
+  'graduated',
+] as const
+
+export const STUDENT_TYPES = ['subscription', 'non_subscription'] as const
+
+export const SCHOOL_MONTHS = [
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+  'january',
+  'february',
+  'march',
+] as const
+
+export const USER_ROLES = ['admin', 'manager', 'supervisor', 'cashier'] as const
+
+export const MENU_CATEGORIES = ['meal', 'snack', 'drink', 'extra'] as const
+
+export const STAFF_STATUSES = [
+  'Working',
+  'Off',
+  'OnLeave',
+  'Emergency',
+  'OnBreak',
+] as const
