@@ -32,7 +32,7 @@ export const posApi = {
 
   // Orders
   checkout: (payload: CheckoutPayload) =>
-    client.post<Order>('/pos/checkout', payload),
+    client.post<{ order: Order }>('/pos/checkout', payload),
   transactions: (params?: {
     page?: number; per_page?: number; search?: string
     date_from?: string; date_to?: string

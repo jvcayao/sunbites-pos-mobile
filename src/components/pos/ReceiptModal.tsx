@@ -17,20 +17,20 @@ export function ReceiptModal({ order, onNewOrder }: ReceiptModalProps) {
       '=== SUNBITES POS RECEIPT ===',
       `Receipt #: ${order.receipt_number}`,
       `Date: ${formatDate(order.created_at, 'MMM d, yyyy h:mm a')}`,
-      `Cashier: ${order.cashier.full_name}`,
+      `Cashier: ${order.cashier.name}`,
       order.student !== null ? `Student: ${order.student.full_name}` : 'Customer: Walk-in',
       '',
       '--- ITEMS ---',
       ...order.items.map((i) => `${i.name} x${i.quantity}  ${formatCurrency(i.price * i.quantity)}`),
       '',
-      order.discount_amount > 0 ? `Subtotal:  ${formatCurrency(order.subtotal)}` : '',
-      order.discount_amount > 0 ? `Discount:  -${formatCurrency(order.discount_amount)}` : '',
+      parseFloat(order.discount_amount) > 0 ? `Subtotal:  ${formatCurrency(order.subtotal)}` : '',
+      parseFloat(order.discount_amount) > 0 ? `Discount:  -${formatCurrency(order.discount_amount)}` : '',
       `TOTAL:     ${formatCurrency(order.total)}`,
-      `Payment:   ${order.payment_method.toUpperCase()}`,
+      `Payment:   ${order.payment_method?.toUpperCase() ?? '—'}`,
       order.amount_tendered !== null
         ? `Tendered:  ${formatCurrency(order.amount_tendered)}`
         : '',
-      order.change_amount !== null && order.change_amount > 0
+      order.change_amount !== null && parseFloat(order.change_amount) > 0
         ? `Change:    ${formatCurrency(order.change_amount)}`
         : '',
       '',
@@ -69,13 +69,13 @@ export function ReceiptModal({ order, onNewOrder }: ReceiptModalProps) {
 
         <Divider style={styles.divider} />
 
-        {order.discount_amount > 0 && (
+        {parseFloat(order.discount_amount) > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium">Subtotal</Text>
             <MonoText size="md">{formatCurrency(order.subtotal)}</MonoText>
           </View>
         )}
-        {order.discount_amount > 0 && (
+        {parseFloat(order.discount_amount) > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium" style={styles.discountLabel}>Discount</Text>
             <MonoText size="md" color={palette.orange500}>
@@ -88,14 +88,14 @@ export function ReceiptModal({ order, onNewOrder }: ReceiptModalProps) {
           <MonoText size="lg" weight="bold" color={palette.orange500}>{formatCurrency(order.total)}</MonoText>
         </View>
         <View style={styles.summaryRow}>
-          <Text variant="bodyMedium" style={styles.method}>{order.payment_method.toUpperCase()}</Text>
+          <Text variant="bodyMedium" style={styles.method}>{order.payment_method?.toUpperCase() ?? '—'}</Text>
           {order.amount_tendered !== null && (
             <MonoText size="sm" color={palette.zinc500}>
               Tendered {formatCurrency(order.amount_tendered)}
             </MonoText>
           )}
         </View>
-        {order.change_amount !== null && order.change_amount > 0 && (
+        {order.change_amount !== null && parseFloat(order.change_amount) > 0 && (
           <View style={styles.summaryRow}>
             <Text variant="bodyMedium">Change</Text>
             <MonoText size="md" color={palette.green500}>{formatCurrency(order.change_amount)}</MonoText>

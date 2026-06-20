@@ -1,8 +1,8 @@
 import { format, parseISO } from 'date-fns'
 
-export function formatCurrency(amount: number | null | undefined): string {
-  const value = amount ?? 0
-  return `₱ ${value.toLocaleString('en-PH', {
+export function formatCurrency(amount: number | string | null | undefined): string {
+  const value = amount != null ? parseFloat(String(amount)) : 0
+  return `₱ ${(isNaN(value) ? 0 : value).toLocaleString('en-PH', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`

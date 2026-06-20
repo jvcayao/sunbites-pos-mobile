@@ -71,7 +71,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     "extra": {
         "eas": {
-            "projectId": "sunbites-pos-mobile"
+            "projectId": "20f6590e-6e92-4f59-b1be-9585aa218c64"
         },
         reverbAppKey: process.env.EXPO_PUBLIC_REVERB_APP_KEY,
         reverbHost: process.env.EXPO_PUBLIC_REVERB_HOST,

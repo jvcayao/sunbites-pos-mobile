@@ -18,11 +18,11 @@ export interface Order {
   cashier_id: number
   receipt_number: string
   payment_method: OrderPaymentMethod
-  subtotal: number
-  discount_amount: number
-  total: number
-  amount_tendered: number | null
-  change_amount: number | null
+  subtotal: string
+  discount_amount: string
+  total: string
+  amount_tendered: string | null
+  change_amount: string | null
   reference_number: string | null
   notes: string | null
   is_credit: boolean
@@ -34,7 +34,7 @@ export interface Order {
   created_at: string
   items: OrderItem[]
   student: PosStudent | null
-  cashier: { id: number; full_name: string }
+  cashier: { id: number; name: string }
   // Checkout response extras
   wallet_balance_remaining?: number
   credit_balance_after?: number
