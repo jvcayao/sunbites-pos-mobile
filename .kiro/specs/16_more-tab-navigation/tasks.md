@@ -1,0 +1,66 @@
+# Implementation Plan — 16 More Tab Navigation
+
+- [ ] 1. Create `BranchPill` component
+  - Create `src/components/shared/BranchPill.tsx`
+  - Read `activeBranch` from `useAuthStore((s) => s.activeBranch)` selector
+  - Return `null` when `activeBranch` is null
+  - Render `Pressable` with branch name (truncated to 18 chars) + `chevron-down` icon
+  - On press: `router.push('/(auth)/branch?mode=switch')`
+  - Style: `zinc-100` bg, `zinc-700` text, border-radius `6`, height `28`, horizontal padding `10`, `FontFamily.sans.medium` size `12`, icon size `14`
+  - Add `accessibilityRole="button"` and `accessibilityLabel="Switch branch, currently {name}"`
+  - Write component tests in `src/components/shared/__tests__/BranchPill.test.tsx`:
+    - renders null when activeBranch is null
+    - renders branch name when activeBranch is set
+    - truncates branch name beyond 18 characters
+    - calls `router.push('/(auth)/branch?mode=switch')` on press
+    - has correct accessibilityRole and accessibilityLabel
+  - _Requirements: REQ-MORE-001_
+
+- [ ] 2. Update `AppHeader` to render `BranchPill`
+  - Add `showBranchPill?: boolean` prop to `AppHeaderProps` interface (default `true`)
+  - Import `BranchPill` from `@/components/shared/BranchPill`
+  - Update right slot render order: `{showBranchPill !== false && <BranchPill />}` then `{right}` then `<NotificationBell />`
+  - Write component tests in `src/components/shared/__tests__/AppHeader.test.tsx`:
+    - renders BranchPill by default
+    - hides BranchPill when `showBranchPill={false}`
+    - renders custom `right` content alongside BranchPill when both are provided
+    - NotificationBell always renders last in the right slot
+  - _Requirements: REQ-MORE-002_
+
+- [ ] 3. Create `MoreScreen`
+  - [ ] 3.1 Create `app/(app)/more/index.tsx`
+    - Read `user` and `activeBranch` from `useAuthStore` selectors
+    - Render `<AppHeader title="More" showBranchPill={false} />`
+    - Guard: if `user` is null render `<EmptyState message="Session expired" />`
+    - Two-column landscape layout via `useLayout()` (left 35%, right 65%)
+    - Left column: avatar circle (64px, zinc-100 bg, primary red initials, FontFamily.sans.bold size 22), full_name, email, role badge (roles[0] capitalized), branch row (map-marker icon + branch name)
+    - Right column: two sections (ACCOUNT with 3 disabled placeholder rows, SESSION with Sign Out row)
+    - Sign Out row: red text, `log-out` icon, calls `performLogout()` on press
+    - Placeholder rows: disabled appearance (`zinc-400` text), `(soon)` label, no onPress handler
+    - _Requirements: REQ-MORE-003, REQ-MORE-004, REQ-MORE-005_
+  - [ ] 3.2 Write component tests in `app/(app)/more/__tests__/MoreScreen.test.tsx`
+    - renders user initials in avatar circle
+    - renders full_name, email, and capitalized role badge
+    - renders activeBranch.name in branch row
+    - renders EmptyState when user is null
+    - Sign Out row calls `performLogout()` on press
+    - placeholder items are not pressable (or onPress is undefined)
+    - _Requirements: REQ-MORE-004, REQ-MORE-005_
+
+- [ ] 4. Register `more` tab in `_layout.tsx`
+  - Open `app/(app)/_layout.tsx`
+  - Add `<Tabs.Screen name="more" options={{ title: 'More', tabBarIcon: ... }} />` as the last `<Tabs.Screen>` before `{/* Hidden */}` entries
+  - Icon: `MaterialCommunityIcons` name `"menu"`
+  - No `href` guard — always visible to all roles
+  - Verify app renders without TypeScript errors (`npm run typecheck`)
+  - _Requirements: REQ-MORE-003_
+
+- [ ] 5. Clean up POS screen header
+  - Open `app/(app)/pos/index.tsx`
+  - Remove `handleLogout` function
+  - Remove `handleSwitchBranch` function
+  - Remove `performLogout` import (verify no other call site in this file first)
+  - Remove the `right={...}` prop from `<AppHeader>` in the POS screen
+  - Confirm `activeBranch` selector is retained (still used elsewhere in the screen)
+  - Run `npm run typecheck` and `npm run lint` to confirm no regressions
+  - _Requirements: REQ-MORE-006_

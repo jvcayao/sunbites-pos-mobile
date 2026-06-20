@@ -225,10 +225,11 @@ Read the relevant spec before implementing. Each folder has `requirements.md`, `
 | 13 | announcements | 🔲 Planned — Announcements list/create/detail, nav item, NotificationBell routing |
 | 14 | pre-registrations | 🔲 Planned — Pre-reg queue: list, detail, approve/reject/reactivate, pending badge |
 | 15 | design-system | 🔲 Planned — Font system (Space Grotesk/DM Sans/DM Mono), logo/brand assets, nav rail (tablet), motion, MonoText, StatusBadge |
+| 16 | more-tab-navigation | 🔲 Planned — More tab (hamburger), MoreScreen (profile + logout), BranchPill in AppHeader, POS header cleanup |
 
 **Build order (implemented):** `09` → `10` → `04` → `05` → `06` → `07` → `02` → `03` → `08` → `11`
 
-**Build order (planned):** `12` → `13` → `14` → `15`
+**Build order (planned):** `12` → `13` → `14` → `16` → `15`
 
 ---
 
