@@ -61,7 +61,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
   },
   updates: {
-    url: "https://u.expo.dev/sunbites-pos-mobile",
+    url: "https://u.expo.dev/20f6590e-6e92-4f59-b1be-9585aa218c64",
     enabled: true,
     checkAutomatically: "ON_LOAD",
     fallbackToCacheTimeout: 0,
