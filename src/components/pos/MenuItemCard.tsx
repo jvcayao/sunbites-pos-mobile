@@ -1,22 +1,16 @@
-import { useCallback } from 'react'
-import { Animated, Pressable, StyleSheet, View } from 'react-native'
-import { Surface, Text } from 'react-native-paper'
+import React, { useCallback } from 'react'
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native'
 import { formatCurrency } from '@/lib/formatters'
 import { usePressScale } from '@/lib/animation'
+import { MonoText } from '@/components/shared/MonoText'
 import { palette } from '@/theme'
+import { FontFamily } from '@/theme/fonts'
 import type { PosMenuItem } from '@/types/menu'
 
 interface MenuItemCardProps {
   item: PosMenuItem
   cartQuantity: number
   onPress: (item: PosMenuItem) => void
-}
-
-const CATEGORY_BADGE: Record<string, { bg: string; text: string }> = {
-  meal:  { bg: palette.orange100, text: palette.orange500 },
-  snack: { bg: '#FEF9C3',         text: '#854D0E' },
-  drink: { bg: palette.blue100,   text: palette.blue500 },
-  extra: { bg: palette.zinc100,   text: palette.zinc500 },
 }
 
 // Badge priority (highest wins, each is mutually exclusive for disabled state):
@@ -38,67 +32,67 @@ function getItemState(item: PosMenuItem): {
   return { isDisabled: false, badge: 'none' }
 }
 
-export const MenuItemCard = function MenuItemCard({ item, cartQuantity, onPress }: MenuItemCardProps) {
-  const badge = CATEGORY_BADGE[item.category] ?? CATEGORY_BADGE['extra']
+export const MenuItemCard = function MenuItemCard({ item, cartQuantity, onPress }: MenuItemCardProps): React.JSX.Element {
   const { isDisabled, badge: statusBadge } = getItemState(item)
 
   const handlePress = useCallback(() => onPress(item), [item, onPress])
   const { scale, onPressIn, onPressOut } = usePressScale(0.97)
 
   return (
-    <Animated.View style={[styles.container, { transform: [{ scale }] }]}>
-    <Pressable
-      onPress={handlePress}
-      onPressIn={onPressIn}
-      onPressOut={onPressOut}
-      disabled={isDisabled}
-      style={({ pressed }: { pressed: boolean }) => [
-        pressed && !isDisabled && styles.pressed,
-        isDisabled && styles.disabled,
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={`${item.name}, ${formatCurrency(item.price)}`}
-      accessibilityState={{ disabled: isDisabled }}
-    >
-      <Surface
-        style={[styles.card, cartQuantity > 0 && styles.cardInCart]}
-        elevation={1}
+    <Animated.View style={[
+      styles.container,
+      { transform: [{ scale }] },
+      isDisabled && styles.disabled,
+    ]}>
+      <Pressable
+        onPress={handlePress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        disabled={isDisabled}
+        style={({ pressed }: { pressed: boolean }) => pressed && !isDisabled && styles.pressed}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.name}, ${formatCurrency(item.price)}`}
+        accessibilityState={{ disabled: isDisabled }}
       >
-        {cartQuantity > 0 && (
-          <View style={styles.quantityBadge}>
-            <Text variant="labelSmall" style={styles.quantityText}>{cartQuantity}</Text>
+        <View style={[styles.card, cartQuantity > 0 && styles.cardInCart]}>
+          {/* overflow:hidden on card clips the awning to rounded corners.
+              Card has NO elevation on Android — elevation + overflow:hidden together
+              produces Android's thick Material surface outline artifact. */}
+          <View style={styles.awning}>
+            <Text style={styles.awningName} numberOfLines={2}>{item.name}</Text>
           </View>
-        )}
-        <View style={[styles.categoryBadge, { backgroundColor: badge.bg }]}>
-          <Text variant="labelSmall" numberOfLines={1} style={{ color: badge.text }}>
-            {item.category}
-          </Text>
+          <View style={styles.body}>
+            <MonoText size="lg" weight="bold" color={palette.zinc950}>
+              {formatCurrency(item.price)}
+            </MonoText>
+            {statusBadge === 'out' && (
+              <View style={[styles.badge, styles.badgeOut]}>
+                <Text style={[styles.badgeText, styles.badgeOutText]}>Out of Stock</Text>
+              </View>
+            )}
+            {statusBadge === 'not_linked' && (
+              <View style={[styles.badge, styles.badgeNotLinked]}>
+                <Text style={[styles.badgeText, styles.badgeNotLinkedText]}>Not linked</Text>
+              </View>
+            )}
+            {statusBadge === 'low' && (
+              <View style={[styles.badge, styles.badgeLow]}>
+                <Text style={[styles.badgeText, styles.badgeLowText]}>Low Stock</Text>
+              </View>
+            )}
+            {statusBadge === 'subscription' && (
+              <View style={[styles.badge, styles.badgeSub]}>
+                <Text style={[styles.badgeText, styles.badgeSubText]}>Subscription</Text>
+              </View>
+            )}
+          </View>
+          {cartQuantity > 0 && (
+            <View style={styles.quantityBadge}>
+              <Text style={styles.quantityText}>{cartQuantity}</Text>
+            </View>
+          )}
         </View>
-        <Text variant="bodyMedium" style={styles.name} numberOfLines={2}>{item.name}</Text>
-        <Text variant="titleSmall" style={styles.price}>{formatCurrency(item.price)}</Text>
-
-        {statusBadge === 'out' && (
-          <View style={styles.statusBadge}>
-            <Text variant="labelSmall" style={styles.outText}>Out of Stock</Text>
-          </View>
-        )}
-        {statusBadge === 'not_linked' && (
-          <View style={[styles.statusBadge, styles.unmappedBadge]}>
-            <Text variant="labelSmall" style={styles.unmappedText}>Not linked</Text>
-          </View>
-        )}
-        {statusBadge === 'low' && (
-          <View style={[styles.statusBadge, styles.lowBadge]}>
-            <Text variant="labelSmall" style={styles.lowText}>Low Stock</Text>
-          </View>
-        )}
-        {statusBadge === 'subscription' && (
-          <View style={[styles.statusBadge, styles.subscriptionBadge]}>
-            <Text variant="labelSmall" style={styles.subscriptionText}>Subscription</Text>
-          </View>
-        )}
-      </Surface>
-    </Pressable>
+      </Pressable>
     </Animated.View>
   )
 }
@@ -106,19 +100,78 @@ export const MenuItemCard = function MenuItemCard({ item, cartQuantity, onPress 
 const styles = StyleSheet.create({
   container: { flex: 1, minWidth: 0 },
   pressed:   { opacity: 0.85 },
-  disabled:  { opacity: 0.4 },
+  disabled:  { opacity: 0.35 },
+
   card: {
     flex: 1,
-    borderRadius: 12,
-    padding: 12,
+    minHeight: 108,
+    borderRadius: 14,
     backgroundColor: palette.white,
-    minHeight: 100,
-    gap: 4,
+    overflow: 'hidden',
+    // Android: no elevation (elevation + overflow:hidden = thick border artifact).
+    // Use a hairline border for card separation instead.
+    // iOS: keep subtle shadow — overflow:hidden is fine without elevation on iOS.
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.10)',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.07,
+        shadowRadius: 3,
+        // Widen border to show shadow on iOS
+        borderWidth: 0,
+      },
+    }),
   },
   cardInCart: {
     borderWidth: 2,
     borderColor: palette.orange500,
   },
+
+  awning: {
+    backgroundColor: '#E7000B',
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 9,
+    // No borderTopRadius needed — parent card's overflow:hidden clips this cleanly.
+  },
+  awningName: {
+    fontFamily: FontFamily.grotesk.semibold,
+    fontSize: 13,
+    letterSpacing: -0.2,
+    lineHeight: 17,
+    color: '#FFFFFF',
+  },
+
+  body: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingTop: 9,
+    paddingBottom: 11,
+    gap: 5,
+  },
+
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
+  badgeText: {
+    fontFamily: FontFamily.sans.medium,
+    fontSize: 9,
+    letterSpacing: 0.2,
+  },
+  badgeOut:           { backgroundColor: '#FEE2E2' },
+  badgeOutText:       { color: '#991B1B' },
+  badgeNotLinked:     { backgroundColor: '#FEF3C7' },
+  badgeNotLinkedText: { color: '#92400E' },
+  badgeLow:           { backgroundColor: '#FEF3C7' },
+  badgeLowText:       { color: '#78350F' },
+  badgeSub:           { backgroundColor: '#DBEAFE' },
+  badgeSubText:       { color: '#1E40AF' },
+
   quantityBadge: {
     position: 'absolute',
     top: -6,
@@ -131,28 +184,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 1,
   },
-  quantityText:   { color: '#FFF', fontWeight: '700' },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    flexShrink: 0,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
+  quantityText: {
+    fontFamily: FontFamily.sans.bold,
+    fontSize: 10,
+    color: '#FFFFFF',
   },
-  name:  { color: palette.zinc950, marginTop: 4 },
-  price: { color: palette.orange500, fontWeight: '700' },
-  statusBadge: {
-    backgroundColor: '#FEE2E2',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  lowBadge:          { backgroundColor: palette.yellow100 },
-  unmappedBadge:     { backgroundColor: palette.orange100 },
-  subscriptionBadge: { backgroundColor: palette.blue100 },
-  outText:           { color: palette.red500 },
-  lowText:           { color: palette.yellow500 },
-  unmappedText:      { color: palette.orange500 },
-  subscriptionText:  { color: palette.blue500 },
 })
