@@ -1,29 +1,32 @@
-import { useState } from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { router } from 'expo-router'
-import { getNotificationTitle, getNotificationRoute } from '@/types/staff-notification'
-import { relativeTime } from '@/lib/relative-time'
-import { listCardStyle } from '@/lib/constants'
-import { NotificationContextMenu } from './NotificationContextMenu'
-import { palette } from '@/theme'
-import type { StaffNotification } from '@/types/staff-notification'
+import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import {
+  getNotificationTitle,
+  getNotificationRoute,
+} from "@/types/staff-notification";
+import { relativeTime } from "@/lib/relative-time";
+import { listCardStyle } from "@/lib/constants";
+import { NotificationContextMenu } from "./NotificationContextMenu";
+import { palette } from "@/theme";
+import type { StaffNotification } from "@/types/staff-notification";
 
 interface NotificationRowProps {
-  notification: StaffNotification
-  onMarkRead: (id: string) => void
-  onDelete: (id: string) => void
+  notification: StaffNotification;
+  onMarkRead: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 function getPreview(n: StaffNotification): string {
   switch (n.type) {
-    case 'App\\Notifications\\AnnouncementNotification':
-      return n.data.message
-    case 'App\\Notifications\\PreRegistrationNotification':
-      return `${n.data.enrollment_type} • ${n.data.branch_name}`
+    case "App\\Notifications\\AnnouncementNotification":
+      return n.data.message;
+    case "App\\Notifications\\PreRegistrationNotification":
+      return `${n.data.enrollment_type} • ${n.data.branch_name}`;
     default:
-      return ''
+      return "";
   }
 }
 
@@ -32,17 +35,17 @@ export function NotificationRow({
   onMarkRead,
   onDelete,
 }: NotificationRowProps): React.JSX.Element {
-  const [menuVisible, setMenuVisible] = useState(false)
-  const isRead = notification.read_at !== null
-  const title = getNotificationTitle(notification)
-  const preview = getPreview(notification)
-  const timestamp = relativeTime(notification.created_at)
-  const route = getNotificationRoute(notification)
+  const [menuVisible, setMenuVisible] = useState(false);
+  const isRead = notification.read_at !== null;
+  const title = getNotificationTitle(notification);
+  const preview = getPreview(notification);
+  const timestamp = relativeTime(notification.created_at);
+  const route = getNotificationRoute(notification);
 
   const handlePress = (): void => {
-    if (!isRead) onMarkRead(notification.id)
-    if (route !== null) router.push(route as never)
-  }
+    if (!isRead) onMarkRead(notification.id);
+    if (route !== null) router.push(route as never);
+  };
 
   return (
     <View style={[listCardStyle, styles.wrapper]}>
@@ -68,7 +71,9 @@ export function NotificationRow({
           <Text variant="bodySmall" numberOfLines={2} style={styles.preview}>
             {preview}
           </Text>
-          <Text variant="bodySmall" style={styles.timestamp}>{timestamp}</Text>
+          <Text variant="bodySmall" style={styles.timestamp}>
+            {timestamp}
+          </Text>
         </View>
 
         <Pressable
@@ -79,7 +84,11 @@ export function NotificationRow({
           accessibilityLabel="Notification options"
           hitSlop={8}
         >
-          <MaterialCommunityIcons name="dots-vertical" size={20} color={palette.zinc500} />
+          <MaterialCommunityIcons
+            name="dots-vertical"
+            size={20}
+            color={palette.zinc500}
+          />
         </Pressable>
       </Pressable>
 
@@ -91,19 +100,30 @@ export function NotificationRow({
         onDismiss={() => setMenuVisible(false)}
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  wrapper:     { overflow: 'hidden' },
-  row:         { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 16, gap: 8 },
-  rowUnread:   { backgroundColor: palette.orange100 },
-  dotCol:      { width: 10, paddingTop: 4, alignItems: 'center' },
-  dot:         { width: 8, height: 8, borderRadius: 4, backgroundColor: palette.orange500 },
-  body:        { flex: 1, gap: 2 },
-  title:       { color: palette.zinc900 },
-  titleUnread: { color: palette.zinc950, fontWeight: '600' },
-  preview:     { color: palette.zinc500 },
-  timestamp:   { color: palette.zinc500, marginTop: 2 },
-  menuBtn:     { paddingLeft: 8, paddingVertical: 4 },
-})
+  wrapper: { overflow: "hidden" },
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  rowUnread: { backgroundColor: palette.orange100 },
+  dotCol: { width: 10, paddingTop: 4, alignItems: "center" },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: palette.orange500,
+  },
+  body: { flex: 1, gap: 2 },
+  title: { color: palette.zinc900 },
+  titleUnread: { color: palette.zinc950, fontWeight: "600" },
+  preview: { color: palette.zinc500 },
+  timestamp: { color: palette.zinc500, marginTop: 2 },
+  menuBtn: { paddingLeft: 8, paddingVertical: 4 },
+});

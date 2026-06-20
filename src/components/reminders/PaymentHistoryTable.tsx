@@ -1,27 +1,39 @@
-import { StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import { formatCurrency, formatDate } from '@/lib/formatters'
-import { palette } from '@/theme'
-import type { PaymentHistoryEntry } from '@/types/reminder'
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
+import { formatCurrency, formatDate } from "@/lib/formatters";
+import { palette } from "@/theme";
+import type { PaymentHistoryEntry } from "@/types/reminder";
 
 interface Props {
-  entries: PaymentHistoryEntry[]
+  entries: PaymentHistoryEntry[];
 }
 
 export function PaymentHistoryTable({ entries }: Props): React.JSX.Element {
   return (
     <View style={styles.table} testID="payment-history-table">
       <View style={styles.headerRow}>
-        <Text variant="labelSmall" style={[styles.cell, styles.header, styles.monthCol]}>
+        <Text
+          variant="labelSmall"
+          style={[styles.cell, styles.header, styles.monthCol]}
+        >
           Month
         </Text>
-        <Text variant="labelSmall" style={[styles.cell, styles.header, styles.amountCol]}>
+        <Text
+          variant="labelSmall"
+          style={[styles.cell, styles.header, styles.amountCol]}
+        >
           Amount
         </Text>
-        <Text variant="labelSmall" style={[styles.cell, styles.header, styles.statusCol]}>
+        <Text
+          variant="labelSmall"
+          style={[styles.cell, styles.header, styles.statusCol]}
+        >
           Status
         </Text>
-        <Text variant="labelSmall" style={[styles.cell, styles.header, styles.dateCol]}>
+        <Text
+          variant="labelSmall"
+          style={[styles.cell, styles.header, styles.dateCol]}
+        >
           Paid Date
         </Text>
       </View>
@@ -38,25 +50,34 @@ export function PaymentHistoryTable({ entries }: Props): React.JSX.Element {
             style={[
               styles.cell,
               styles.statusCol,
-              entry.status === 'paid' ? styles.statusPaid : styles.statusUnpaid,
+              entry.status === "paid" ? styles.statusPaid : styles.statusUnpaid,
             ]}
           >
-            {entry.status === 'paid' ? 'Paid' : 'Unpaid'}
+            {entry.status === "paid" ? "Paid" : "Unpaid"}
           </Text>
           <Text variant="bodySmall" style={[styles.cell, styles.dateCol]}>
-            {entry.paid_at !== null ? formatDate(entry.paid_at, 'MMM d') : '—'}
+            {entry.paid_at !== null ? formatDate(entry.paid_at, "MMM d") : "—"}
           </Text>
         </View>
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  table: { borderWidth: StyleSheet.hairlineWidth, borderColor: palette.zinc200, borderRadius: 8, overflow: 'hidden' },
-  headerRow: { flexDirection: 'row', backgroundColor: palette.zinc100, paddingVertical: 8 },
+  table: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: palette.zinc200,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  headerRow: {
+    flexDirection: "row",
+    backgroundColor: palette.zinc100,
+    paddingVertical: 8,
+  },
   dataRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: palette.zinc200,
@@ -69,4 +90,4 @@ const styles = StyleSheet.create({
   dateCol: { flex: 2 },
   statusPaid: { color: palette.green500 },
   statusUnpaid: { color: palette.red500 },
-})
+});

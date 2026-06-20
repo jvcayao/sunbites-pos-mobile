@@ -1,20 +1,23 @@
-import { useRef } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
-import { createSkeletonAnim } from '@/lib/animation'
-import { palette } from '@/theme'
+import { useMemo } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import { createSkeletonAnim } from "@/lib/animation";
+import { palette } from "@/theme";
 
 interface SkeletonRowProps {
-  count?: number
+  count?: number;
 }
 
 function SkeletonRowItem({ opacity }: { opacity: Animated.Value }) {
   return (
-    <Animated.View style={[styles.row, { opacity }]} accessibilityElementsHidden />
-  )
+    <Animated.View
+      style={[styles.row, { opacity }]}
+      accessibilityElementsHidden
+    />
+  );
 }
 
 export function SkeletonRow({ count = 5 }: SkeletonRowProps) {
-  const opacity = useRef(createSkeletonAnim()).current
+  const opacity = useMemo(() => createSkeletonAnim(), []);
 
   return (
     <View style={styles.container}>
@@ -22,7 +25,7 @@ export function SkeletonRow({ count = 5 }: SkeletonRowProps) {
         <SkeletonRowItem key={i} opacity={opacity} />
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -31,4 +34,4 @@ const styles = StyleSheet.create({
     height: 48,
     backgroundColor: palette.zinc200,
   },
-})
+});

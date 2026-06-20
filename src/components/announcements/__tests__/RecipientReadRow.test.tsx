@@ -1,51 +1,63 @@
-import React from 'react'
-import { render, screen } from '@testing-library/react-native'
-import { RecipientReadRow } from '../RecipientReadRow'
+import React from "react";
+import { render, screen } from "@testing-library/react-native";
+import { RecipientReadRow } from "../RecipientReadRow";
 
-describe('RecipientReadRow', () => {
-  it('displays recipient name', () => {
+describe("RecipientReadRow", () => {
+  it("displays recipient name", () => {
     render(
       <RecipientReadRow
-        recipient={{ id: 1, full_name: 'Maria Santos', read_at: '2026-06-20T10:00:00Z' }}
+        recipient={{
+          id: 1,
+          full_name: "Maria Santos",
+          read_at: "2026-06-20T10:00:00Z",
+        }}
       />,
-    )
-    expect(screen.getByText('Maria Santos')).toBeTruthy()
-  })
+    );
+    expect(screen.getByText("Maria Santos")).toBeTruthy();
+  });
 
-  it('shows formatted read timestamp for read recipients', () => {
+  it("shows formatted read timestamp for read recipients", () => {
     render(
       <RecipientReadRow
-        recipient={{ id: 1, full_name: 'Maria Santos', read_at: '2026-06-20T10:00:00Z' }}
+        recipient={{
+          id: 1,
+          full_name: "Maria Santos",
+          read_at: "2026-06-20T10:00:00Z",
+        }}
       />,
-    )
-    expect(screen.queryByText('Not yet read')).toBeNull()
-    expect(screen.getByTestId('read-timestamp-1')).toBeTruthy()
-  })
+    );
+    expect(screen.queryByText("Not yet read")).toBeNull();
+    expect(screen.getByTestId("read-timestamp-1")).toBeTruthy();
+  });
 
   it('shows "Not yet read" for unread recipients', () => {
     render(
       <RecipientReadRow
-        recipient={{ id: 2, full_name: 'Ana Reyes', read_at: null }}
+        recipient={{ id: 2, full_name: "Ana Reyes", read_at: null }}
       />,
-    )
-    expect(screen.getByText('Not yet read')).toBeTruthy()
-  })
+    );
+    expect(screen.getByText("Not yet read")).toBeTruthy();
+  });
 
-  it('shows check icon for read recipients', () => {
+  it("shows check icon for read recipients", () => {
     render(
       <RecipientReadRow
-        recipient={{ id: 1, full_name: 'Maria Santos', read_at: '2026-06-20T10:00:00Z' }}
+        recipient={{
+          id: 1,
+          full_name: "Maria Santos",
+          read_at: "2026-06-20T10:00:00Z",
+        }}
       />,
-    )
-    expect(screen.getByTestId('read-check-1')).toBeTruthy()
-  })
+    );
+    expect(screen.getByTestId("read-check-1")).toBeTruthy();
+  });
 
-  it('does not show check icon for unread recipients', () => {
+  it("does not show check icon for unread recipients", () => {
     render(
       <RecipientReadRow
-        recipient={{ id: 2, full_name: 'Ana Reyes', read_at: null }}
+        recipient={{ id: 2, full_name: "Ana Reyes", read_at: null }}
       />,
-    )
-    expect(screen.queryByTestId('read-check-2')).toBeNull()
-  })
-})
+    );
+    expect(screen.queryByTestId("read-check-2")).toBeNull();
+  });
+});

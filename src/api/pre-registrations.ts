@@ -1,21 +1,24 @@
-import client from './client'
-import type { PaginatedResponse } from '@/types/common'
+import client from "./client";
+import type { PaginatedResponse } from "@/types/common";
 import type {
   PreRegistrationStatus,
   PreRegistrationListItem,
   PreRegistrationDetail,
   UpdatePreRegistrationDto,
-} from '@/types/pre-registration'
+} from "@/types/pre-registration";
 
 interface ListParams {
-  status?: PreRegistrationStatus
-  page?: number
-  per_page?: number
+  status?: PreRegistrationStatus;
+  page?: number;
+  per_page?: number;
 }
 
 export const preRegistrationsApi = {
   list: (params?: ListParams) =>
-    client.get<PaginatedResponse<PreRegistrationListItem>>('/pre-registrations', { params }),
+    client.get<PaginatedResponse<PreRegistrationListItem>>(
+      "/pre-registrations",
+      { params },
+    ),
 
   show: (id: number) =>
     client.get<PreRegistrationDetail>(`/pre-registrations/${id}`),
@@ -31,4 +34,4 @@ export const preRegistrationsApi = {
 
   reactivate: (id: number) =>
     client.post(`/pre-registrations/${id}/reactivate`),
-}
+};

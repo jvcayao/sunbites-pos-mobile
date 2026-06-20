@@ -1,28 +1,32 @@
-import { StyleSheet, View } from 'react-native'
-import { Button, Divider, Text } from 'react-native-paper'
-import { Controller } from 'react-hook-form'
-import type { Control } from 'react-hook-form'
-import { TextInput } from 'react-native-paper'
-import { InlineError } from '@/components/shared/InlineError'
-import { SelectInput } from '@/components/shared/SelectInput'
-import { palette } from '@/theme'
-import type { EnrollFormData } from '@/lib/schemas/enrollment'
+import { StyleSheet, View } from "react-native";
+import { Button, Divider, Text, TextInput } from "react-native-paper";
+import { Controller } from "react-hook-form";
+import type { Control } from "react-hook-form";
+import { InlineError } from "@/components/shared/InlineError";
+import { SelectInput } from "@/components/shared/SelectInput";
+import { palette } from "@/theme";
+import type { EnrollFormData } from "@/lib/schemas/enrollment";
 
-const RELATIONSHIPS = ['Mother', 'Father', 'Guardian', 'Other'] as const
+const RELATIONSHIPS = ["Mother", "Father", "Guardian", "Other"] as const;
 
 interface ContactFormProps {
-  index: number
-  control: Control<EnrollFormData>
-  canRemove: boolean
-  onRemove: () => void
+  index: number;
+  control: Control<EnrollFormData>;
+  canRemove: boolean;
+  onRemove: () => void;
 }
 
-export function ContactForm({ index, control, canRemove, onRemove }: ContactFormProps) {
+export function ContactForm({
+  index,
+  control,
+  canRemove,
+  onRemove,
+}: ContactFormProps) {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text variant="labelLarge" style={styles.title}>
-          {index === 0 ? 'Primary Contact' : `Contact ${index + 1}`}
+          {index === 0 ? "Primary Contact" : `Contact ${index + 1}`}
         </Text>
         {canRemove && (
           <Button
@@ -106,7 +110,7 @@ export function ContactForm({ index, control, canRemove, onRemove }: ContactForm
             <TextInput
               label="Email (optional)"
               mode="outlined"
-              value={value ?? ''}
+              value={value ?? ""}
               onChangeText={onChange}
               onBlur={onBlur}
               keyboardType="email-address"
@@ -142,14 +146,22 @@ export function ContactForm({ index, control, canRemove, onRemove }: ContactForm
         )}
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: { gap: 10 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { color: palette.zinc950, fontWeight: '700' },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: { color: palette.zinc950, fontWeight: "700" },
   divider: { marginBottom: 4 },
-  fieldLabel: { color: palette.zinc500, marginBottom: 4, textTransform: 'uppercase' },
+  fieldLabel: {
+    color: palette.zinc500,
+    marginBottom: 4,
+    textTransform: "uppercase",
+  },
   input: { backgroundColor: palette.white },
-})
+});

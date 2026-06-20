@@ -1,45 +1,59 @@
-import { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Pressable } from 'react-native'
-import { Button, Divider, Modal, Portal, Surface, Text, TextInput } from 'react-native-paper'
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths } from 'date-fns'
-import { palette } from '@/theme'
+import { useState } from "react";
+import { StyleSheet, View, Pressable } from "react-native";
+import {
+  Button,
+  Divider,
+  Modal,
+  Portal,
+  Surface,
+  Text,
+  TextInput,
+} from "react-native-paper";
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+} from "date-fns";
+import { palette } from "@/theme";
 
-export type DateRange = { from: string; to: string }
+export type DateRange = { from: string; to: string };
 
-type Preset = 'today' | 'this_week' | 'this_month' | 'last_month' | 'custom'
+type Preset = "today" | "this_week" | "this_month" | "last_month" | "custom";
 
 interface DatePresetPickerProps {
-  visible: boolean
-  value: DateRange
-  onConfirm: (range: DateRange) => void
-  onDismiss: () => void
+  visible: boolean;
+  value: DateRange;
+  onConfirm: (range: DateRange) => void;
+  onDismiss: () => void;
 }
 
-const PRESETS: Array<{ key: Preset; label: string }> = [
-  { key: 'today', label: 'Today' },
-  { key: 'this_week', label: 'This Week' },
-  { key: 'this_month', label: 'This Month' },
-  { key: 'last_month', label: 'Last Month' },
-  { key: 'custom', label: 'Custom Range' },
-]
+const PRESETS: { key: Preset; label: string }[] = [
+  { key: "today", label: "Today" },
+  { key: "this_week", label: "This Week" },
+  { key: "this_month", label: "This Month" },
+  { key: "last_month", label: "Last Month" },
+  { key: "custom", label: "Custom Range" },
+];
 
 function getPresetRange(preset: Preset): DateRange | null {
-  const today = new Date()
-  const fmt = (d: Date) => format(d, 'yyyy-MM-dd')
+  const today = new Date();
+  const fmt = (d: Date) => format(d, "yyyy-MM-dd");
   switch (preset) {
-    case 'today':
-      return { from: fmt(today), to: fmt(today) }
-    case 'this_week':
-      return { from: fmt(startOfWeek(today)), to: fmt(endOfWeek(today)) }
-    case 'this_month':
-      return { from: fmt(startOfMonth(today)), to: fmt(endOfMonth(today)) }
-    case 'last_month': {
-      const last = subMonths(today, 1)
-      return { from: fmt(startOfMonth(last)), to: fmt(endOfMonth(last)) }
+    case "today":
+      return { from: fmt(today), to: fmt(today) };
+    case "this_week":
+      return { from: fmt(startOfWeek(today)), to: fmt(endOfWeek(today)) };
+    case "this_month":
+      return { from: fmt(startOfMonth(today)), to: fmt(endOfMonth(today)) };
+    case "last_month": {
+      const last = subMonths(today, 1);
+      return { from: fmt(startOfMonth(last)), to: fmt(endOfMonth(last)) };
     }
     default:
-      return null
+      return null;
   }
 }
 
@@ -49,18 +63,18 @@ export function DatePresetPicker({
   onConfirm,
   onDismiss,
 }: DatePresetPickerProps) {
-  const [selected, setSelected] = useState<Preset>('today')
-  const [customFrom, setCustomFrom] = useState(value.from)
-  const [customTo, setCustomTo] = useState(value.to)
+  const [selected, setSelected] = useState<Preset>("today");
+  const [customFrom, setCustomFrom] = useState(value.from);
+  const [customTo, setCustomTo] = useState(value.to);
 
   const handleConfirm = () => {
-    if (selected === 'custom') {
-      onConfirm({ from: customFrom, to: customTo })
+    if (selected === "custom") {
+      onConfirm({ from: customFrom, to: customTo });
     } else {
-      const range = getPresetRange(selected)
-      if (range !== null) onConfirm(range)
+      const range = getPresetRange(selected);
+      if (range !== null) onConfirm(range);
     }
-  }
+  };
 
   return (
     <Portal>
@@ -85,13 +99,17 @@ export function DatePresetPicker({
             >
               <Text
                 variant="bodyLarge"
-                style={selected === p.key ? styles.optionTextActive : styles.optionText}
+                style={
+                  selected === p.key
+                    ? styles.optionTextActive
+                    : styles.optionText
+                }
               >
                 {p.label}
               </Text>
             </Pressable>
           ))}
-          {selected === 'custom' && (
+          {selected === "custom" && (
             <View style={styles.customRange}>
               <TextInput
                 label="From (YYYY-MM-DD)"
@@ -116,7 +134,11 @@ export function DatePresetPicker({
             </View>
           )}
           <View style={styles.actions}>
-            <Button onPress={onDismiss} accessibilityRole="button" accessibilityLabel="Cancel">
+            <Button
+              onPress={onDismiss}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel"
+            >
               Cancel
             </Button>
             <Button
@@ -131,7 +153,7 @@ export function DatePresetPicker({
         </Surface>
       </Modal>
     </Portal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -140,7 +162,7 @@ const styles = StyleSheet.create({
   },
   surface: {
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   heading: {
     paddingHorizontal: 20,
@@ -155,7 +177,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 20,
     minHeight: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   optionActive: {
     backgroundColor: palette.orange100,
@@ -165,7 +187,7 @@ const styles = StyleSheet.create({
   },
   optionTextActive: {
     color: palette.orange500,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   customRange: {
     paddingHorizontal: 20,
@@ -176,10 +198,10 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
   },
   actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 8,
   },
-})
+});

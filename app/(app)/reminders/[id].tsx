@@ -1,44 +1,60 @@
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native'
-import { ActivityIndicator, Appbar, Button, Divider, Text } from 'react-native-paper'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useReminderParentDetail, useSendReminders } from '@/hooks/useReminders'
-import { usePermission } from '@/lib/permissions'
-import { useToast } from '@/components/shared/ErrorToast'
-import { PaymentHistoryTable } from '@/components/reminders/PaymentHistoryTable'
-import { palette } from '@/theme'
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Appbar,
+  Button,
+  Divider,
+  Text,
+} from "react-native-paper";
+import { router, useLocalSearchParams } from "expo-router";
+import {
+  useReminderParentDetail,
+  useSendReminders,
+} from "@/hooks/useReminders";
+import { usePermission } from "@/lib/permissions";
+import { useToast } from "@/components/shared/ErrorToast";
+import { PaymentHistoryTable } from "@/components/reminders/PaymentHistoryTable";
+import { palette } from "@/theme";
 
 export default function ParentDetailScreen(): React.JSX.Element {
-  const { id } = useLocalSearchParams<{ id: string }>()
-  const parentId = parseInt(id ?? '0', 10)
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const parentId = parseInt(id ?? "0", 10);
 
-  const canSend = usePermission('reminders_send')
-  const { data: parent, isLoading, refetch, isRefetching } = useReminderParentDetail(parentId)
-  const { mutate: sendReminders, isPending } = useSendReminders()
-  const toast = useToast()
+  const canSend = usePermission("reminders_send");
+  const {
+    data: parent,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useReminderParentDetail(parentId);
+  const { mutate: sendReminders, isPending } = useSendReminders();
+  const toast = useToast();
 
   const handleSendReminder = (): void => {
     sendReminders(
       { parent_ids: [parentId] },
       {
         onSuccess: (result) => {
-          toast.success(`Reminder sent to ${parent?.full_name ?? 'parent'}`)
+          toast.success(`Reminder sent to ${parent?.full_name ?? "parent"}`);
           if (result.skipped > 0) {
-            toast.error('Reminder already sent this month. Use force to override.')
+            toast.error(
+              "Reminder already sent this month. Use force to override.",
+            );
           }
         },
         onError: () => {
-          toast.error('Failed to send reminder. Please try again.')
+          toast.error("Failed to send reminder. Please try again.");
         },
       },
-    )
-  }
+    );
+  };
 
   if (isLoading) {
     return (
       <View style={styles.centered} testID="parent-detail-loading">
         <ActivityIndicator color={palette.orange500} />
       </View>
-    )
+    );
   }
 
   if (parent === undefined) {
@@ -46,19 +62,24 @@ export default function ParentDetailScreen(): React.JSX.Element {
       <View style={styles.centered}>
         <Text variant="bodyLarge">Parent not found</Text>
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => router.back()} accessibilityLabel="Back" />
+        <Appbar.BackAction
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
+        />
         <Appbar.Content title={parent.full_name} />
       </Appbar.Header>
 
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
       >
         <View style={styles.contactCard}>
           <Text variant="bodyMedium" style={styles.contactText}>
@@ -103,12 +124,12 @@ export default function ParentDetailScreen(): React.JSX.Element {
         </View>
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.white },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
   appbar: { backgroundColor: palette.white, elevation: 0 },
   content: { padding: 16, gap: 16 },
   contactCard: {
@@ -129,4 +150,4 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
   },
   sendBtn: { borderRadius: 8 },
-})
+});

@@ -1,23 +1,26 @@
-import { useRef } from 'react'
-import { Animated } from 'react-native'
+import { useMemo } from "react";
+import { Animated } from "react-native";
 
 export const duration = {
-  press:       80,
-  micro:       200,
-  standard:    250,
-  sheetEnter:  320,
-  sheetExit:   200,
-  toast:       250,
-  fade:        150,
-} as const
+  press: 80,
+  micro: 200,
+  standard: 250,
+  sheetEnter: 320,
+  sheetExit: 200,
+  toast: 250,
+  fade: 150,
+} as const;
 
 export function usePressScale(toScale = 0.97): {
-  scale: Animated.AnimatedInterpolation<number>
-  onPressIn: () => void
-  onPressOut: () => void
+  scale: Animated.AnimatedInterpolation<number>;
+  onPressIn: () => void;
+  onPressOut: () => void;
 } {
-  const anim = useRef(new Animated.Value(0)).current
-  const scale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, toScale] })
+  const anim = useMemo(() => new Animated.Value(0), []);
+  const scale = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, toScale],
+  });
 
   function onPressIn(): void {
     Animated.spring(anim, {
@@ -25,7 +28,7 @@ export function usePressScale(toScale = 0.97): {
       useNativeDriver: true,
       speed: 50,
       bounciness: 0,
-    }).start()
+    }).start();
   }
 
   function onPressOut(): void {
@@ -34,19 +37,27 @@ export function usePressScale(toScale = 0.97): {
       useNativeDriver: true,
       speed: 50,
       bounciness: 0,
-    }).start()
+    }).start();
   }
 
-  return { scale, onPressIn, onPressOut }
+  return { scale, onPressIn, onPressOut };
 }
 
 export function createSkeletonAnim(): Animated.Value {
-  const opacity = new Animated.Value(0.4)
+  const opacity = new Animated.Value(0.4);
   Animated.loop(
     Animated.sequence([
-      Animated.timing(opacity, { toValue: 0.8, duration: 600, useNativeDriver: true }),
-      Animated.timing(opacity, { toValue: 0.4, duration: 600, useNativeDriver: true }),
-    ])
-  ).start()
-  return opacity
+      Animated.timing(opacity, {
+        toValue: 0.8,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0.4,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]),
+  ).start();
+  return opacity;
 }

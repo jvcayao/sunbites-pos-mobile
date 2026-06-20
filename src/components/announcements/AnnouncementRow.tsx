@@ -1,21 +1,24 @@
-import { Pressable, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import { relativeTime } from '@/lib/relative-time'
-import { palette } from '@/theme'
-import type { AnnouncementListItem } from '@/types/announcement'
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
+import { relativeTime } from "@/lib/relative-time";
+import { palette } from "@/theme";
+import type { AnnouncementListItem } from "@/types/announcement";
 
 const BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  parents: { bg: '#F3E8FF', text: '#A855F7' },
-  staff:   { bg: palette.blue100, text: palette.blue500 },
-}
+  parents: { bg: "#F3E8FF", text: "#A855F7" },
+  staff: { bg: palette.blue100, text: palette.blue500 },
+};
 
 interface AnnouncementRowProps {
-  announcement: AnnouncementListItem
-  onPress: (id: number) => void
+  announcement: AnnouncementListItem;
+  onPress: (id: number) => void;
 }
 
-export function AnnouncementRow({ announcement, onPress }: AnnouncementRowProps): React.JSX.Element {
-  const badge = BADGE_COLORS[announcement.recipient_type]
+export function AnnouncementRow({
+  announcement,
+  onPress,
+}: AnnouncementRowProps): React.JSX.Element {
+  const badge = BADGE_COLORS[announcement.recipient_type];
 
   return (
     <Pressable
@@ -30,8 +33,11 @@ export function AnnouncementRow({ announcement, onPress }: AnnouncementRowProps)
           {announcement.sender_name}
         </Text>
         <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-          <Text variant="labelSmall" style={[styles.badgeText, { color: badge.text }]}>
-            {announcement.recipient_type === 'parents' ? 'Parents' : 'Staff'}
+          <Text
+            variant="labelSmall"
+            style={[styles.badgeText, { color: badge.text }]}
+          >
+            {announcement.recipient_type === "parents" ? "Parents" : "Staff"}
           </Text>
         </View>
         <Text variant="bodySmall" style={styles.date}>
@@ -53,25 +59,32 @@ export function AnnouncementRow({ announcement, onPress }: AnnouncementRowProps)
         <Text variant="bodySmall" style={styles.meta}>
           {announcement.recipient_count} recipients
         </Text>
-        <Text variant="bodySmall" style={styles.metaDot}>•</Text>
+        <Text variant="bodySmall" style={styles.metaDot}>
+          •
+        </Text>
         <Text variant="bodySmall" style={styles.meta}>
           {announcement.read_count}/{announcement.recipient_count} read
         </Text>
       </View>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  row:       { paddingVertical: 12, paddingHorizontal: 16, gap: 4 },
-  header:    { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  sender:    { color: palette.zinc900, fontWeight: '600', flexShrink: 1 },
-  badge:     { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
-  badgeText: { fontWeight: '600' },
-  date:      { color: palette.zinc500, marginLeft: 'auto' },
-  title:     { color: palette.zinc900, fontWeight: '600' },
-  preview:   { color: palette.zinc500 },
-  footer:    { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  meta:      { color: palette.zinc500 },
-  metaDot:   { color: palette.zinc500 },
-})
+  row: { paddingVertical: 12, paddingHorizontal: 16, gap: 4 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  sender: { color: palette.zinc900, fontWeight: "600", flexShrink: 1 },
+  badge: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
+  badgeText: { fontWeight: "600" },
+  date: { color: palette.zinc500, marginLeft: "auto" },
+  title: { color: palette.zinc900, fontWeight: "600" },
+  preview: { color: palette.zinc500 },
+  footer: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },
+  meta: { color: palette.zinc500 },
+  metaDot: { color: palette.zinc500 },
+});

@@ -1,12 +1,12 @@
-import { StyleSheet, View } from 'react-native'
-import { Button, Text } from 'react-native-paper'
-import { palette } from '@/theme'
+import { StyleSheet, View } from "react-native";
+import { Button, Text } from "react-native-paper";
+import { palette } from "@/theme";
 
 interface Props {
-  selectedCount: number
-  isWindowOpen: boolean
-  isPending: boolean
-  onSend: () => void
+  selectedCount: number;
+  isWindowOpen: boolean;
+  isPending: boolean;
+  onSend: () => void;
 }
 
 export function SendRemindersBar({
@@ -15,7 +15,7 @@ export function SendRemindersBar({
   isPending,
   onSend,
 }: Props): React.JSX.Element {
-  const isDisabled = selectedCount === 0 || !isWindowOpen || isPending
+  const isDisabled = selectedCount === 0 || !isWindowOpen || isPending;
 
   return (
     <View style={styles.container}>
@@ -37,7 +37,7 @@ export function SendRemindersBar({
         {`Send (${selectedCount}) Reminders`}
       </Button>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   windowNote: {
     color: palette.zinc500,
-    textAlign: 'center',
+    textAlign: "center",
   },
   button: { borderRadius: 8 },
-})
+});

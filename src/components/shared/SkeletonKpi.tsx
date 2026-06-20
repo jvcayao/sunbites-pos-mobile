@@ -1,21 +1,24 @@
-import { useRef } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
-import { createSkeletonAnim } from '@/lib/animation'
-import { palette } from '@/theme'
+import { useMemo } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import { createSkeletonAnim } from "@/lib/animation";
+import { palette } from "@/theme";
 
 interface SkeletonKpiProps {
-  count?: number
-  columns?: number
+  count?: number;
+  columns?: number;
 }
 
 function SkeletonKpiItem({ opacity }: { opacity: Animated.Value }) {
   return (
-    <Animated.View style={[styles.card, { opacity }]} accessibilityElementsHidden />
-  )
+    <Animated.View
+      style={[styles.card, { opacity }]}
+      accessibilityElementsHidden
+    />
+  );
 }
 
 export function SkeletonKpi({ count = 6, columns = 2 }: SkeletonKpiProps) {
-  const opacity = useRef(createSkeletonAnim()).current
+  const opacity = useMemo(() => createSkeletonAnim(), []);
 
   return (
     <View style={[styles.grid, { gap: 12 }]}>
@@ -25,13 +28,13 @@ export function SkeletonKpi({ count = 6, columns = 2 }: SkeletonKpiProps) {
         </View>
       ))}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     padding: 16,
   },
   card: {
@@ -39,4 +42,4 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: palette.zinc200,
   },
-})
+});

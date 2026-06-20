@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Button, Modal, Portal, Text, TextInput } from 'react-native-paper'
-import { useRejectPreRegistration } from '@/hooks/usePreRegistrations'
-import { palette } from '@/theme'
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, Modal, Portal, Text, TextInput } from "react-native-paper";
+import { useRejectPreRegistration } from "@/hooks/usePreRegistrations";
+import { palette } from "@/theme";
 
 interface Props {
-  preRegistrationId: number
-  visible: boolean
-  onDismiss: () => void
-  onSuccess: () => void
+  preRegistrationId: number;
+  visible: boolean;
+  onDismiss: () => void;
+  onSuccess: () => void;
 }
 
 export function RejectSheet({
@@ -17,22 +17,22 @@ export function RejectSheet({
   onDismiss,
   onSuccess,
 }: Props): React.JSX.Element {
-  const [reason, setReason] = useState('')
-  const { mutate: reject, isPending } = useRejectPreRegistration()
+  const [reason, setReason] = useState("");
+  const { mutate: reject, isPending } = useRejectPreRegistration();
 
-  const canSubmit = reason.trim().length >= 10
+  const canSubmit = reason.trim().length >= 10;
 
   const handleConfirm = (): void => {
     reject(
       { id: preRegistrationId, rejection_reason: reason.trim() },
       { onSuccess },
-    )
-  }
+    );
+  };
 
   const handleDismiss = (): void => {
-    setReason('')
-    onDismiss()
-  }
+    setReason("");
+    onDismiss();
+  };
 
   return (
     <Portal>
@@ -84,7 +84,7 @@ export function RejectSheet({
         </View>
       </Modal>
     </Portal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: palette.zinc900,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   description: {
     color: palette.zinc500,
@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
     backgroundColor: palette.white,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     marginTop: 4,
   },
   btn: {
     minWidth: 120,
   },
-})
+});

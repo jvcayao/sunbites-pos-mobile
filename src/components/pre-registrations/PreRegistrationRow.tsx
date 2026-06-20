@@ -1,31 +1,32 @@
-import React from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { formatDate } from '@/lib/formatters'
-import { isExpiringSoon } from '@/types/pre-registration'
-import { palette } from '@/theme'
-import type { PreRegistrationListItem } from '@/types/pre-registration'
+import React from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { formatDate } from "@/lib/formatters";
+import { isExpiringSoon } from "@/types/pre-registration";
+import { palette } from "@/theme";
+import type { PreRegistrationListItem } from "@/types/pre-registration";
 
 interface Props {
-  item: PreRegistrationListItem
-  onPress: (id: number) => void
+  item: PreRegistrationListItem;
+  onPress: (id: number) => void;
 }
 
 const BADGE_COLOR: Record<string, string> = {
-  subscription:     '#F97316',
+  subscription: "#F97316",
   non_subscription: palette.zinc500,
-}
+};
 
 const BADGE_LABEL: Record<string, string> = {
-  subscription:     'Subscription',
-  non_subscription: 'Non-Subscription',
-}
+  subscription: "Subscription",
+  non_subscription: "Non-Subscription",
+};
 
 function PreRegistrationRowBase({ item, onPress }: Props): React.JSX.Element {
-  const expiringSoon = item.status === 'pending' && isExpiringSoon(item.expires_at)
-  const badgeColor = BADGE_COLOR[item.enrollment_type] ?? palette.zinc500
-  const badgeLabel = BADGE_LABEL[item.enrollment_type] ?? item.enrollment_type
+  const expiringSoon =
+    item.status === "pending" && isExpiringSoon(item.expires_at);
+  const badgeColor = BADGE_COLOR[item.enrollment_type] ?? palette.zinc500;
+  const badgeLabel = BADGE_LABEL[item.enrollment_type] ?? item.enrollment_type;
 
   return (
     <Pressable
@@ -48,11 +49,11 @@ function PreRegistrationRowBase({ item, onPress }: Props): React.JSX.Element {
 
       <Text variant="bodySmall" style={styles.meta}>
         Guardian: {item.contact_name}
-        {'  •  '}
+        {"  •  "}
         {formatDate(item.submitted_at)}
       </Text>
 
-      {item.status === 'pending' && item.expires_at !== null && (
+      {item.status === "pending" && item.expires_at !== null && (
         <View style={styles.expiryRow}>
           <Text
             variant="bodySmall"
@@ -73,11 +74,11 @@ function PreRegistrationRowBase({ item, onPress }: Props): React.JSX.Element {
         </View>
       )}
     </Pressable>
-  )
+  );
 }
 
-PreRegistrationRowBase.displayName = 'PreRegistrationRow'
-export const PreRegistrationRow = React.memo(PreRegistrationRowBase)
+PreRegistrationRowBase.displayName = "PreRegistrationRow";
+export const PreRegistrationRow = React.memo(PreRegistrationRowBase);
 
 const styles = StyleSheet.create({
   row: {
@@ -86,14 +87,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   name: {
     flex: 1,
     color: palette.zinc900,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   badge: {
     borderRadius: 4,
@@ -102,14 +103,14 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: palette.white,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   meta: {
     color: palette.zinc500,
   },
   expiryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   expiry: {
@@ -117,9 +118,9 @@ const styles = StyleSheet.create({
   },
   expiryRed: {
     color: palette.red500,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   warningIcon: {
     marginTop: 1,
   },
-})
+});

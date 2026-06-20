@@ -1,17 +1,16 @@
-import { StyleSheet, View } from 'react-native'
-import { Appbar, ActivityIndicator } from 'react-native-paper'
-import { FlatList } from 'react-native'
-import { router } from 'expo-router'
+import { StyleSheet, View, FlatList } from "react-native";
+import { Appbar, ActivityIndicator } from "react-native-paper";
+import { router } from "expo-router";
 import {
   useNotificationList,
   useMarkNotificationRead,
   useMarkAllNotificationsRead,
   useDeleteNotification,
-} from '@/hooks/useNotifications'
-import { NotificationRow } from '@/components/notifications/NotificationRow'
-import { EmptyState } from '@/components/shared/EmptyState'
-import { palette } from '@/theme'
-import type { StaffNotification } from '@/types/staff-notification'
+} from "@/hooks/useNotifications";
+import { NotificationRow } from "@/components/notifications/NotificationRow";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { palette } from "@/theme";
+import type { StaffNotification } from "@/types/staff-notification";
 
 export default function NotificationsScreen(): React.JSX.Element {
   const {
@@ -22,27 +21,31 @@ export default function NotificationsScreen(): React.JSX.Element {
     hasNextPage,
     refetch,
     isRefetching,
-  } = useNotificationList()
+  } = useNotificationList();
 
-  const { mutate: markRead }    = useMarkNotificationRead()
-  const { mutate: markAllRead, isPending: isMarkingAll } = useMarkAllNotificationsRead()
-  const { mutate: deleteNotif } = useDeleteNotification()
+  const { mutate: markRead } = useMarkNotificationRead();
+  const { mutate: markAllRead, isPending: isMarkingAll } =
+    useMarkAllNotificationsRead();
+  const { mutate: deleteNotif } = useDeleteNotification();
 
   const notifications: StaffNotification[] =
-    data?.pages.flatMap((page) => page.data) ?? []
+    data?.pages.flatMap((page) => page.data) ?? [];
 
   if (isLoading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator color={palette.orange500} />
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => router.back()} accessibilityLabel="Back" />
+        <Appbar.BackAction
+          onPress={() => router.back()}
+          accessibilityLabel="Back"
+        />
         <Appbar.Content title="Notifications" />
         <Appbar.Action
           icon="check-all"
@@ -64,9 +67,13 @@ export default function NotificationsScreen(): React.JSX.Element {
         )}
         refreshing={isRefetching}
         onRefresh={refetch}
-        onEndReached={() => { if (hasNextPage) void fetchNextPage() }}
+        onEndReached={() => {
+          if (hasNextPage) void fetchNextPage();
+        }}
         onEndReachedThreshold={0.2}
-        contentContainerStyle={notifications.length === 0 ? styles.emptyContainer : undefined}
+        contentContainerStyle={
+          notifications.length === 0 ? styles.emptyContainer : undefined
+        }
         ListEmptyComponent={
           <EmptyState
             icon="bell-check-outline"
@@ -75,17 +82,22 @@ export default function NotificationsScreen(): React.JSX.Element {
           />
         }
         ListFooterComponent={
-          isFetchingNextPage ? <ActivityIndicator style={styles.footerSpinner} color={palette.orange500} /> : null
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              style={styles.footerSpinner}
+              color={palette.orange500}
+            />
+          ) : null
         }
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  container:      { flex: 1, backgroundColor: palette.white },
-  appbar:         { backgroundColor: palette.white },
-  centered:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  footerSpinner:  { paddingVertical: 16 },
-})
+  container: { flex: 1, backgroundColor: palette.white },
+  appbar: { backgroundColor: palette.white },
+  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  footerSpinner: { paddingVertical: 16 },
+});

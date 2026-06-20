@@ -1,80 +1,105 @@
-import { useState } from 'react'
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   View,
-} from 'react-native'
-import { ActivityIndicator, Button, Text, TextInput } from 'react-native-paper'
-import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuthStore } from '@/store/auth'
-import { useEnrollmentFormData, useEnrollStudent } from '@/hooks/useEnrollment'
-import { enrollSchema } from '@/lib/schemas/enrollment'
-import type { EnrollFormData } from '@/lib/schemas/enrollment'
-import { getApiError } from '@/lib/errors'
-import { useToast } from '@/components/shared/ErrorToast'
-import { SectionCard } from '@/components/shared/SectionCard'
-import { InlineError } from '@/components/shared/InlineError'
-import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
-import { SelectInput } from '@/components/shared/SelectInput'
-import { DatePickerInput } from '@/components/shared/DatePickerInput'
-import { EnrollmentTypeSelector } from '@/components/enrollment/EnrollmentTypeSelector'
-import { SubscriptionPeriodForm } from '@/components/enrollment/SubscriptionPeriodForm'
-import { ContactForm } from '@/components/enrollment/ContactForm'
-import { PermissionsSection } from '@/components/enrollment/PermissionsSection'
-import { EnrollmentSuccess } from '@/components/enrollment/EnrollmentSuccess'
-import { AppHeader } from '@/components/shared/AppHeader'
-import { GRADE_LEVELS } from '@/lib/constants'
-import { palette } from '@/theme'
-import type { EnrolledStudentResponse } from '@/types/enrollment'
+} from "react-native";
+import { ActivityIndicator, Button, Text, TextInput } from "react-native-paper";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/store/auth";
+import { useEnrollmentFormData, useEnrollStudent } from "@/hooks/useEnrollment";
+import { enrollSchema } from "@/lib/schemas/enrollment";
+import type { EnrollFormData } from "@/lib/schemas/enrollment";
+import { getApiError } from "@/lib/errors";
+import { useToast } from "@/components/shared/ErrorToast";
+import { SectionCard } from "@/components/shared/SectionCard";
+import { InlineError } from "@/components/shared/InlineError";
+import { FilterChip, FilterChipRow } from "@/components/shared/FilterChip";
+import { SelectInput } from "@/components/shared/SelectInput";
+import { DatePickerInput } from "@/components/shared/DatePickerInput";
+import { EnrollmentTypeSelector } from "@/components/enrollment/EnrollmentTypeSelector";
+import { SubscriptionPeriodForm } from "@/components/enrollment/SubscriptionPeriodForm";
+import { ContactForm } from "@/components/enrollment/ContactForm";
+import { PermissionsSection } from "@/components/enrollment/PermissionsSection";
+import { EnrollmentSuccess } from "@/components/enrollment/EnrollmentSuccess";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { GRADE_LEVELS } from "@/lib/constants";
+import { palette } from "@/theme";
+import type { EnrolledStudentResponse } from "@/types/enrollment";
 
 export default function EnrollmentScreen() {
-  const { user } = useAuthStore()
-  const { data: formData, isLoading: formLoading } = useEnrollmentFormData()
-  const { mutate: enroll, isPending } = useEnrollStudent()
-  const toast = useToast()
-  const [enrolled, setEnrolled] = useState<EnrolledStudentResponse | null>(null)
+  const { user } = useAuthStore();
+  const { data: formData, isLoading: formLoading } = useEnrollmentFormData();
+  const { mutate: enroll, isPending } = useEnrollStudent();
+  const toast = useToast();
+  const [enrolled, setEnrolled] = useState<EnrolledStudentResponse | null>(
+    null,
+  );
 
-  const isAdmin = user?.roles.includes('admin') ?? false
-  const userBranchId = user?.branches[0]?.id ?? 0
+  const isAdmin = user?.roles.includes("admin") ?? false;
+  const userBranchId = user?.branches[0]?.id ?? 0;
 
-  const { control, handleSubmit, watch, reset, formState: { errors } } = useForm<EnrollFormData>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<EnrollFormData>({
     resolver: zodResolver(enrollSchema),
     defaultValues: {
       branch_id: isAdmin ? 0 : userBranchId,
-      student_type: 'non_subscription',
-      first_name: '',
-      last_name: '',
-      grade_level: '',
-      birthday: '',
-      contacts: [{
-        full_name: '', relationship: 'Mother', phone: '', email: '', address: '', is_primary: true,
-      }],
+      student_type: "non_subscription",
+      first_name: "",
+      last_name: "",
+      grade_level: "",
+      birthday: "",
+      contacts: [
+        {
+          full_name: "",
+          relationship: "Mother",
+          phone: "",
+          email: "",
+          address: "",
+          is_primary: true,
+        },
+      ],
       permission_meals: false as any,
       permission_allergies: false as any,
-      signature: '',
+      signature: "",
     },
-  })
+  });
 
-  const { fields, append, remove } = useFieldArray({ control, name: 'contacts' })
-  const studentType = watch('student_type')
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "contacts",
+  });
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const studentType = watch("student_type");
 
   const onSubmit = (data: EnrollFormData): void => {
     enroll(data as any, {
       onSuccess: (result) => setEnrolled(result as EnrolledStudentResponse),
       onError: (err) => toast.error(getApiError(err)),
-    })
-  }
+    });
+  };
 
   if (enrolled !== null) {
     return (
       <View style={styles.container}>
         <AppHeader title="Enrollment" />
-        <EnrollmentSuccess student={enrolled} onEnrollAnother={() => { setEnrolled(null); reset() }} />
+        <EnrollmentSuccess
+          student={enrolled}
+          onEnrollAnother={() => {
+            setEnrolled(null);
+            reset();
+          }}
+        />
       </View>
-    )
+    );
   }
 
   if (formLoading) {
@@ -82,7 +107,7 @@ export default function EnrollmentScreen() {
       <View style={styles.centered}>
         <ActivityIndicator color={palette.orange500} />
       </View>
-    )
+    );
   }
 
   return (
@@ -91,14 +116,18 @@ export default function EnrollmentScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Branch Selection (admin only) */}
           {isAdmin && (
             <SectionCard>
-              <Text variant="titleSmall" style={styles.sectionTitle}>Branch</Text>
+              <Text variant="titleSmall" style={styles.sectionTitle}>
+                Branch
+              </Text>
               <Controller
                 control={control}
                 name="branch_id"
@@ -106,7 +135,12 @@ export default function EnrollmentScreen() {
                   <>
                     <FilterChipRow>
                       {(formData?.branches ?? user?.branches ?? []).map((b) => (
-                        <FilterChip key={b.id} label={b.name} active={value === b.id} onPress={() => onChange(b.id)} />
+                        <FilterChip
+                          key={b.id}
+                          label={b.name}
+                          active={value === b.id}
+                          onPress={() => onChange(b.id)}
+                        />
                       ))}
                     </FilterChipRow>
                     <InlineError message={fieldState.error?.message} />
@@ -118,7 +152,9 @@ export default function EnrollmentScreen() {
 
           {/* Enrollment Type */}
           <SectionCard>
-            <Text variant="titleSmall" style={styles.sectionTitle}>Enrollment Type</Text>
+            <Text variant="titleSmall" style={styles.sectionTitle}>
+              Enrollment Type
+            </Text>
             <Controller
               control={control}
               name="student_type"
@@ -129,24 +165,40 @@ export default function EnrollmentScreen() {
           </SectionCard>
 
           {/* Subscription Period */}
-          {studentType === 'subscription' && (
+          {studentType === "subscription" && (
             <SectionCard>
-              <Text variant="titleSmall" style={styles.sectionTitle}>Subscription Period</Text>
+              <Text variant="titleSmall" style={styles.sectionTitle}>
+                Subscription Period
+              </Text>
               <SubscriptionPeriodForm control={control} />
             </SectionCard>
           )}
 
           {/* Student Information */}
           <SectionCard>
-            <Text variant="titleSmall" style={styles.sectionTitle}>Student Information</Text>
+            <Text variant="titleSmall" style={styles.sectionTitle}>
+              Student Information
+            </Text>
             <View style={styles.fieldStack}>
               <View style={styles.fieldGroup}>
                 <Controller
                   control={control}
                   name="first_name"
-                  render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState,
+                  }) => (
                     <View style={styles.halfField}>
-                      <TextInput label="First Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="First name" />
+                      <TextInput
+                        label="First Name *"
+                        mode="outlined"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        error={!!fieldState.error}
+                        style={styles.input}
+                        accessibilityLabel="First name"
+                      />
                       <InlineError message={fieldState.error?.message} />
                     </View>
                   )}
@@ -154,9 +206,21 @@ export default function EnrollmentScreen() {
                 <Controller
                   control={control}
                   name="last_name"
-                  render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                  render={({
+                    field: { onChange, onBlur, value },
+                    fieldState,
+                  }) => (
                     <View style={styles.halfField}>
-                      <TextInput label="Last Name *" mode="outlined" value={value} onChangeText={onChange} onBlur={onBlur} error={!!fieldState.error} style={styles.input} accessibilityLabel="Last name" />
+                      <TextInput
+                        label="Last Name *"
+                        mode="outlined"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        error={!!fieldState.error}
+                        style={styles.input}
+                        accessibilityLabel="Last name"
+                      />
                       <InlineError message={fieldState.error?.message} />
                     </View>
                   )}
@@ -202,7 +266,16 @@ export default function EnrollmentScreen() {
                 control={control}
                 name="allergies"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput label="Allergies (optional)" mode="outlined" value={value ?? ''} onChangeText={onChange} onBlur={onBlur} multiline style={styles.input} accessibilityLabel="Allergies" />
+                  <TextInput
+                    label="Allergies (optional)"
+                    mode="outlined"
+                    value={value ?? ""}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    multiline
+                    style={styles.input}
+                    accessibilityLabel="Allergies"
+                  />
                 )}
               />
             </View>
@@ -224,7 +297,15 @@ export default function EnrollmentScreen() {
             <Button
               mode="outlined"
               icon="account-plus"
-              onPress={() => append({ full_name: '', relationship: 'Guardian', phone: '', email: '', address: '' })}
+              onPress={() =>
+                append({
+                  full_name: "",
+                  relationship: "Guardian",
+                  phone: "",
+                  email: "",
+                  address: "",
+                })
+              }
               style={styles.addContactBtn}
               accessibilityRole="button"
             >
@@ -238,7 +319,9 @@ export default function EnrollmentScreen() {
 
           {/* Permissions */}
           <SectionCard>
-            <Text variant="titleSmall" style={styles.sectionTitle}>Permissions & Acknowledgement</Text>
+            <Text variant="titleSmall" style={styles.sectionTitle}>
+              Permissions & Acknowledgement
+            </Text>
             <PermissionsSection control={control} />
           </SectionCard>
 
@@ -257,21 +340,26 @@ export default function EnrollmentScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
   flex: { flex: 1 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
   scroll: { padding: 16, gap: 16 },
-  sectionTitle: { fontWeight: '700', color: palette.zinc950, marginBottom: 12 },
+  sectionTitle: { fontWeight: "700", color: palette.zinc950, marginBottom: 12 },
   fieldStack: { gap: 12 },
-  fieldGroup: { flexDirection: 'row', gap: 12 },
+  fieldGroup: { flexDirection: "row", gap: 12 },
   halfField: { flex: 1 },
-  fieldLabel: { color: palette.zinc500, textTransform: 'uppercase', marginBottom: 4, marginTop: 8 },
+  fieldLabel: {
+    color: palette.zinc500,
+    textTransform: "uppercase",
+    marginBottom: 4,
+    marginTop: 8,
+  },
   input: { backgroundColor: palette.white },
   addContactBtn: { marginVertical: 4 },
   submitBtn: { marginTop: 8, marginBottom: 32 },
   submitContent: { paddingVertical: 8 },
-})
+});

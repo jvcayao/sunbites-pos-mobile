@@ -1,16 +1,23 @@
-import { StyleSheet, View } from 'react-native'
-import { Button, Divider, Modal, Portal, Surface, Text } from 'react-native-paper'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { palette } from '@/theme'
-import { useState } from 'react'
+import { StyleSheet, View } from "react-native";
+import {
+  Button,
+  Divider,
+  Modal,
+  Portal,
+  Surface,
+  Text,
+} from "react-native-paper";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { palette } from "@/theme";
+import { useState } from "react";
 
 interface NotificationContextMenuProps {
-  visible: boolean
-  isRead: boolean
-  isDeleting?: boolean
-  onMarkRead: () => void
-  onDelete: () => void
-  onDismiss: () => void
+  visible: boolean;
+  isRead: boolean;
+  isDeleting?: boolean;
+  onMarkRead: () => void;
+  onDelete: () => void;
+  onDismiss: () => void;
 }
 
 export function NotificationContextMenu({
@@ -21,13 +28,13 @@ export function NotificationContextMenu({
   onDelete,
   onDismiss,
 }: NotificationContextMenuProps): React.JSX.Element {
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const handleDeleteConfirm = (): void => {
-    setConfirmDelete(false)
-    onDelete()
-    onDismiss()
-  }
+    setConfirmDelete(false);
+    onDelete();
+    onDismiss();
+  };
 
   return (
     <>
@@ -38,12 +45,17 @@ export function NotificationContextMenu({
           contentContainerStyle={styles.modal}
         >
           <Surface style={styles.surface} elevation={3}>
-            <Text variant="labelMedium" style={styles.header}>Options</Text>
+            <Text variant="labelMedium" style={styles.header}>
+              Options
+            </Text>
             <Divider />
             {!isRead && (
               <Button
                 mode="text"
-                onPress={() => { onMarkRead(); onDismiss() }}
+                onPress={() => {
+                  onMarkRead();
+                  onDismiss();
+                }}
                 style={styles.option}
                 accessibilityRole="button"
               >
@@ -76,13 +88,17 @@ export function NotificationContextMenu({
         onDismiss={() => setConfirmDelete(false)}
       />
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  modal:     { marginHorizontal: 40 },
-  surface:   { borderRadius: 12, overflow: 'hidden', paddingBottom: 8 },
-  header:    { padding: 16, color: palette.zinc500, textTransform: 'uppercase' },
-  option:    { borderRadius: 0, justifyContent: 'flex-start' },
-  separator: { height: StyleSheet.hairlineWidth, backgroundColor: palette.zinc200, marginHorizontal: 16 },
-})
+  modal: { marginHorizontal: 40 },
+  surface: { borderRadius: 12, overflow: "hidden", paddingBottom: 8 },
+  header: { padding: 16, color: palette.zinc500, textTransform: "uppercase" },
+  option: { borderRadius: 0, justifyContent: "flex-start" },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: palette.zinc200,
+    marginHorizontal: 16,
+  },
+});

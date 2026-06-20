@@ -1,37 +1,45 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useAuthStore } from '@/store/auth'
-import { performLogout } from '@/lib/logout'
-import { useLayout } from '@/hooks/useLayout'
-import { AppHeader } from '@/components/shared/AppHeader'
-import { EmptyState } from '@/components/shared/EmptyState'
-import { palette } from '@/theme'
-import { FontFamily } from '@/theme/fonts'
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAuthStore } from "@/store/auth";
+import { performLogout } from "@/lib/logout";
+import { useLayout } from "@/hooks/useLayout";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { palette } from "@/theme";
+import { FontFamily } from "@/theme/fonts";
 
 function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 interface PlaceholderRowProps {
-  testID: string
-  label: string
-  icon: string
+  testID: string;
+  label: string;
+  icon: string;
 }
 
-function PlaceholderRow({ testID, label, icon }: PlaceholderRowProps): React.JSX.Element {
+function PlaceholderRow({
+  testID,
+  label,
+  icon,
+}: PlaceholderRowProps): React.JSX.Element {
   return (
     <View testID={testID} style={styles.menuRow}>
-      <MaterialCommunityIcons name={icon as any} size={20} color={palette.zinc200} />
+      <MaterialCommunityIcons
+        name={icon as any}
+        size={20}
+        color={palette.zinc200}
+      />
       <Text style={styles.menuLabelDisabled}>{label}</Text>
       <Text style={styles.soonLabel}>(soon)</Text>
     </View>
-  )
+  );
 }
 
 export default function MoreScreen(): React.JSX.Element {
-  const user = useAuthStore((s) => s.user)
-  const activeBranch = useAuthStore((s) => s.activeBranch)
-  const { isTablet } = useLayout()
+  const user = useAuthStore((s) => s.user);
+  const activeBranch = useAuthStore((s) => s.activeBranch);
+  const { isTablet } = useLayout();
 
   if (user === null) {
     return (
@@ -39,14 +47,14 @@ export default function MoreScreen(): React.JSX.Element {
         <AppHeader title="More" showBranchPill={false} />
         <EmptyState title="Session expired" />
       </View>
-    )
+    );
   }
 
-  const initials = (user.first_name[0] + user.last_name[0]).toUpperCase()
-  const role = capitalize(user.roles[0])
+  const initials = (user.first_name[0] + user.last_name[0]).toUpperCase();
+  const role = capitalize(user.roles[0]);
 
-  const leftWidth = isTablet ? '35%' : '100%'
-  const rightWidth = isTablet ? '65%' : '100%'
+  const leftWidth = isTablet ? "35%" : "100%";
+  const rightWidth = isTablet ? "65%" : "100%";
 
   return (
     <View style={styles.container}>
@@ -63,7 +71,11 @@ export default function MoreScreen(): React.JSX.Element {
           </View>
           {activeBranch !== null && (
             <View style={styles.branchRow}>
-              <MaterialCommunityIcons name="map-marker" size={14} color={palette.zinc500} />
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={14}
+                color={palette.zinc500}
+              />
               <Text style={styles.branchName}>{activeBranch.name}</Text>
             </View>
           )}
@@ -71,25 +83,45 @@ export default function MoreScreen(): React.JSX.Element {
 
         <View style={[styles.rightCol, { width: rightWidth }]}>
           <Text style={styles.sectionHeader}>ACCOUNT</Text>
-          <PlaceholderRow testID="placeholder-profile-settings" label="Profile Settings" icon="account-edit" />
-          <PlaceholderRow testID="placeholder-appearance" label="Appearance" icon="palette" />
-          <PlaceholderRow testID="placeholder-notifications" label="Notification Preferences" icon="bell-outline" />
+          <PlaceholderRow
+            testID="placeholder-profile-settings"
+            label="Profile Settings"
+            icon="account-edit"
+          />
+          <PlaceholderRow
+            testID="placeholder-appearance"
+            label="Appearance"
+            icon="palette"
+          />
+          <PlaceholderRow
+            testID="placeholder-notifications"
+            label="Notification Preferences"
+            icon="bell-outline"
+          />
 
-          <Text style={[styles.sectionHeader, styles.sectionHeaderSpaced]}>SESSION</Text>
+          <Text style={[styles.sectionHeader, styles.sectionHeaderSpaced]}>
+            SESSION
+          </Text>
           <Pressable
             testID="sign-out-row"
             style={styles.menuRow}
-            onPress={() => { void performLogout() }}
+            onPress={() => {
+              void performLogout();
+            }}
             accessibilityRole="button"
             accessibilityLabel="Sign out"
           >
-            <MaterialCommunityIcons name="logout" size={20} color={palette.red500} />
+            <MaterialCommunityIcons
+              name="logout"
+              size={20}
+              color={palette.red500}
+            />
             <Text style={styles.signOutLabel}>Sign Out</Text>
           </Pressable>
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -99,11 +131,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   leftCol: {
     padding: 24,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     gap: 8,
     borderRightWidth: StyleSheet.hairlineWidth,
     borderRightColor: palette.zinc200,
@@ -117,8 +149,8 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: palette.zinc100,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 8,
   },
   initials: {
@@ -145,11 +177,11 @@ const styles = StyleSheet.create({
   roleText: {
     fontFamily: FontFamily.sans.medium,
     fontSize: 11,
-    color: '#3F3F46',
+    color: "#3F3F46",
   },
   branchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     marginTop: 4,
   },
@@ -170,8 +202,8 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   menuRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     paddingVertical: 12,
     paddingHorizontal: 4,
@@ -192,4 +224,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: palette.red500,
   },
-})
+});

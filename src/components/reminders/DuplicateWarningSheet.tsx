@@ -1,19 +1,19 @@
-import { StyleSheet, View } from 'react-native'
-import { Button, Dialog, Portal, Text } from 'react-native-paper'
-import { formatDate } from '@/lib/formatters'
-import { palette } from '@/theme'
+import { StyleSheet, View } from "react-native";
+import { Button, Dialog, Portal, Text } from "react-native-paper";
+import { formatDate } from "@/lib/formatters";
+import { palette } from "@/theme";
 
 interface AlreadySentParent {
-  id: number
-  full_name: string
-  last_sent_at: string
+  id: number;
+  full_name: string;
+  last_sent_at: string;
 }
 
 interface Props {
-  visible: boolean
-  alreadySentParents: AlreadySentParent[]
-  onConfirm: () => void
-  onDismiss: () => void
+  visible: boolean;
+  alreadySentParents: AlreadySentParent[];
+  onConfirm: () => void;
+  onDismiss: () => void;
 }
 
 export function DuplicateWarningSheet({
@@ -22,7 +22,7 @@ export function DuplicateWarningSheet({
   onConfirm,
   onDismiss,
 }: Props): React.JSX.Element | null {
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <Portal>
@@ -41,7 +41,7 @@ export function DuplicateWarningSheet({
             <View key={p.id} style={styles.row}>
               <Text variant="labelMedium">{p.full_name}</Text>
               <Text variant="bodySmall" style={styles.sentDate}>
-                Sent: {formatDate(p.last_sent_at, 'MMM d, yyyy')}
+                Sent: {formatDate(p.last_sent_at, "MMM d, yyyy")}
               </Text>
             </View>
           ))}
@@ -67,7 +67,7 @@ export function DuplicateWarningSheet({
         </Dialog.Actions>
       </Dialog>
     </Portal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
   subtitle: { color: palette.zinc500, marginBottom: 8 },
   row: { marginBottom: 6 },
   sentDate: { color: palette.zinc500 },
-})
+});

@@ -1,21 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { Appbar } from 'react-native-paper'
-import { Image } from 'expo-image'
-import { useRouter } from 'expo-router'
-import { NotificationBell } from '@/components/notifications/NotificationBell'
-import { BranchPill } from '@/components/shared/BranchPill'
-import { palette } from '@/theme'
-import { FontFamily } from '@/theme/fonts'
+import { StyleSheet, Text, View } from "react-native";
+import { Appbar } from "react-native-paper";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { BranchPill } from "@/components/shared/BranchPill";
+import { palette } from "@/theme";
+import { FontFamily } from "@/theme/fonts";
 
-const iconSource = require('../../../assets/icon.png')
+const iconSource = require("../../../assets/icon.png");
 
 interface AppHeaderProps {
-  title: string
-  subtitle?: string
-  showBack?: boolean
-  onBack?: () => void
-  right?: React.ReactNode
-  showBranchPill?: boolean
+  title: string;
+  subtitle?: string;
+  showBack?: boolean;
+  onBack?: () => void;
+  right?: React.ReactNode;
+  showBranchPill?: boolean;
 }
 
 export function AppHeader({
@@ -26,13 +26,13 @@ export function AppHeader({
   right,
   showBranchPill = true,
 }: AppHeaderProps): React.JSX.Element {
-  const router = useRouter()
+  const router = useRouter();
 
   function handleBack(): void {
     if (onBack !== undefined) {
-      onBack()
+      onBack();
     } else {
-      router.back()
+      router.back();
     }
   }
 
@@ -51,9 +51,13 @@ export function AppHeader({
           accessibilityLabel="Sunbites"
         />
         <View style={styles.titleBlock}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
           {subtitle !== undefined && (
-            <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
           )}
         </View>
       </View>
@@ -63,7 +67,7 @@ export function AppHeader({
         <NotificationBell />
       </View>
     </Appbar.Header>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -74,8 +78,8 @@ const styles = StyleSheet.create({
   },
   logoTitle: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     paddingLeft: 4,
   },
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
   },
   titleBlock: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     fontFamily: FontFamily.sans.medium,
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
     color: palette.zinc500,
   },
   rightSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
-})
+});

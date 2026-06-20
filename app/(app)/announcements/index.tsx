@@ -1,13 +1,13 @@
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native'
-import { FAB } from 'react-native-paper'
-import { AppHeader } from '@/components/shared/AppHeader'
-import { router } from 'expo-router'
-import { useAnnouncementList } from '@/hooks/useAnnouncements'
-import { AnnouncementRow } from '@/components/announcements/AnnouncementRow'
-import { EmptyState } from '@/components/shared/EmptyState'
-import { usePermission } from '@/lib/permissions'
-import { palette } from '@/theme'
-import type { AnnouncementListItem } from '@/types/announcement'
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { FAB } from "react-native-paper";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { router } from "expo-router";
+import { useAnnouncementList } from "@/hooks/useAnnouncements";
+import { AnnouncementRow } from "@/components/announcements/AnnouncementRow";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { usePermission } from "@/lib/permissions";
+import { palette } from "@/theme";
+import type { AnnouncementListItem } from "@/types/announcement";
 
 export default function AnnouncementsScreen(): React.JSX.Element {
   const {
@@ -18,19 +18,22 @@ export default function AnnouncementsScreen(): React.JSX.Element {
     hasNextPage,
     refetch,
     isRefetching,
-  } = useAnnouncementList()
+  } = useAnnouncementList();
 
-  const canCreate = usePermission('announcements')
+  const canCreate = usePermission("announcements");
 
   const announcements: AnnouncementListItem[] =
-    data?.pages.flatMap((page) => page.data) ?? []
+    data?.pages.flatMap((page) => page.data) ?? [];
 
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator testID="loading-indicator" color={palette.orange500} />
+        <ActivityIndicator
+          testID="loading-indicator"
+          color={palette.orange500}
+        />
       </View>
-    )
+    );
   }
 
   return (
@@ -48,9 +51,13 @@ export default function AnnouncementsScreen(): React.JSX.Element {
         )}
         refreshing={isRefetching}
         onRefresh={refetch}
-        onEndReached={() => { if (hasNextPage) void fetchNextPage() }}
+        onEndReached={() => {
+          if (hasNextPage) void fetchNextPage();
+        }}
         onEndReachedThreshold={0.2}
-        contentContainerStyle={announcements.length === 0 ? styles.emptyContainer : undefined}
+        contentContainerStyle={
+          announcements.length === 0 ? styles.emptyContainer : undefined
+        }
         ListEmptyComponent={
           <EmptyState
             icon="bullhorn-outline"
@@ -59,9 +66,12 @@ export default function AnnouncementsScreen(): React.JSX.Element {
           />
         }
         ListFooterComponent={
-          isFetchingNextPage
-            ? <ActivityIndicator style={styles.footerSpinner} color={palette.orange500} />
-            : null
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              style={styles.footerSpinner}
+              color={palette.orange500}
+            />
+          ) : null
         }
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
@@ -71,20 +81,28 @@ export default function AnnouncementsScreen(): React.JSX.Element {
           testID="create-announcement-fab"
           icon="plus"
           style={styles.fab}
-          onPress={() => router.push('/(app)/announcements/create' as never)}
+          onPress={() => router.push("/(app)/announcements/create" as never)}
           accessibilityLabel="Create announcement"
         />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  container:      { flex: 1, backgroundColor: palette.white },
+  container: { flex: 1, backgroundColor: palette.white },
 
-  centered:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  separator:      { height: StyleSheet.hairlineWidth, backgroundColor: palette.zinc200 },
-  footerSpinner:  { paddingVertical: 16 },
-  fab:            { position: 'absolute', right: 16, bottom: 16, backgroundColor: palette.orange500 },
-})
+  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: palette.zinc200,
+  },
+  footerSpinner: { paddingVertical: 16 },
+  fab: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    backgroundColor: palette.orange500,
+  },
+});

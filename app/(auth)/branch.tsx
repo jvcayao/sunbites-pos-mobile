@@ -1,72 +1,78 @@
-import { useEffect, useState } from 'react'
-import { View, FlatList, StyleSheet } from 'react-native'
-import { Text, Surface, TouchableRipple, Button, ActivityIndicator } from 'react-native-paper'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useAuthStore } from '@/store/auth'
-import { useCartStore } from '@/store/cart'
-import { authApi } from '@/api/auth'
-import { queryClient } from '@/lib/queryClient'
-import { performLogout } from '@/lib/logout'
-import client from '@/api/client'
-import { AppLogo } from '@/components/shared/AppLogo'
-import { palette } from '@/theme'
-import type { Branch } from '@/types/auth'
+import { useEffect, useState } from "react";
+import { View, FlatList, StyleSheet } from "react-native";
+import {
+  Text,
+  Surface,
+  TouchableRipple,
+  Button,
+  ActivityIndicator,
+} from "react-native-paper";
+import { router, useLocalSearchParams } from "expo-router";
+import { useAuthStore } from "@/store/auth";
+import { useCartStore } from "@/store/cart";
+import { authApi } from "@/api/auth";
+import { queryClient } from "@/lib/queryClient";
+import { performLogout } from "@/lib/logout";
+import client from "@/api/client";
+import { AppLogo } from "@/components/shared/AppLogo";
+import { palette } from "@/theme";
+import type { Branch } from "@/types/auth";
 
 export default function BranchScreen() {
-  const { mode } = useLocalSearchParams<{ mode?: string }>()
-  const isSwitchMode = mode === 'switch'
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  const isSwitchMode = mode === "switch";
 
-  const { user, activeBranch, setActiveBranch } = useAuthStore()
-  const isAdmin = user?.roles.includes('admin') ?? false
+  const { user, activeBranch, setActiveBranch } = useAuthStore();
+  const isAdmin = user?.roles.includes("admin") ?? false;
 
   // For admin: fetch all branches; null means still loading / use fallback
-  const [adminBranches, setAdminBranches] = useState<Branch[] | null>(null)
-  const [loading, setLoading] = useState(isAdmin)
+  const [adminBranches, setAdminBranches] = useState<Branch[] | null>(null);
+  const [loading, setLoading] = useState(isAdmin);
   // Non-admin derives branches directly from the login response (no extra fetch)
-  const branches = adminBranches ?? (user?.branches ?? [])
+  const branches = adminBranches ?? user?.branches ?? [];
 
   async function handleSelect(branch: Branch): Promise<void> {
     try {
-      await authApi.setBranch(branch.id, activeBranch?.id)
+      await authApi.setBranch(branch.id, activeBranch?.id);
     } catch {
       // branch context set server-side is best-effort;
       // API still enforces authorization per request
     }
-    setActiveBranch(branch)
+    setActiveBranch(branch);
     // Clear stale data and cart from previous branch session
-    queryClient.clear()
-    useCartStore.getState().clearCart()
-    router.replace('/(app)/pos')
+    queryClient.clear();
+    useCartStore.getState().clearCart();
+    router.replace("/(app)/pos");
   }
 
   useEffect(() => {
-    if (!isAdmin) return
+    if (!isAdmin) return;
     client
-      .get<Branch[]>('/branches')
+      .get<Branch[]>("/branches")
       .then((res) => setAdminBranches(res.data))
-      .catch(() => setAdminBranches(null))  // null → falls back to user?.branches
-      .finally(() => setLoading(false))
-  }, [isAdmin])
+      .catch(() => setAdminBranches(null)) // null → falls back to user?.branches
+      .finally(() => setLoading(false));
+  }, [isAdmin]);
 
   // Auto-select single branch (only on login flow, not switch mode)
   useEffect(() => {
     if (!isSwitchMode && branches.length === 1) {
-      void handleSelect(branches[0])
+      void handleSelect(branches[0]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [branches, isSwitchMode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branches, isSwitchMode]);
 
-  const handleLogout = (): Promise<void> => performLogout()
+  const handleLogout = (): Promise<void> => performLogout();
 
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={palette.orange500} />
       </View>
-    )
+    );
   }
 
-  if (!isSwitchMode && branches.length === 1) return null
+  if (!isSwitchMode && branches.length === 1) return null;
 
   return (
     <View style={styles.container}>
@@ -86,7 +92,7 @@ export default function BranchScreen() {
       <View style={styles.header}>
         <AppLogo variant="compact" />
         <Text variant="headlineSmall" style={styles.title}>
-          {isSwitchMode ? 'Switch Branch' : 'Select Branch'}
+          {isSwitchMode ? "Switch Branch" : "Select Branch"}
         </Text>
         <Text variant="bodyMedium" style={styles.subtitle}>
           Choose the branch you are working at today
@@ -98,7 +104,7 @@ export default function BranchScreen() {
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => {
-          const isActive = isSwitchMode && activeBranch?.id === item.id
+          const isActive = isSwitchMode && activeBranch?.id === item.id;
           return (
             <Surface
               style={[styles.card, isActive && styles.cardActive]}
@@ -114,7 +120,10 @@ export default function BranchScreen() {
               >
                 <View style={styles.cardContent}>
                   <View style={styles.cardRow}>
-                    <Text variant="titleMedium" style={isActive && styles.activeText}>
+                    <Text
+                      variant="titleMedium"
+                      style={isActive && styles.activeText}
+                    >
                       {item.name}
                     </Text>
                     {isActive && (
@@ -123,11 +132,13 @@ export default function BranchScreen() {
                       </Text>
                     )}
                   </View>
-                  <Text variant="bodySmall" style={styles.slug}>{item.slug}</Text>
+                  <Text variant="bodySmall" style={styles.slug}>
+                    {item.slug}
+                  </Text>
                 </View>
               </TouchableRipple>
             </Surface>
-          )
+          );
         }}
       />
 
@@ -144,7 +155,7 @@ export default function BranchScreen() {
         </Button>
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -156,24 +167,24 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   backBtn: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: 8,
   },
   header: { marginBottom: 32, gap: 12 },
-  title: { color: palette.zinc950, fontWeight: 'bold' },
+  title: { color: palette.zinc950, fontWeight: "bold" },
   subtitle: { color: palette.zinc500, marginTop: 4 },
   list: { gap: 12 },
-  card: { borderRadius: 12, overflow: 'hidden' },
+  card: { borderRadius: 12, overflow: "hidden" },
   cardActive: { borderWidth: 2, borderColor: palette.orange500 },
   ripple: { borderRadius: 12 },
   cardContent: { padding: 20 },
   cardRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   activeText: { color: palette.orange500 },
@@ -183,8 +194,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   slug: { color: palette.zinc500, marginTop: 2 },
   logoutBtn: { marginTop: 24, marginBottom: 16 },
-})
+});

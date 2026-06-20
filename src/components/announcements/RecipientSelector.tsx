@@ -1,20 +1,27 @@
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native'
-import { Text } from 'react-native-paper'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useState } from 'react'
-import { palette } from '@/theme'
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
+import { Text } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useState } from "react";
+import { palette } from "@/theme";
 
 interface RecipientItem {
-  id: number
-  full_name: string
+  id: number;
+  full_name: string;
 }
 
 interface RecipientSelectorProps {
-  recipients: RecipientItem[]
-  selectedIds: number[]
-  onToggle: (id: number) => void
-  onSelectAll: () => void
-  isLoading?: boolean
+  recipients: RecipientItem[];
+  selectedIds: number[];
+  onToggle: (id: number) => void;
+  onSelectAll: () => void;
+  isLoading?: boolean;
 }
 
 export function RecipientSelector({
@@ -24,23 +31,29 @@ export function RecipientSelector({
   onSelectAll,
   isLoading = false,
 }: RecipientSelectorProps): React.JSX.Element {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState("");
 
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator testID="recipients-loading" color={palette.orange500} />
+        <ActivityIndicator
+          testID="recipients-loading"
+          color={palette.orange500}
+        />
       </View>
-    )
+    );
   }
 
-  const filtered = query.trim() === ''
-    ? recipients
-    : recipients.filter((r) =>
-        r.full_name.toLowerCase().includes(query.toLowerCase()),
-      )
+  const filtered =
+    query.trim() === ""
+      ? recipients
+      : recipients.filter((r) =>
+          r.full_name.toLowerCase().includes(query.toLowerCase()),
+        );
 
-  const allSelected = recipients.length > 0 && recipients.every((r) => selectedIds.includes(r.id))
+  const allSelected =
+    recipients.length > 0 &&
+    recipients.every((r) => selectedIds.includes(r.id));
 
   return (
     <View style={styles.container}>
@@ -63,24 +76,32 @@ export function RecipientSelector({
       >
         <View style={[styles.checkbox, allSelected && styles.checkboxSelected]}>
           {allSelected && (
-            <MaterialCommunityIcons name="check" size={14} color={palette.white} />
+            <MaterialCommunityIcons
+              name="check"
+              size={14}
+              color={palette.white}
+            />
           )}
         </View>
-        <Text variant="labelMedium" style={styles.rowLabel}>Select All</Text>
+        <Text variant="labelMedium" style={styles.rowLabel}>
+          Select All
+        </Text>
       </Pressable>
 
       <View style={styles.divider} />
 
       {filtered.length === 0 ? (
         <View style={styles.emptyRow}>
-          <Text variant="bodySmall" style={styles.emptyText}>No recipients found</Text>
+          <Text variant="bodySmall" style={styles.emptyText}>
+            No recipients found
+          </Text>
         </View>
       ) : (
         <FlatList
           data={filtered}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => {
-            const isSelected = selectedIds.includes(item.id)
+            const isSelected = selectedIds.includes(item.id);
             return (
               <Pressable
                 testID={`recipient-row-${item.id}`}
@@ -89,7 +110,12 @@ export function RecipientSelector({
                 accessibilityRole="checkbox"
                 accessibilityLabel={item.full_name}
               >
-                <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    isSelected && styles.checkboxSelected,
+                  ]}
+                >
                   {isSelected && (
                     <MaterialCommunityIcons
                       testID={`check-icon-${item.id}`}
@@ -99,27 +125,61 @@ export function RecipientSelector({
                     />
                   )}
                 </View>
-                <Text variant="bodyMedium" style={styles.rowLabel}>{item.full_name}</Text>
+                <Text variant="bodyMedium" style={styles.rowLabel}>
+                  {item.full_name}
+                </Text>
               </Pressable>
-            )
+            );
           }}
           ItemSeparatorComponent={() => <View style={styles.divider} />}
           scrollEnabled={false}
         />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  container:        { borderWidth: 1, borderColor: palette.zinc200, borderRadius: 8, overflow: 'hidden' },
-  search:           { paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: palette.zinc200, color: palette.zinc900, fontSize: 14 },
-  row:              { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, gap: 10 },
-  rowLabel:         { flex: 1, color: palette.zinc900 },
-  checkbox:         { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: palette.zinc200, alignItems: 'center', justifyContent: 'center' },
-  checkboxSelected: { backgroundColor: palette.orange500, borderColor: palette.orange500 },
-  divider:          { height: StyleSheet.hairlineWidth, backgroundColor: palette.zinc200 },
-  centered:         { paddingVertical: 24, alignItems: 'center' },
-  emptyRow:         { paddingVertical: 16, alignItems: 'center' },
-  emptyText:        { color: palette.zinc500 },
-})
+  container: {
+    borderWidth: 1,
+    borderColor: palette.zinc200,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  search: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: palette.zinc200,
+    color: palette.zinc900,
+    fontSize: 14,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  rowLabel: { flex: 1, color: palette.zinc900 },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: palette.zinc200,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxSelected: {
+    backgroundColor: palette.orange500,
+    borderColor: palette.orange500,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: palette.zinc200,
+  },
+  centered: { paddingVertical: 24, alignItems: "center" },
+  emptyRow: { paddingVertical: 16, alignItems: "center" },
+  emptyText: { color: palette.zinc500 },
+});

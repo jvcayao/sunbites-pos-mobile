@@ -1,15 +1,18 @@
-import React from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { Text, TextInput } from 'react-native-paper'
-import { palette } from '@/theme'
-import type { UpdatePreRegistrationDto } from '@/types/pre-registration'
+import React from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Text, TextInput } from "react-native-paper";
+import { palette } from "@/theme";
+import type { UpdatePreRegistrationDto } from "@/types/pre-registration";
 
 interface Props {
-  data: UpdatePreRegistrationDto
-  onChange: (update: Partial<UpdatePreRegistrationDto>) => void
+  data: UpdatePreRegistrationDto;
+  onChange: (update: Partial<UpdatePreRegistrationDto>) => void;
 }
 
-export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Element {
+export function PreRegistrationForm({
+  data,
+  onChange,
+}: Props): React.JSX.Element {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text variant="labelMedium" style={styles.sectionLabel}>
@@ -19,7 +22,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
       <View style={styles.row}>
         <TextInput
           label="First name"
-          value={data.first_name ?? ''}
+          value={data.first_name ?? ""}
           onChangeText={(v) => onChange({ first_name: v })}
           style={styles.inputHalf}
           mode="outlined"
@@ -27,7 +30,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
         />
         <TextInput
           label="Last name"
-          value={data.last_name ?? ''}
+          value={data.last_name ?? ""}
           onChangeText={(v) => onChange({ last_name: v })}
           style={styles.inputHalf}
           mode="outlined"
@@ -37,7 +40,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
 
       <TextInput
         label="Student number"
-        value={data.student_number ?? ''}
+        value={data.student_number ?? ""}
         onChangeText={(v) => onChange({ student_number: v })}
         style={styles.input}
         mode="outlined"
@@ -47,7 +50,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
       <View style={styles.row}>
         <TextInput
           label="Grade level"
-          value={data.grade_level ?? ''}
+          value={data.grade_level ?? ""}
           onChangeText={(v) => onChange({ grade_level: v })}
           style={styles.inputHalf}
           mode="outlined"
@@ -55,7 +58,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
         />
         <TextInput
           label="Section"
-          value={data.section ?? ''}
+          value={data.section ?? ""}
           onChangeText={(v) => onChange({ section: v })}
           style={styles.inputHalf}
           mode="outlined"
@@ -65,7 +68,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
 
       <TextInput
         label="Birthday (YYYY-MM-DD)"
-        value={data.birthday ?? ''}
+        value={data.birthday ?? ""}
         onChangeText={(v) => onChange({ birthday: v })}
         style={styles.input}
         mode="outlined"
@@ -74,7 +77,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
 
       <TextInput
         label="Allergies"
-        value={data.allergies ?? ''}
+        value={data.allergies ?? ""}
         onChangeText={(v) => onChange({ allergies: v })}
         style={styles.input}
         mode="outlined"
@@ -84,7 +87,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
 
       <TextInput
         label="Notes"
-        value={data.notes ?? ''}
+        value={data.notes ?? ""}
         onChangeText={(v) => onChange({ notes: v })}
         style={styles.input}
         mode="outlined"
@@ -92,7 +95,7 @@ export function PreRegistrationForm({ data, onChange }: Props): React.JSX.Elemen
         accessibilityLabel="Notes"
       />
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -106,11 +109,11 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: palette.zinc500,
     marginBottom: 4,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   input: {
@@ -120,4 +123,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: palette.white,
   },
-})
+});
