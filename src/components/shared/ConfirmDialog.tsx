@@ -1,26 +1,26 @@
-import { StyleSheet } from 'react-native'
-import { Button, Dialog, Portal, Text } from 'react-native-paper'
-import { palette } from '@/theme'
+import { StyleSheet } from "react-native";
+import { Button, Dialog, Portal, Text } from "react-native-paper";
+import { palette } from "@/theme";
 
 interface ConfirmDialogProps {
-  visible: boolean
-  title: string
-  message?: string
-  confirmLabel?: string
-  confirmColor?: string
-  cancelLabel?: string
-  loading?: boolean
-  onConfirm: () => void
-  onDismiss: () => void
+  visible: boolean;
+  title: string;
+  message?: string;
+  confirmLabel?: string;
+  confirmColor?: string;
+  cancelLabel?: string;
+  loading?: boolean;
+  onConfirm: () => void;
+  onDismiss: () => void;
 }
 
 export function ConfirmDialog({
   visible,
   title,
   message,
-  confirmLabel = 'Confirm',
+  confirmLabel = "Confirm",
   confirmColor = palette.red500,
-  cancelLabel = 'Cancel',
+  cancelLabel = "Cancel",
   loading = false,
   onConfirm,
   onDismiss,
@@ -56,11 +56,11 @@ export function ConfirmDialog({
         </Dialog.Actions>
       </Dialog>
     </Portal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   dialog: {
     borderRadius: 12,
   },
-})
+});

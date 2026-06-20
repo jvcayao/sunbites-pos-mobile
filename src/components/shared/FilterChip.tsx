@@ -1,40 +1,52 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { Pressable } from 'react-native'
-import { Text } from 'react-native-paper'
-import { palette } from '@/theme'
+import {
+  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Text } from "react-native-paper";
+import { usePressScale } from "@/lib/animation";
+import { palette } from "@/theme";
 
 interface FilterChipProps {
-  label: string
-  active: boolean
-  onPress: () => void
-  accessibilityLabel?: string
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  accessibilityLabel?: string;
 }
 
-export function FilterChip({ label, active, onPress, accessibilityLabel }: FilterChipProps) {
+export function FilterChip({
+  label,
+  active,
+  onPress,
+  accessibilityLabel,
+}: FilterChipProps) {
+  const { scale, onPressIn, onPressOut } = usePressScale(0.95);
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.chip,
-        active ? styles.chipActive : styles.chipInactive,
-        pressed && styles.chipPressed,
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ selected: active }}
-    >
-      <Text
-        variant="labelMedium"
-        style={active ? styles.labelActive : styles.labelInactive}
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={[styles.chip, active ? styles.chipActive : styles.chipInactive]}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? label}
+        accessibilityState={{ selected: active }}
       >
-        {label}
-      </Text>
-    </Pressable>
-  )
+        <Text
+          variant="labelMedium"
+          style={active ? styles.labelActive : styles.labelInactive}
+        >
+          {label}
+        </Text>
+      </Pressable>
+    </Animated.View>
+  );
 }
 
 interface FilterChipRowProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function FilterChipRow({ children }: FilterChipRowProps) {
@@ -43,10 +55,11 @@ export function FilterChipRow({ children }: FilterChipRowProps) {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.row}
+      style={styles.rowScroll}
     >
       <View style={styles.rowInner}>{children}</View>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -54,8 +67,8 @@ const styles = StyleSheet.create({
     height: 36,
     paddingHorizontal: 14,
     borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minWidth: 44,
   },
   chipActive: {
@@ -64,21 +77,22 @@ const styles = StyleSheet.create({
   chipInactive: {
     backgroundColor: palette.zinc100,
   },
-  chipPressed: {
-    opacity: 0.75,
-  },
   labelActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   labelInactive: {
     color: palette.zinc900,
+  },
+  rowScroll: {
+    flexGrow: 0,
+    flexShrink: 0,
   },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   rowInner: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
-})
+});

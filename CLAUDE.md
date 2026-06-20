@@ -132,23 +132,25 @@ Never duplicate API data in Zustand. Never store tokens in AsyncStorage.
 
 ### Responsive Layout — mandatory on every screen
 
-All screens auto-adjust to orientation and tablet size. **Call `useLayout()` in every screen with a list, form, or multi-section layout.**
+**The app is locked to landscape mode on Android tablet.** `orientation: 'landscape'` in `app.config.ts`. Portrait layout is not supported — design all screens for landscape only.
+
+**Call `useLayout()` in every screen with a list, form, or multi-section layout.**
 
 ```typescript
 const { isLandscape, isTablet } = useLayout()
-// isLandscape = width > height  |  isTablet = min(w,h) >= 768
+// isLandscape = always true (landscape-locked)  |  isTablet = min(w,h) >= 768
 ```
 
-| Screen | Portrait | Landscape / Tablet |
-|---|---|---|
-| POS | Full-screen menu + cart FAB | Split 60/40 side-by-side |
-| Enrollment | Single-column form | 2-column sections |
-| Student List | Single-column cards | 2-column card grid |
-| Dashboard | Single-column widgets | 2–3 column grid |
-| Reports | Card rows | Table with more columns |
-| References | Single list | List + detail side by side |
+| Screen | Layout (always landscape) |
+|---|---|
+| POS | Split 60/40 menu + cart side-by-side |
+| Enrollment | 2-column sections |
+| Student List | 2-column card grid |
+| Dashboard | 2–3 column grid |
+| Reports | Table with full columns |
+| References | List + detail side by side |
 
-`app.json` → `"orientation": "default"` (portrait + landscape both enabled). Never hardcode pixel widths.
+`app.config.ts` → `orientation: 'landscape'` (landscape-only, Android tablet target). Never hardcode pixel widths.
 
 ### Pagination
 All paginated lists use `useInfiniteQuery`. API returns `{ data[], meta: { current_page, last_page }, links }`. Trigger next page at `onEndReachedThreshold: 0.2`.
@@ -207,7 +209,7 @@ Read the relevant spec before implementing. Each folder has `requirements.md`, `
 
 | # | Spec | Status |
 |---|---|---|
-| 00 | api-cross-reference | ✅ All breaking mismatches fixed in src/api/ |
+| 00 | api-cross-reference | ✅ All breaking mismatches fixed in src/api/ — updated 2026-06-20 |
 | 01 | project-foundation | ✅ Implemented |
 | 02 | reports | ✅ Implemented — 8 report screens |
 | 03 | references | ✅ Implemented — 8 sub-sections incl. system settings |
@@ -218,8 +220,16 @@ Read the relevant spec before implementing. Each folder has `requirements.md`, `
 | 08 | branch-switcher | ✅ Implemented — Post-login + in-app switch |
 | 09 | shared-components | ✅ Implemented |
 | 10 | auth-login | ✅ Implemented |
+| 11 | notifications | ✅ Implemented — Reverb WebSocket, EchoProvider, NotificationBell, staff notifications page |
+| 12 | payment-reminders | 🔲 Planned — ReminderBell, eligible parents list, send reminders, parent detail |
+| 13 | announcements | 🔲 Planned — Announcements list/create/detail, nav item, NotificationBell routing |
+| 14 | pre-registrations | 🔲 Planned — Pre-reg queue: list, detail, approve/reject/reactivate, pending badge |
+| 15 | design-system | 🔲 Planned — Font system (Space Grotesk/DM Sans/DM Mono), logo/brand assets, nav rail (tablet), motion, MonoText, StatusBadge |
+| 16 | more-tab-navigation | 🔲 Planned — More tab (hamburger), MoreScreen (profile + logout), BranchPill in AppHeader, POS header cleanup |
 
-**Build order:** `09` → `10` → `04` → `05` → `06` → `07` → `02` → `03` → `08`
+**Build order (implemented):** `09` → `10` → `04` → `05` → `06` → `07` → `02` → `03` → `08` → `11`
+
+**Build order (planned):** `12` → `13` → `14` → `16` → `15`
 
 ---
 

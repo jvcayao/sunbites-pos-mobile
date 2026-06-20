@@ -48,7 +48,39 @@ Sunbites POS Mobile is a React Native / Expo mobile companion to the existing Su
   Sales, Students, Wallet, Inventory, Billing, Credits, Activity Log, Daily Summary.
 
 ### REQ-008 — References
-- Inventory, Meal Planner, Users, Branches, Subscription Config, and Parents must be accessible to authorized roles.
+- Inventory, Meal Planner, Users, Branches, Subscription Config, Parents, Feedback, and System Settings must be accessible to authorized roles.
+- See spec `03_references` for per-section role breakdown.
+
+### REQ-013 — Real-Time Notifications
+- The app must connect to the API's Reverb WebSocket server using the authenticated staff token.
+- An `EchoProvider` must initialize on login and disconnect on logout.
+- A single `NotificationBell` component must appear in the POS screen header — this is the **only** notification bell in the entire app header. It subscribes to the `staff.{userId}` private channel.
+- The bell must display an unread count badge (hidden when count = 0).
+- Tapping the bell navigates to the staff notifications page (`/notifications`).
+- The notifications page follows MagicBell design: unread dot, type-aware title, 2-line preview, relative timestamp, context menu (`...`).
+- Staff must be able to mark individual notifications as read, mark all as read, and delete individual notifications.
+
+### REQ-014 — Payment Reminders
+- Authorized roles (admin/manager) must be able to send payment reminders to parents of subscription students for the upcoming school month.
+- Supervisor role can view the reminders list but the Send button is hidden.
+- A reminder count badge (number of unsent eligible parents) must be visible on the Payment Reminders navigation entry.
+- Sent parents must be shown in the list as grayed/non-selectable by default; a "Force resend" option must be available.
+- Tapping a parent entry must show their contact info and subscription payment history.
+
+### REQ-015 — Announcements
+- Authorized roles (admin/manager/supervisor) must be able to compose and send announcements to parents or co-workers (never both simultaneously).
+- A nav item with a Megaphone icon must appear in the navigation for supervisor+ roles.
+- The announcements list shows: sender, recipient type, message preview, recipient count, date.
+- The announcement detail shows: full message, sender, recipient type, sent date, and per-recipient read status.
+
+### REQ-016 — Pre-Registrations
+- Authorized roles (admin/manager/supervisor) must be able to view and process incoming pre-registration records.
+- A nav item with a ClipboardCheck icon must appear in the navigation for supervisor+ roles, showing a pending count badge.
+- The list must support filtering by status (pending/approved/rejected/expired).
+- Pending records can be edited before approval.
+- Approved records create a student via the standard enrollment flow.
+- Rejected records require a rejection reason.
+- Expired records can be reactivated by admin/manager/supervisor.
 
 ---
 
@@ -83,20 +115,17 @@ Sunbites POS Mobile is a React Native / Expo mobile companion to the existing Su
 - Export to Excel
 - Thermal / Bluetooth receipt printing
 - Offline mode / local queue
-- Parent portal screens
+- Parent portal screens (handled by `~/sunbites-portal`)
 - Biometric login
-- Push notifications
-- System Settings screen
-- Feedback collection module
 
 ---
 
-## Open Questions
+## Resolved Open Questions
 
-| # | Question | Impact |
+| # | Question | Resolution |
 |---|---|---|
-| OQ-1 | Should the POS show a split-pane (menu + cart) on tablet/iPad matching the web two-column layout? | Layout spec for POS screen |
-| OQ-2 | For v1 receipts — display on-screen only, share as PDF, or print via Bluetooth thermal? | Scope of receipt feature |
-| OQ-3 | Should users be able to switch branches mid-session without a full logout? | Auth flow complexity |
-| OQ-4 | ~~What are the confirmed app icon and splash screen assets?~~ **Deferred — use Expo placeholder assets until production build.** | Asset delivery |
-| OQ-5 | Are iOS 16+ and Android 10+ the correct minimum OS targets? | EAS build config |
+| OQ-1 | Split-pane on tablet? | ✅ Yes — 60/40 split, tablet width ≥ 768px |
+| OQ-2 | Receipt format? | ✅ On-screen only + `Share.share()` text; no printer in v1 |
+| OQ-3 | In-app branch switch? | ✅ Yes — via `?mode=switch` param on branch screen |
+| OQ-4 | App icon/splash assets? | Deferred — use Expo placeholder assets until first production build |
+| OQ-5 | Min OS targets? | ✅ iOS 16+ and Android 10 (API 29) |

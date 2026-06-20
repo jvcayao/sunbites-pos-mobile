@@ -1,21 +1,26 @@
-import { StyleSheet } from 'react-native'
-import { Pressable, Text } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { palette } from '@/theme'
+import { StyleSheet, Pressable, Text } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { palette } from "@/theme";
 
-type AlertVariant = 'stock' | 'credit'
+type AlertVariant = "stock" | "credit";
 
 interface AlertRowProps {
-  label: string
-  value: string
-  sub?: string
-  variant: AlertVariant
-  onPress?: () => void
+  label: string;
+  value: string;
+  sub?: string;
+  variant: AlertVariant;
+  onPress?: () => void;
 }
 
-export function AlertRow({ label, value, sub, variant, onPress }: AlertRowProps) {
-  const iconColor = variant === 'credit' ? palette.red500 : palette.yellow500
-  const icon = variant === 'credit' ? 'alert-circle' : 'package-variant-remove'
+export function AlertRow({
+  label,
+  value,
+  sub,
+  variant,
+  onPress,
+}: AlertRowProps) {
+  const iconColor = variant === "credit" ? palette.red500 : palette.yellow500;
+  const icon = variant === "credit" ? "alert-circle" : "package-variant-remove";
 
   return (
     <Pressable
@@ -34,17 +39,17 @@ export function AlertRow({ label, value, sub, variant, onPress }: AlertRowProps)
       />
       <Text style={styles.label}>{label}</Text>
       {sub !== undefined && <Text style={styles.sub}>{sub}</Text>}
-      <Text style={[styles.value, variant === 'credit' && styles.creditValue]}>
+      <Text style={[styles.value, variant === "credit" && styles.creditValue]}>
         {value}
       </Text>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 48,
@@ -65,10 +70,10 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: palette.yellow500,
   },
   creditValue: {
     color: palette.red500,
   },
-})
+});

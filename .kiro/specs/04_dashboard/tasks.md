@@ -37,7 +37,7 @@
 ### 4. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] All 6 KPI cards render with correct values — verify on staging
-- [ ] Staff status updates without full page reload — verify on staging
-- [ ] Low stock / credit rows navigate to correct screens — verify on device
-- [ ] Auto-refresh fires every 60 seconds — verify on staging
+- [x] All 6 KPI cards render with correct values — verify on staging
+- [x] Staff status updates without full page reload — verify on staging
+- [x] Low stock / credit rows navigate to correct screens — verify on device
+- [x] Auto-refresh fires every 60 seconds — verify on staging

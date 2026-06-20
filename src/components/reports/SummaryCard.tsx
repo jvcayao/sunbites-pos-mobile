@@ -1,22 +1,35 @@
-import { StyleSheet, View } from 'react-native'
-import { Surface, Text } from 'react-native-paper'
-import { palette } from '@/theme'
+import { StyleSheet } from "react-native";
+import { Surface, Text } from "react-native-paper";
+import { palette } from "@/theme";
 
 interface SummaryCardProps {
-  label: string
-  value: string | number
-  sub?: string
-  accent?: string
+  label: string;
+  value: string | number;
+  sub?: string;
+  accent?: string;
 }
 
-export function SummaryCard({ label, value, sub, accent = palette.orange500 }: SummaryCardProps) {
+export function SummaryCard({
+  label,
+  value,
+  sub,
+  accent = palette.orange500,
+}: SummaryCardProps) {
   return (
     <Surface style={[styles.card, { borderTopColor: accent }]} elevation={1}>
-      <Text variant="labelSmall" style={styles.label}>{label}</Text>
-      <Text variant="titleLarge" style={styles.value}>{value}</Text>
-      {sub !== undefined && <Text variant="bodySmall" style={styles.sub}>{sub}</Text>}
+      <Text variant="labelSmall" style={styles.label}>
+        {label}
+      </Text>
+      <Text variant="titleLarge" style={styles.value}>
+        {value}
+      </Text>
+      {sub !== undefined && (
+        <Text variant="bodySmall" style={styles.sub}>
+          {sub}
+        </Text>
+      )}
     </Surface>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -29,9 +42,9 @@ const styles = StyleSheet.create({
   },
   label: {
     color: palette.zinc500,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginBottom: 4,
   },
-  value: { color: palette.zinc950, fontWeight: '700' },
+  value: { color: palette.zinc950, fontWeight: "700" },
   sub: { color: palette.zinc500, marginTop: 2 },
-})
+});

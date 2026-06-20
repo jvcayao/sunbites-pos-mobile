@@ -34,7 +34,19 @@
 ### 5. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] PH phone validation — verify in app
-- [ ] Age validation — verify in app
-- [ ] Subscription fields conditional — verify in app
-- [ ] Success QR displays — verify on staging
+- [x] PH phone validation — verify in app
+- [x] Age validation — verify in app
+- [x] Subscription fields conditional — verify in app
+- [x] Success QR displays — verify on staging
+
+### 6. Form Input Corrections (from design system — spec 15 REQ-DS-008)
+
+- [x] **ENR-6.1** Replace grade level `FilterChipRow` in `app/(app)/enrollment/index.tsx:172–176` with a `SelectInput` bottom sheet — options: Nursery, Kinder 1, Kinder 2, Grade 1–Grade 12 (same values as `GRADE_LEVELS` constant)
+
+- [x] **ENR-6.2** Replace relationship `FilterChipRow` in `src/components/enrollment/ContactForm.tsx:65–78` with a `SelectInput` bottom sheet — options: Mother, Father, Guardian, Other (same values as `RELATIONSHIPS` constant)
+
+- [x] **ENR-6.3** Replace birthday `TextInput` (label `"Birthday * (YYYY-MM-DD)"`) in `app/(app)/enrollment/index.tsx:188` with a `DatePickerInput` — display as `MMM DD, YYYY`, submit as `YYYY-MM-DD`; retain existing Zod age validation (2–20 years)
+
+- [x] **ENR-6.4** Run `npm run typecheck && npm run lint` — 0 errors (tsc exit 0; lint 0 errors, 3 warnings only) ✅ 2026-06-20
+
+- [ ] **ENR-6.5** Manual verify: grade level shows bottom sheet select, relationship shows bottom sheet select, birthday opens date picker, form submits and validates correctly
