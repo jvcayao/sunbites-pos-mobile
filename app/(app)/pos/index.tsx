@@ -3,7 +3,6 @@ import {
   FlatList,
   Modal,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native'
@@ -13,10 +12,7 @@ import {
   SegmentedButtons,
   Text,
 } from 'react-native-paper'
-import { router } from 'expo-router'
-import { useAuthStore } from '@/store/auth'
 import { useCartStore } from '@/store/cart'
-import { performLogout } from '@/lib/logout'
 import { usePermission } from '@/lib/permissions'
 import { useLayout } from '@/hooks/useLayout'
 import { useCheckout, usePosTransactions, useVoidOrder } from '@/hooks/usePos'
@@ -45,8 +41,6 @@ import type { DateRange } from '@/components/shared/DatePresetPicker'
 type PosTab = 'pos' | 'transactions' | 'menu_mgmt' | 'inventory'
 
 export default function PosScreen() {
-  const user         = useAuthStore((s) => s.user)
-  const activeBranch = useAuthStore((s) => s.activeBranch)
   const { isTablet, isLandscape } = useLayout()
   const toast = useToast()
 
@@ -81,12 +75,6 @@ export default function PosScreen() {
   const { mutate: checkout, isPending: isCheckingOut } = useCheckout()
   const { mutate: voidOrder, isPending: isVoiding } = useVoidOrder()
 
-  const handleLogout = (): Promise<void> => performLogout()
-
-  const handleSwitchBranch = (): void => {
-    router.push('/(auth)/branch?mode=switch')
-  }
-
   const handleAddToCart = useCallback((item: PosMenuItem) => {
     addItem(item)
   }, [addItem])
@@ -115,7 +103,8 @@ export default function PosScreen() {
     }))
     checkout(payload, {
       onSuccess: (res) => {
-        setCompletedOrder({ ...res.data, items: res.data.items ?? receiptItems })
+        const order = res.data.order
+        setCompletedOrder({ ...order, payment_method: order.payment_method ?? payload.payment_method, items: order.items?.length ? order.items : receiptItems })
         clearCart()
       },
       onError: (err) => toast.error(getApiError(err)),
@@ -160,26 +149,7 @@ export default function PosScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader
-        title="Point of Sale"
-        subtitle={activeBranch?.name}
-        right={
-          <>
-            <Appbar.Action
-              icon="swap-horizontal"
-              onPress={handleSwitchBranch}
-              accessibilityLabel="Switch branch"
-              accessibilityRole="button"
-            />
-            <Appbar.Action
-              icon="logout"
-              onPress={handleLogout}
-              accessibilityLabel="Sign out"
-              accessibilityRole="button"
-            />
-          </>
-        }
-      />
+      <AppHeader title="Point of Sale" />
 
       <SegmentedButtons
         value={tab}

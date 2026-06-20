@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { FlatList, Pressable, StyleSheet, View } from 'react-native'
-import { ActivityIndicator, Appbar, Checkbox, Text } from 'react-native-paper'
+import { ActivityIndicator, Checkbox, Text } from 'react-native-paper'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { router, useFocusEffect } from 'expo-router'
 import { useEligibleParents, useSendReminders, useReminderBellCount } from '@/hooks/useReminders'
 import { usePermission } from '@/lib/permissions'
@@ -109,22 +110,24 @@ export default function RemindersScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Payment Reminders" />
-        <Pressable
-          testID="select-all-btn"
-          onPress={handleSelectAll}
-          style={styles.selectAllBtn}
-          accessibilityRole="checkbox"
-          accessibilityLabel="Select all unsent"
-          accessibilityState={{ checked: allUnsentSelected }}
-        >
-          <Checkbox.Android status={allUnsentSelected ? 'checked' : 'unchecked'} />
-          <Text variant="labelSmall" style={styles.selectAllText}>
-            Select All Unsent
-          </Text>
-        </Pressable>
-      </Appbar.Header>
+      <AppHeader
+        title="Payment Reminders"
+        right={
+          <Pressable
+            testID="select-all-btn"
+            onPress={handleSelectAll}
+            style={styles.selectAllBtn}
+            accessibilityRole="checkbox"
+            accessibilityLabel="Select all unsent"
+            accessibilityState={{ checked: allUnsentSelected }}
+          >
+            <Checkbox.Android status={allUnsentSelected ? 'checked' : 'unchecked'} />
+            <Text variant="labelSmall" style={styles.selectAllText}>
+              Select All Unsent
+            </Text>
+          </Pressable>
+        }
+      />
 
       <FlatList
         data={parents}
@@ -174,7 +177,6 @@ export default function RemindersScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.white },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  appbar: { backgroundColor: palette.white, elevation: 0 },
   selectAllBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
   selectAllText: { color: palette.zinc900 },
   list: { flexGrow: 1 },

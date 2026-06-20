@@ -130,6 +130,15 @@ export default function AppLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: 'More',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="menu" size={size} color={color as string} />
+          ),
+        }}
+      />
       {/* Hidden from tab bar — sub-routes navigated to from their parent tab */}
       <Tabs.Screen name="reminders/[id]" options={{ href: null }} />
       <Tabs.Screen name="announcements/[id]" options={{ href: null }} />

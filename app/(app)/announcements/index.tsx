@@ -1,5 +1,6 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native'
-import { Appbar, FAB } from 'react-native-paper'
+import { FAB } from 'react-native-paper'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { router } from 'expo-router'
 import { useAnnouncementList } from '@/hooks/useAnnouncements'
 import { AnnouncementRow } from '@/components/announcements/AnnouncementRow'
@@ -34,9 +35,7 @@ export default function AnnouncementsScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Announcements" />
-      </Appbar.Header>
+      <AppHeader title="Announcements" />
 
       <FlatList
         data={announcements}
@@ -82,7 +81,7 @@ export default function AnnouncementsScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container:      { flex: 1, backgroundColor: palette.white },
-  appbar:         { backgroundColor: palette.white },
+
   centered:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   separator:      { height: StyleSheet.hairlineWidth, backgroundColor: palette.zinc200 },

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { Appbar, ActivityIndicator, SegmentedButtons } from 'react-native-paper'
+import { ActivityIndicator, SegmentedButtons } from 'react-native-paper'
+import { AppHeader } from '@/components/shared/AppHeader'
 import { router } from 'expo-router'
 import { usePreRegistrationList } from '@/hooks/usePreRegistrations'
 import { PreRegistrationRow } from '@/components/pre-registrations/PreRegistrationRow'
@@ -56,9 +57,7 @@ export default function PreRegistrationsScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Pre-Registrations" />
-      </Appbar.Header>
+      <AppHeader title="Pre-Registrations" />
 
       <SegmentedButtons
         value={status}
@@ -101,7 +100,7 @@ export default function PreRegistrationsScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container:      { flex: 1, backgroundColor: palette.white },
-  appbar:         { backgroundColor: palette.white },
+
   tabs:           { marginHorizontal: 16, marginVertical: 8 },
   centered:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
   separator:      { height: StyleSheet.hairlineWidth, backgroundColor: palette.zinc200 },

@@ -137,3 +137,27 @@ describe('AnnouncementsScreen — FAB', () => {
     expect(router.push).toHaveBeenCalledWith('/(app)/announcements/create')
   })
 })
+
+// --- Smoke tests: AppHeader migration (REQ-MORE-007) ---
+jest.mock('@/hooks/useNotifications', () => ({
+  useNotificationUnreadCount: jest.fn(() => ({ data: { count: 0 } })),
+}))
+
+describe('AnnouncementsScreen — header (REQ-MORE-007)', () => {
+  const mockBranch = { id: 1, name: 'Main Branch', slug: 'main-branch' }
+
+  beforeEach(() => {
+    const { useAuthStore } = require('@/store/auth')
+    useAuthStore.setState({ activeBranch: mockBranch, token: 'tok', user: null })
+    mockUseAnnouncementList.mockReturnValue({
+      data: { pages: [{ data: [], meta: { current_page: 1, last_page: 1 } }] },
+      isLoading: false, isFetchingNextPage: false, fetchNextPage: jest.fn(),
+      hasNextPage: false, refetch: jest.fn(), isRefetching: false,
+    } as any)
+  })
+
+  it('renders BranchPill via AppHeader', () => {
+    render(<AnnouncementsScreen />, { wrapper: Wrapper })
+    expect(screen.getByText('Main Branch')).toBeTruthy()
+  })
+})

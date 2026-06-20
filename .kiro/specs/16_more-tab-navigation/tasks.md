@@ -1,6 +1,6 @@
 # Implementation Plan — 16 More Tab Navigation
 
-- [ ] 1. Create `BranchPill` component
+- [x] 1. Create `BranchPill` component — done: BranchPill.tsx, 5 tests passing
   - Create `src/components/shared/BranchPill.tsx`
   - Read `activeBranch` from `useAuthStore((s) => s.activeBranch)` selector
   - Return `null` when `activeBranch` is null
@@ -16,7 +16,7 @@
     - has correct accessibilityRole and accessibilityLabel
   - _Requirements: REQ-MORE-001_
 
-- [ ] 2. Update `AppHeader` to render `BranchPill`
+- [x] 2. Update `AppHeader` to render `BranchPill` — done: showBranchPill prop added, 4 tests passing
   - Add `showBranchPill?: boolean` prop to `AppHeaderProps` interface (default `true`)
   - Import `BranchPill` from `@/components/shared/BranchPill`
   - Update right slot render order: `{showBranchPill !== false && <BranchPill />}` then `{right}` then `<NotificationBell />`
@@ -27,8 +27,8 @@
     - NotificationBell always renders last in the right slot
   - _Requirements: REQ-MORE-002_
 
-- [ ] 3. Create `MoreScreen`
-  - [ ] 3.1 Create `app/(app)/more/index.tsx`
+- [x] 3. Create `MoreScreen` — done: two-column landscape layout, 9 tests passing
+  - [x] 3.1 Create `app/(app)/more/index.tsx`
     - Read `user` and `activeBranch` from `useAuthStore` selectors
     - Render `<AppHeader title="More" showBranchPill={false} />`
     - Guard: if `user` is null render `<EmptyState message="Session expired" />`
@@ -38,7 +38,7 @@
     - Sign Out row: red text, `log-out` icon, calls `performLogout()` on press
     - Placeholder rows: disabled appearance (`zinc-400` text), `(soon)` label, no onPress handler
     - _Requirements: REQ-MORE-003, REQ-MORE-004, REQ-MORE-005_
-  - [ ] 3.2 Write component tests in `app/(app)/more/__tests__/MoreScreen.test.tsx`
+  - [x] 3.2 Write component tests in `app/(app)/more/__tests__/MoreScreen.test.tsx`
     - renders user initials in avatar circle
     - renders full_name, email, and capitalized role badge
     - renders activeBranch.name in branch row
@@ -47,7 +47,7 @@
     - placeholder items are not pressable (or onPress is undefined)
     - _Requirements: REQ-MORE-004, REQ-MORE-005_
 
-- [ ] 4. Register `more` tab in `_layout.tsx`
+- [x] 4. Register `more` tab in `_layout.tsx` — done: menu icon tab added as last visible tab
   - Open `app/(app)/_layout.tsx`
   - Add `<Tabs.Screen name="more" options={{ title: 'More', tabBarIcon: ... }} />` as the last `<Tabs.Screen>` before `{/* Hidden */}` entries
   - Icon: `MaterialCommunityIcons` name `"menu"`
@@ -55,7 +55,7 @@
   - Verify app renders without TypeScript errors (`npm run typecheck`)
   - _Requirements: REQ-MORE-003_
 
-- [ ] 5. Clean up POS screen header
+- [x] 5. Clean up POS screen header — done: removed logout/branch controls, unused vars cleaned up
   - Open `app/(app)/pos/index.tsx`
   - Remove `handleLogout` function
   - Remove `handleSwitchBranch` function
@@ -65,8 +65,8 @@
   - Run `npm run typecheck` and `npm run lint` to confirm no regressions
   - _Requirements: REQ-MORE-006_
 
-- [ ] 6. Migrate remaining top-level screens from `Appbar.Header` to `AppHeader`
-  - [ ] 6.1 Migrate `app/(app)/reminders/index.tsx`
+- [x] 6. Migrate remaining top-level screens from `Appbar.Header` to `AppHeader` — done: all 3 screens migrated, 19 smoke tests passing
+  - [x] 6.1 Migrate `app/(app)/reminders/index.tsx`
     - Replace `<Appbar.Header>` + `<Appbar.Content title="Payment Reminders" />` with `<AppHeader title="Payment Reminders" right={...} />`
     - Move the existing "Select All Unsent" `<Pressable>` (Checkbox + Text) into the `right` prop of `<AppHeader>` — no logic changes
     - Remove the `Appbar` import from `react-native-paper` (keep other imports: `Checkbox`, `Text`, etc.)
@@ -74,14 +74,14 @@
     - Add `AppHeader` import from `@/components/shared/AppHeader`
     - Write smoke test: renders Sunbites logo area; renders "Select All Unsent" control; renders `BranchPill`
     - _Requirements: REQ-MORE-007_
-  - [ ] 6.2 Migrate `app/(app)/announcements/index.tsx`
+  - [x] 6.2 Migrate `app/(app)/announcements/index.tsx`
     - Replace `<Appbar.Header style={styles.appbar}><Appbar.Content title="Announcements" /></Appbar.Header>` with `<AppHeader title="Announcements" />`
     - Remove `Appbar` import from `react-native-paper`
     - Remove `styles.appbar` style definition
     - Add `AppHeader` import from `@/components/shared/AppHeader`
     - Write smoke test: renders title "Announcements"; renders `BranchPill`
     - _Requirements: REQ-MORE-007_
-  - [ ] 6.3 Migrate `app/(app)/pre-registrations/index.tsx`
+  - [x] 6.3 Migrate `app/(app)/pre-registrations/index.tsx`
     - Replace `<Appbar.Header style={styles.appbar}><Appbar.Content title="Pre-Registrations" /></Appbar.Header>` with `<AppHeader title="Pre-Registrations" />`
     - Remove `Appbar` import from `react-native-paper`
     - Remove `styles.appbar` style definition

@@ -188,3 +188,28 @@ describe('RemindersScreen — send action', () => {
     expect(screen.queryByTestId('send-reminders-btn')).toBeNull()
   })
 })
+
+// --- Smoke tests: AppHeader migration (REQ-MORE-007) ---
+jest.mock('@/hooks/useNotifications', () => ({
+  useNotificationUnreadCount: jest.fn(() => ({ data: { count: 0 } })),
+}))
+
+describe('RemindersScreen — header (REQ-MORE-007)', () => {
+  const mockBranch = { id: 1, name: 'Main Branch', slug: 'main-branch' }
+
+  beforeEach(() => {
+    const { useAuthStore } = require('@/store/auth')
+    useAuthStore.setState({ activeBranch: mockBranch, token: 'tok', user: null })
+    setupMocks({})
+  })
+
+  it('renders BranchPill via AppHeader', () => {
+    renderScreen()
+    expect(screen.getByText('Main Branch')).toBeTruthy()
+  })
+
+  it('preserves the Select All Unsent control in AppHeader right slot', () => {
+    renderScreen()
+    expect(screen.getByTestId('select-all-btn')).toBeTruthy()
+  })
+})
