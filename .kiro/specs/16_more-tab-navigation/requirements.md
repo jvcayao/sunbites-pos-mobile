@@ -2,7 +2,7 @@
 
 ## Overview
 
-Add a "More" bottom tab with a hamburger icon that opens a full-screen user profile + logout page. Remove the logout button from all screen headers. Replace the branch switcher icon in the POS header with a universal tappable branch pill that appears on every top-level screen header.
+Add a "More" bottom tab with a hamburger icon that opens a full-screen user profile + logout page. Remove the logout button from all screen headers. Add a universal tappable branch pill and Sunbites logo to every top-level screen header. Three screens (Reminders, Announcements, Pre-Registrations) currently use raw `<Appbar.Header>` instead of the shared `<AppHeader>` component — they must be migrated so all nine top-level screens display an identical header.
 
 **Depends on:** Spec 01 (AppHeader, shared components), Spec 10 (auth store, performLogout), Spec 08 (branch switcher route `/(auth)/branch?mode=switch`)
 
@@ -82,6 +82,20 @@ Add a "More" bottom tab with a hamburger icon that opens a full-screen user prof
 1. WHEN the POS screen renders THEN the header SHALL NOT contain a logout action button.
 2. WHEN the POS screen renders THEN the header SHALL NOT contain a swap-branch action button.
 3. WHEN the POS screen renders THEN the branch pill from `AppHeader` SHALL be the only branch-switching affordance.
+
+---
+
+## REQ-MORE-007 — Uniform Header Across All Top-Level Screens
+
+**User Story:** As a staff member, I want every top-level screen to show the same header — logo, screen title, branch pill, and notification bell — so that the UI feels consistent no matter which tab I'm on.
+
+### Acceptance Criteria
+
+1. WHEN the Reminders screen renders THEN it SHALL use `<AppHeader>` displaying the Sunbites logo, title, `BranchPill`, and `NotificationBell`.
+2. WHEN the Announcements screen renders THEN it SHALL use `<AppHeader>` displaying the Sunbites logo, title, `BranchPill`, and `NotificationBell`.
+3. WHEN the Pre-Registrations screen renders THEN it SHALL use `<AppHeader>` displaying the Sunbites logo, title, `BranchPill`, and `NotificationBell`.
+4. IF a screen previously had custom right-side controls in its `<Appbar.Header>` (e.g. the Reminders "Select All Unsent" checkbox) THEN those controls SHALL be preserved by passing them as the `right` prop to `<AppHeader>`.
+5. WHEN any of the nine top-level screens (Dashboard, POS, Enrollment, Students, Reports, Reminders, Pre-Registrations, Announcements, References) renders THEN all SHALL display an identical header structure: logo + title + BranchPill + [optional custom right] + NotificationBell.
 
 ---
 

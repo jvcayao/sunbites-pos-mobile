@@ -2,7 +2,7 @@
 
 ## Overview
 
-Five targeted file changes. No new providers, no new contexts, no new routes beyond the `more` tab. The branch pill is a self-contained component added to `AppHeader`; the `MoreScreen` is a standard tab screen that reads from existing Zustand selectors.
+Eight targeted file changes. No new providers, no new contexts, no new routes beyond the `more` tab. The branch pill is a self-contained component added to `AppHeader`; the `MoreScreen` is a standard tab screen that reads from existing Zustand selectors. Three screens that use raw `<Appbar.Header>` (Reminders, Announcements, Pre-Registrations) are migrated to `<AppHeader>` so all nine top-level screens have an identical header.
 
 ---
 
@@ -20,6 +20,9 @@ graph TD
     G -->|push| I[/(auth)/branch?mode=switch]
 
     J[app/(app)/pos/index.tsx] -->|removes right prop| F
+    K[app/(app)/reminders/index.tsx] -->|migrates to| F
+    L[app/(app)/announcements/index.tsx] -->|migrates to| F
+    M[app/(app)/pre-registrations/index.tsx] -->|migrates to| F
 ```
 
 ---
@@ -165,6 +168,72 @@ No `href` guard — always visible.
 
 ---
 
+### Screen header migrations
+
+Three top-level screens use raw `<Appbar.Header>` and must be migrated to `<AppHeader>`.
+
+#### Reminders (`app/(app)/reminders/index.tsx`)
+
+**Before:**
+```tsx
+<Appbar.Header style={styles.appbar}>
+  <Appbar.Content title="Payment Reminders" />
+  <Pressable ...>
+    <Checkbox.Android ... />
+    <Text>Select All Unsent</Text>
+  </Pressable>
+</Appbar.Header>
+```
+
+**After:**
+```tsx
+<AppHeader
+  title="Payment Reminders"
+  right={
+    <Pressable ...>
+      <Checkbox.Android ... />
+      <Text>Select All Unsent</Text>
+    </Pressable>
+  }
+/>
+```
+
+The `styles.appbar` definition and `Appbar` import are removed. The "Select All Unsent" control moves intact into `right` — no logic changes.
+
+#### Announcements (`app/(app)/announcements/index.tsx`)
+
+**Before:**
+```tsx
+<Appbar.Header style={styles.appbar}>
+  <Appbar.Content title="Announcements" />
+</Appbar.Header>
+```
+
+**After:**
+```tsx
+<AppHeader title="Announcements" />
+```
+
+Remove `Appbar` import and `styles.appbar`.
+
+#### Pre-Registrations (`app/(app)/pre-registrations/index.tsx`)
+
+**Before:**
+```tsx
+<Appbar.Header style={styles.appbar}>
+  <Appbar.Content title="Pre-Registrations" />
+</Appbar.Header>
+```
+
+**After:**
+```tsx
+<AppHeader title="Pre-Registrations" />
+```
+
+Remove `Appbar` import and `styles.appbar`.
+
+---
+
 ## Integration Points
 
 **Depends on:**
@@ -174,6 +243,9 @@ No `href` guard — always visible.
 - `src/components/shared/AppHeader.tsx` — extended, not replaced
 - `src/components/shared/EmptyState.tsx` — used as null-user guard in MoreScreen
 - `src/lib/permissions.ts` — no change; More tab has no permission guard
+- `app/(app)/reminders/index.tsx` — migrated from `Appbar.Header` to `AppHeader`
+- `app/(app)/announcements/index.tsx` — migrated from `Appbar.Header` to `AppHeader`
+- `app/(app)/pre-registrations/index.tsx` — migrated from `Appbar.Header` to `AppHeader`
 
 **Exposes:**
 - `BranchPill` — used only by `AppHeader`
@@ -211,6 +283,7 @@ No new data models. All data read from existing Zustand auth store (`AuthUser`, 
 - **BranchPill unit tests:** renders null when no branch; renders branch name; truncates long names; calls router.push on press; correct accessibility props.
 - **AppHeader unit tests:** renders BranchPill by default; hides BranchPill when `showBranchPill={false}`; renders custom `right` alongside BranchPill.
 - **MoreScreen component tests:** renders user initials, full name, email, role badge, branch; Sign Out calls performLogout; placeholder items are disabled; null-user guard shows EmptyState.
+- **Migrated screen smoke tests:** Reminders, Announcements, and Pre-Registrations screens each render the Sunbites logo and BranchPill after migration; Reminders "Select All Unsent" control still renders.
 
 ---
 
@@ -223,3 +296,6 @@ No new data models. All data read from existing Zustand auth store (`AuthUser`, 
 | `app/(app)/more/index.tsx` | **New** |
 | `app/(app)/_layout.tsx` | Add `more` tab |
 | `app/(app)/pos/index.tsx` | Remove logout + switch-branch from header |
+| `app/(app)/reminders/index.tsx` | Migrate `Appbar.Header` → `AppHeader`; preserve "Select All Unsent" as `right` prop |
+| `app/(app)/announcements/index.tsx` | Migrate `Appbar.Header` → `AppHeader` |
+| `app/(app)/pre-registrations/index.tsx` | Migrate `Appbar.Header` → `AppHeader` |

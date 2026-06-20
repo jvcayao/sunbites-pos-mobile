@@ -64,3 +64,28 @@
   - Confirm `activeBranch` selector is retained (still used elsewhere in the screen)
   - Run `npm run typecheck` and `npm run lint` to confirm no regressions
   - _Requirements: REQ-MORE-006_
+
+- [ ] 6. Migrate remaining top-level screens from `Appbar.Header` to `AppHeader`
+  - [ ] 6.1 Migrate `app/(app)/reminders/index.tsx`
+    - Replace `<Appbar.Header>` + `<Appbar.Content title="Payment Reminders" />` with `<AppHeader title="Payment Reminders" right={...} />`
+    - Move the existing "Select All Unsent" `<Pressable>` (Checkbox + Text) into the `right` prop of `<AppHeader>` — no logic changes
+    - Remove the `Appbar` import from `react-native-paper` (keep other imports: `Checkbox`, `Text`, etc.)
+    - Remove `styles.appbar` style definition
+    - Add `AppHeader` import from `@/components/shared/AppHeader`
+    - Write smoke test: renders Sunbites logo area; renders "Select All Unsent" control; renders `BranchPill`
+    - _Requirements: REQ-MORE-007_
+  - [ ] 6.2 Migrate `app/(app)/announcements/index.tsx`
+    - Replace `<Appbar.Header style={styles.appbar}><Appbar.Content title="Announcements" /></Appbar.Header>` with `<AppHeader title="Announcements" />`
+    - Remove `Appbar` import from `react-native-paper`
+    - Remove `styles.appbar` style definition
+    - Add `AppHeader` import from `@/components/shared/AppHeader`
+    - Write smoke test: renders title "Announcements"; renders `BranchPill`
+    - _Requirements: REQ-MORE-007_
+  - [ ] 6.3 Migrate `app/(app)/pre-registrations/index.tsx`
+    - Replace `<Appbar.Header style={styles.appbar}><Appbar.Content title="Pre-Registrations" /></Appbar.Header>` with `<AppHeader title="Pre-Registrations" />`
+    - Remove `Appbar` import from `react-native-paper`
+    - Remove `styles.appbar` style definition
+    - Add `AppHeader` import from `@/components/shared/AppHeader`
+    - Write smoke test: renders title "Pre-Registrations"; renders `BranchPill`
+    - Run `npm run typecheck` and `npm run lint` across all three files
+    - _Requirements: REQ-MORE-007_
