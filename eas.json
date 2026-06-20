@@ -20,7 +20,7 @@
         "EXPO_PUBLIC_API_URL": "https://api-staging.sunbites.com.ph/api/v1",
         "EXPO_PUBLIC_REVERB_APP_KEY": "d4LV2tZWoGJ49xEQAzSV",
         "EXPO_PUBLIC_REVERB_HOST": "ws-a204c209-78c0-4c3b-a1b6-0eafd2cfe69c-reverb.laravel.cloud",
-        "EXPO_PUBLIC_REVERB_PORT": 443,
+        "EXPO_PUBLIC_REVERB_PORT": "443",
         "EXPO_PUBLIC_REVERB_SCHEME": "https"
       }
     },
