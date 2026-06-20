@@ -1,58 +1,57 @@
-import { useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native'
-import { Appbar, Surface, Text } from 'react-native-paper'
-import { router } from 'expo-router'
-import { formatDistanceToNow } from 'date-fns'
-import { useDashboard, useUpdateStaffStatus } from '@/hooks/useDashboard'
-import { formatCurrency } from '@/lib/formatters'
-import { useLayout } from '@/hooks/useLayout'
-import { KpiCard } from '@/components/dashboard/KpiCard'
-import { SectionHeader } from '@/components/dashboard/SectionHeader'
-import { OrderRow } from '@/components/dashboard/OrderRow'
-import { StaffRow } from '@/components/dashboard/StaffRow'
-import { StaffStatusPicker } from '@/components/dashboard/StaffStatusPicker'
-import { TopItemRow } from '@/components/dashboard/TopItemRow'
-import { AlertRow } from '@/components/dashboard/AlertRow'
-import { SkeletonKpi } from '@/components/shared/SkeletonKpi'
-import { SkeletonCard } from '@/components/shared/SkeletonCard'
-import { EmptyState } from '@/components/shared/EmptyState'
-import { palette } from '@/theme'
-import type { StaffMember, StaffStatus } from '@/types/dashboard'
+import { useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Surface } from "react-native-paper";
+import { router } from "expo-router";
+import { formatDistanceToNow } from "date-fns";
+import { useDashboard, useUpdateStaffStatus } from "@/hooks/useDashboard";
+import { formatCurrency } from "@/lib/formatters";
+import { useLayout } from "@/hooks/useLayout";
+import { KpiCard } from "@/components/dashboard/KpiCard";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
+import { OrderRow } from "@/components/dashboard/OrderRow";
+import { StaffRow } from "@/components/dashboard/StaffRow";
+import { StaffStatusPicker } from "@/components/dashboard/StaffStatusPicker";
+import { TopItemRow } from "@/components/dashboard/TopItemRow";
+import { AlertRow } from "@/components/dashboard/AlertRow";
+import { SkeletonKpi } from "@/components/shared/SkeletonKpi";
+import { SkeletonCard } from "@/components/shared/SkeletonCard";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { AppHeader } from "@/components/shared/AppHeader";
+import { palette } from "@/theme";
+import type { StaffMember, StaffStatus } from "@/types/dashboard";
 
 export default function DashboardScreen() {
-  const { data, isLoading, refetch, isRefetching, dataUpdatedAt } = useDashboard()
-  const { mutate: updateStatus, isPending: updatingStatus } = useUpdateStaffStatus()
-  const { isTablet, isLandscape } = useLayout()
-  const [pickerStaff, setPickerStaff] = useState<StaffMember | null>(null)
+  const { data, isLoading, refetch, isRefetching, dataUpdatedAt } =
+    useDashboard();
+  const { mutate: updateStatus, isPending: updatingStatus } =
+    useUpdateStaffStatus();
+  const { isTablet, isLandscape } = useLayout();
+  const [pickerStaff, setPickerStaff] = useState<StaffMember | null>(null);
 
-  const kpiColumns = isTablet || isLandscape ? 3 : 2
+  const kpiColumns = isTablet || isLandscape ? 3 : 2;
   const updatedLabel = dataUpdatedAt
     ? `Updated ${formatDistanceToNow(dataUpdatedAt, { addSuffix: true })}`
-    : ''
+    : "";
 
   const handleStatusSelect = (status: StaffStatus): void => {
-    if (pickerStaff === null) return
-    updateStatus({ userId: pickerStaff.id, status })
-    setPickerStaff(null)
-  }
+    if (pickerStaff === null) return;
+    updateStatus({ userId: pickerStaff.id, status });
+    setPickerStaff(null);
+  };
 
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Appbar.Header style={styles.appbar}>
-          <Appbar.Content title="Dashboard" />
-        </Appbar.Header>
+        <AppHeader title="Dashboard" />
         <SkeletonKpi count={6} columns={kpiColumns} />
         <SkeletonCard count={4} />
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Dashboard" subtitle={updatedLabel} />
-      </Appbar.Header>
+      <AppHeader title="Dashboard" subtitle={updatedLabel} />
 
       <ScrollView
         refreshControl={
@@ -67,22 +66,60 @@ export default function DashboardScreen() {
         {/* KPI Cards */}
         <View style={[styles.kpiGrid, { gap: 12 }]}>
           {[
-            { label: 'Total Students', value: data?.total_students ?? 0, icon: 'account-group' as const },
-            { label: 'Enrolled', value: data?.enrolled_count ?? 0, icon: 'account-check' as const, iconColor: palette.green500 },
-            { label: 'Meals Today', value: data?.meals_today ?? 0, icon: 'food' as const },
-            { label: 'Revenue Today', value: formatCurrency(data?.revenue_today ?? 0), icon: 'cash' as const, iconColor: palette.green500 },
-            { label: 'Walk-in Orders', value: data?.walkin_orders ?? 0, icon: 'walk' as const, iconColor: palette.blue500 },
-            { label: 'Wallet Orders', value: data?.wallet_orders ?? 0, icon: 'wallet' as const, iconColor: '#A855F7' },
-          ].reduce<React.ReactNode[][]>((rows, card, i) => {
-            const rowIdx = Math.floor(i / kpiColumns)
-            if (rows[rowIdx] === undefined) rows[rowIdx] = []
-            rows[rowIdx].push(
-              <KpiCard key={card.label} label={card.label} value={card.value} icon={card.icon} iconColor={card.iconColor} />,
-            )
-            return rows
-          }, []).map((row, i) => (
-            <View key={i} style={styles.kpiRow}>{row}</View>
-          ))}
+            {
+              label: "Total Students",
+              value: data?.total_students ?? 0,
+              icon: "account-group" as const,
+            },
+            {
+              label: "Enrolled",
+              value: data?.enrolled_count ?? 0,
+              icon: "account-check" as const,
+              iconColor: palette.green500,
+            },
+            {
+              label: "Meals Today",
+              value: data?.meals_today ?? 0,
+              icon: "food" as const,
+            },
+            {
+              label: "Revenue Today",
+              value: formatCurrency(data?.revenue_today ?? 0),
+              icon: "cash" as const,
+              iconColor: palette.green500,
+            },
+            {
+              label: "Walk-in Orders",
+              value: data?.walkin_orders ?? 0,
+              icon: "walk" as const,
+              iconColor: palette.blue500,
+            },
+            {
+              label: "Wallet Orders",
+              value: data?.wallet_orders ?? 0,
+              icon: "wallet" as const,
+              iconColor: "#A855F7",
+            },
+          ]
+            .reduce<React.ReactNode[][]>((rows, card, i) => {
+              const rowIdx = Math.floor(i / kpiColumns);
+              if (rows[rowIdx] === undefined) rows[rowIdx] = [];
+              rows[rowIdx].push(
+                <KpiCard
+                  key={card.label}
+                  label={card.label}
+                  value={card.value}
+                  icon={card.icon}
+                  iconColor={card.iconColor}
+                />,
+              );
+              return rows;
+            }, [])
+            .map((row, i) => (
+              <View key={i} style={styles.kpiRow}>
+                {row}
+              </View>
+            ))}
         </View>
 
         {/* Recent Orders */}
@@ -101,7 +138,10 @@ export default function DashboardScreen() {
         <Surface style={styles.section} elevation={1}>
           <SectionHeader title="Staff Roster" />
           {(data?.staff_roster.length ?? 0) === 0 ? (
-            <EmptyState icon="account-group-outline" title="No staff on roster" />
+            <EmptyState
+              icon="account-group-outline"
+              title="No staff on roster"
+            />
           ) : (
             data?.staff_roster.map((staff) => (
               <StaffRow
@@ -136,7 +176,7 @@ export default function DashboardScreen() {
                 value={`${item.quantity} left`}
                 sub={item.status}
                 variant="stock"
-                onPress={() => router.push('/(app)/references/inventory')}
+                onPress={() => router.push("/(app)/references/inventory")}
               />
             ))}
           </Surface>
@@ -173,20 +213,19 @@ export default function DashboardScreen() {
         />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: palette.zinc100 },
-  appbar: { backgroundColor: palette.white },
   kpiGrid: { padding: 16 },
-  kpiRow: { flexDirection: 'row', gap: 12 },
+  kpiRow: { flexDirection: "row", gap: 12 },
   section: {
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     backgroundColor: palette.white,
   },
   bottomPad: { height: 24 },
-})
+});

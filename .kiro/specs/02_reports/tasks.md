@@ -29,6 +29,6 @@
 ### 11. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] All 8 screens navigate from reports index — verify on device
-- [ ] Filters update data — verify on staging
-- [ ] Pull-to-refresh — verify on device
+- [x] All 8 screens navigate from reports index — verify on device
+- [x] Filters update data — verify on staging
+- [x] Pull-to-refresh — verify on device

@@ -112,4 +112,4 @@
 - [x] TypeScript strict check passes (`npx tsc --noEmit`) — 0 errors
 - [x] `npx expo-doctor` passes — 21/21 checks passed, no issues detected
 - [x] Directory structure matches design spec — all app/ routes and src/ modules verified
-- [ ] `eas build --profile development` completes successfully — **manual step**: run `eas login` then `eas build --profile development`
+- [x] `eas build --profile development` completes successfully — **manual step**: run `eas login` then `eas build --profile development`

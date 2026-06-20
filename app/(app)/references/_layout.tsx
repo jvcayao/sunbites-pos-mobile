@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router'
-import { palette } from '@/theme'
+import { Stack } from "expo-router";
+import { palette } from "@/theme";
 
 export default function ReferencesLayout() {
   return (
@@ -7,8 +7,8 @@ export default function ReferencesLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: palette.white },
         headerTintColor: palette.orange500,
-        headerTitleStyle: { color: palette.zinc950, fontWeight: '700' },
+        headerTitleStyle: { color: palette.zinc950, fontWeight: "700" },
       }}
     />
-  )
+  );
 }

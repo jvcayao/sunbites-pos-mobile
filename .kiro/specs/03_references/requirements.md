@@ -17,8 +17,8 @@ Access varies per sub-section (see role column below).
 | Users | admin, manager | admin | admin |
 | Branches | admin | admin | admin |
 | Subscription Config | admin, manager | admin, manager | admin, manager |
-| Parents | admin, manager, supervisor | — (read only) | — |
-| Feedback | admin, manager | — (mark resolved) | admin, manager |
+| Parents | admin, manager, supervisor | — (read only) | admin, manager |
+| Feedback | admin, manager | — (mark read, reply) | admin, manager |
 | System Settings | admin | admin | — |
 
 ---
@@ -27,16 +27,18 @@ Access varies per sub-section (see role column below).
 
 ### Inventory List Tab
 - Display a list of active inventory items with: Name, Unit, Current Qty (color if LOW/OUT), Low Alert threshold, Overstock threshold, Cost/Unit, Status badge, actions.
-- Status badges: OK=green, LOW=yellow, OUT=red, OVER=blue.
-- Add New Item form (bottom sheet): Name*, Unit*, Initial Qty*, Low Alert Qty*, Overstock Qty (optional), Cost/Unit (optional).
-- Edit Item (bottom sheet, same fields minus initial qty, plus current qty display).
+- Status badges: OK=green, LOW=yellow, OUT=red, OVER=orange.
+- **Add New Item inline form** (shown at the **top** of the Inventory tab, above the item list, with a dashed border): Name*, Unit*, Initial Qty* (0 default), Low Alert Qty*, Overstock Qty (optional), Cost/Unit (optional). No FAB — the form is always visible.
+- **Edit Item** (bottom sheet, same fields minus Initial Qty, plus current qty display).
+- **Per-item log history**: each item row has a History action button that opens a modal showing that item's stock movement log (Date/Time, Type, Qty Change, Stock After, Reason, Adjusted By).
 - Delete item: if the item has no log history, delete immediately; if it has logs, offer Archive instead.
 - Unarchive button for archived items (shown in collapsed "Archived" section at bottom).
 
 ### Log History Tab
 - Display cross-item log history: Date/Time, Item Name, Log Type badge, Qty Change (± with color), Qty After, Reason, Adjusted By.
 - Filter by date range (from/to), log type (All, Restock, Waste, Manual, Sale), and item selector.
-- Pull-to-refresh; load-more pagination.
+- Pull-to-refresh; load-more pagination (25 per page).
+- **Row color coding:** green (`bg-green-50`) for Restock (stock added); red (`bg-red-50`) for Sale, Waste, or any deduction; gray (`bg-muted/30`) for Manual adjustments.
 
 ### Validation
 - Name: required, max 100 chars.
@@ -86,6 +88,7 @@ Access varies per sub-section (see role column below).
 - Tabs: Personal Info, Employment, Government IDs, Branches.
 - Edit mode (admin only): same form as Create but pre-filled; password fields optional (leave blank = no change).
 - Admin-only actions: Send Password Reset Email, Deactivate / Reactivate (with confirmation).
+- API: Deactivate → `PATCH /users/{id}/deactivate`; Reactivate → `PATCH /users/{id}/reactivate`.
 
 ---
 
@@ -104,7 +107,7 @@ Access varies per sub-section (see role column below).
 - Each cell shows: Configured Days + Amount, or "Not configured" (gray text).
 - Tap any cell to open an edit bottom sheet: School Days*, Amount Override (optional, shows computed amount = Days × Daily Meal Rate).
 - Year selector at top (2024–2030).
-- Fetch daily meal rate from `GET /references/system-settings` or equivalent.
+- Fetch daily meal rate from `GET /system-configurations` (key: `daily_meal_rate`).
 
 ---
 
@@ -118,21 +121,26 @@ Access varies per sub-section (see role column below).
 
 ### Parent Detail
 - View contact info, associated students (list of student names and grades).
-- **Resend Activation Email** button (admin/manager only).
-- No edit capability (read-only on mobile v1).
+- **Resend Activation Email** button (admin/manager only) — visible only when parent is not yet activated; rate-limited to max 3 per 24 hours.
+- **Send Password Reset Email** button (admin/manager only) — visible only when parent is already activated.
+- **Disable** / **Enable** parent account (admin/manager only).
+- **Delete** (soft-delete) with confirmation (admin/manager only).
 
 ---
 
 ## REQ-REF-007 — Feedback
 
-- Display a list of feedback items: Category badge, Student Name, Preview of message, Submission date, Resolved indicator.
-- Category badges (5): Food Quality, Service, Pricing, Cleanliness, Other — each a distinct color.
+- Display a list of feedback items: Category badge, Student Name, Preview of message, Submission date, Read indicator (dot).
+- Category badges (5): Food Quality, Service, Portion Size, Cleanliness, General — each a distinct color.
+- **Unread only** toggle to filter to unread items.
 - Tap to open full feedback detail in a bottom sheet.
-- Detail sheet: full message, category, student info, date, Resolved toggle.
-- Mark as Resolved toggles the item (admin/manager only).
+- Detail sheet: full message, category, student info, date, rating (if present), existing admin reply, Mark as Read button, reply textarea.
+- Mark as Read sets `is_read = true` (admin/manager only).
+- Reply saves `admin_reply`, sets `replied_at`, sends a reply email to the parent (admin/manager only).
 - Delete feedback with confirmation (admin/manager only).
-- Search by category or student (debounced 300ms).
+- Search by student name (debounced 300ms).
 - Paginated with load-more.
+- **Unread feedback count badge** displayed on the References nav section card for this sub-section.
 
 ---
 
@@ -151,17 +159,27 @@ Access varies per sub-section (see role column below).
 ## REQ-REF-008 — System Settings
 
 - **Admin only**. Non-admins are redirected to the References index.
-- Display a list of all system-wide configuration entries.
+- Display a list of all system-wide configuration entries from `GET /system-configurations`.
 - Per row: Setting label (bold), description (sub-label), current value (formatted), Edit button.
 - **Monetary values** (type = `decimal` or `integer`) displayed with ₱ prefix.
 - **Text values** displayed as-is.
 - Tapping Edit opens an **Edit Config bottom sheet**:
   - Title: "Edit: {label}".
   - Description text (if config has a description).
-  - Input field: `type="number"` for integer/decimal, `type="text"` for text values.
+  - Input field: numeric for integer/decimal, text for text values.
     - Integer: step 1, min 0.
     - Decimal: step 0.01, min 0.
-  - Save Changes button calls `PUT /references/system-settings/{key}`.
-  - Inline "Saved ✓" indicator on success (green text).
-  - Validation: value must be a valid number for numeric types; non-empty for text.
-- Fetches all configs from `GET /references/system-settings` on load.
+  - Save Changes button calls `PUT /system-configurations/{key}`.
+  - Inline "Saved ✓" indicator on success (green text, fades after 2s).
+  - Validation: value must be a valid number ≥ 0 for numeric types; non-empty for text.
+- Negative values must be rejected client-side (and server enforces this too).
+
+### Known Config Keys (seeded)
+
+| Key | Default | Type | Description |
+|---|---|---|---|
+| `daily_meal_rate` | 135 | decimal | Daily meal rate (₱) — used in Subscription Config amount preview |
+| `credit_limit` | 300 | decimal | Maximum credit balance (₱) per student |
+| `loyalty_point_threshold` | 1000 | decimal | Spending threshold (₱) to earn loyalty points |
+| `payment_reminder_days` | 14 | integer | Days before 1st of school month that reminder window opens |
+| `pre_registration_expiry_days` | 30 | integer | Days after submission until a pending pre-registration expires |

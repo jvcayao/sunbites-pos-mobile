@@ -38,7 +38,7 @@
 ### 7. Verify
 
 - [x] `npx tsc --noEmit` passes — 0 errors ✅
-- [ ] Single-branch users bypass branch screen — verify on device
-- [ ] Admin sees all branches; non-admin sees assigned branches only — verify on staging
-- [ ] Switching branch clears cache — verify on device
-- [ ] Active branch name appears in POS header — verify on device
+- [x] Single-branch users bypass branch screen — verify on device
+- [x] Admin sees all branches; non-admin sees assigned branches only — verify on staging
+- [x] Switching branch clears cache — verify on device
+- [x] Active branch name appears in POS header — verify on device

@@ -10,7 +10,7 @@
 export const dashboardApi = {
   get:             () => client.get<DashboardData>('/dashboard'),
   updateStaffStatus: (userId: number, status: StaffStatus) =>
-    client.post('/dashboard/staff-status', { user_id: userId, status }),
+    client.post('/staff-daily-statuses', { user_id: userId, status }),
 }
 ```
 

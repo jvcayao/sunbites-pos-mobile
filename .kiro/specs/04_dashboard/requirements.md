@@ -35,7 +35,7 @@ Visible to: `admin`, `manager`, `supervisor`. Hidden from `cashier` (tab hidden 
 - Per staff row: Full name, Role badge, Status badge (Working / Off / OnLeave / Emergency / OnBreak).
 - Tapping the status badge on a staff row opens a picker to change their status.
 - Status badge colors: Working=green, Off=gray, OnLeave=blue, Emergency=red, OnBreak=yellow.
-- Changing status calls `POST /dashboard/staff-status` with `{ user_id, status }`.
+- Changing status calls `POST /staff-daily-statuses` with `{ user_id, status }`.
 
 ## REQ-DSH-004 — Top Items Widget
 

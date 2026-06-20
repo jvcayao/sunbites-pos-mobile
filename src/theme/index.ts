@@ -1,5 +1,6 @@
-import { MD3LightTheme } from 'react-native-paper'
-import type { MD3Theme } from 'react-native-paper'
+import { MD3LightTheme } from "react-native-paper";
+import type { MD3Theme } from "react-native-paper";
+import { FontFamily } from "./fonts";
 
 /**
  * Color palette — Sunbites brand colors.
@@ -19,68 +20,68 @@ import type { MD3Theme } from 'react-native-paper'
  */
 export const palette = {
   // Brand primary — Sunbites red
-  orange500: '#E7000B',
-  orange100: '#FFE4E4',
-  orange900: '#8B0007',
+  orange500: "#E7000B",
+  orange100: "#FFE4E4",
+  orange900: "#8B0007",
   // Neutral grays
-  zinc950:   '#09090B',
-  zinc900:   '#18181B',
-  zinc500:   '#71717A',
-  zinc200:   '#E4E4E7',
-  zinc100:   '#F4F4F5',
-  zinc50:    '#FAFAFA',
-  white:     '#FFFFFF',
+  zinc950: "#09090B",
+  zinc900: "#18181B",
+  zinc500: "#71717A",
+  zinc200: "#E4E4E7",
+  zinc100: "#F4F4F5",
+  zinc50: "#FAFAFA",
+  white: "#FFFFFF",
   // Semantic
-  red500:    '#EF4444',
-  red50:     '#FEF2F2',
-  green500:  '#22C55E',
-  green100:  '#DCFCE7',
-  yellow500: '#EAB308',
-  yellow100: '#FEF9C3',
-  blue500:   '#3B82F6',
-  blue100:   '#DBEAFE',
-}
+  red500: "#EF4444",
+  red50: "#FEF2F2",
+  green500: "#22C55E",
+  green100: "#DCFCE7",
+  yellow500: "#EAB308",
+  yellow100: "#FEF9C3",
+  blue500: "#3B82F6",
+  blue100: "#DBEAFE",
+};
 
 export const lightTheme: MD3Theme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
     // Primary — Sunbites brand red #E7000B
-    primary:            palette.orange500,
-    onPrimary:          palette.white,
-    primaryContainer:   palette.orange100,
+    primary: palette.orange500,
+    onPrimary: palette.white,
+    primaryContainer: palette.orange100,
     onPrimaryContainer: palette.orange900,
     // Secondary — muted gray
-    secondary:            palette.zinc100,
-    onSecondary:          palette.zinc900,
-    secondaryContainer:   palette.zinc100,
+    secondary: palette.zinc100,
+    onSecondary: palette.zinc900,
+    secondaryContainer: palette.zinc100,
     onSecondaryContainer: palette.zinc900,
     // Surface & background
-    background:         palette.white,
-    onBackground:       palette.zinc950,
-    surface:            palette.white,
-    onSurface:          palette.zinc950,
-    surfaceVariant:     palette.zinc100,
-    onSurfaceVariant:   palette.zinc500,
+    background: palette.white,
+    onBackground: palette.zinc950,
+    surface: palette.white,
+    onSurface: palette.zinc950,
+    surfaceVariant: palette.zinc100,
+    onSurfaceVariant: palette.zinc500,
     // Outline
-    outline:            palette.zinc200,
-    outlineVariant:     palette.zinc200,
+    outline: palette.zinc200,
+    outlineVariant: palette.zinc200,
     // Error
-    error:              palette.red500,
-    onError:            palette.white,
-    errorContainer:     palette.red50,
-    onErrorContainer:   '#7F1D1D',
+    error: palette.red500,
+    onError: palette.white,
+    errorContainer: palette.red50,
+    onErrorContainer: "#7F1D1D",
     // Inverse
-    inverseSurface:     palette.zinc950,
-    inverseOnSurface:   palette.white,
-    inversePrimary:     palette.orange100,
+    inverseSurface: palette.zinc950,
+    inverseOnSurface: palette.white,
+    inversePrimary: palette.orange100,
     // Scrim & shadow
-    scrim:              '#000000',
-    shadow:             '#000000',
+    scrim: "#000000",
+    shadow: "#000000",
     // Elevation surfaces
     elevation: {
       ...MD3LightTheme.colors.elevation,
-      level0: 'transparent',
+      level0: "transparent",
       level1: palette.zinc50,
       level2: palette.zinc100,
       level3: palette.zinc100,
@@ -88,4 +89,47 @@ export const lightTheme: MD3Theme = {
       level5: palette.zinc100,
     },
   },
-}
+  fonts: {
+    ...MD3LightTheme.fonts,
+    headlineLarge: {
+      ...MD3LightTheme.fonts.headlineLarge,
+      fontFamily: FontFamily.grotesk.bold,
+    },
+    headlineMedium: {
+      ...MD3LightTheme.fonts.headlineMedium,
+      fontFamily: FontFamily.grotesk.semibold,
+    },
+    headlineSmall: {
+      ...MD3LightTheme.fonts.headlineSmall,
+      fontFamily: FontFamily.grotesk.semibold,
+    },
+    titleLarge: {
+      ...MD3LightTheme.fonts.titleLarge,
+      fontFamily: FontFamily.grotesk.bold,
+    },
+    bodyLarge: {
+      ...MD3LightTheme.fonts.bodyLarge,
+      fontFamily: FontFamily.sans.regular,
+    },
+    bodyMedium: {
+      ...MD3LightTheme.fonts.bodyMedium,
+      fontFamily: FontFamily.sans.regular,
+    },
+    bodySmall: {
+      ...MD3LightTheme.fonts.bodySmall,
+      fontFamily: FontFamily.sans.regular,
+    },
+    labelLarge: {
+      ...MD3LightTheme.fonts.labelLarge,
+      fontFamily: FontFamily.sans.medium,
+    },
+    labelMedium: {
+      ...MD3LightTheme.fonts.labelMedium,
+      fontFamily: FontFamily.sans.medium,
+    },
+    labelSmall: {
+      ...MD3LightTheme.fonts.labelSmall,
+      fontFamily: FontFamily.sans.medium,
+    },
+  },
+};

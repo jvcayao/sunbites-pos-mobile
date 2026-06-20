@@ -1,25 +1,33 @@
-import { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Button, Divider, Modal, Portal, Surface, Text, TextInput } from 'react-native-paper'
-import { FilterChip, FilterChipRow } from '@/components/shared/FilterChip'
-import { palette } from '@/theme'
-import type { StockAdjustDto } from '@/types/pos'
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import {
+  Button,
+  Divider,
+  Modal,
+  Portal,
+  Surface,
+  Text,
+  TextInput,
+} from "react-native-paper";
+import { FilterChip, FilterChipRow } from "@/components/shared/FilterChip";
+import { palette } from "@/theme";
+import type { StockAdjustDto } from "@/types/pos";
 
-type AdjustType = StockAdjustDto['type']
+type AdjustType = StockAdjustDto["type"];
 
-const TYPES: Array<{ key: AdjustType; label: string }> = [
-  { key: 'restock', label: 'Restock' },
-  { key: 'waste',   label: 'Waste' },
-  { key: 'manual',  label: 'Manual' },
-]
+const TYPES: { key: AdjustType; label: string }[] = [
+  { key: "restock", label: "Restock" },
+  { key: "waste", label: "Waste" },
+  { key: "manual", label: "Manual" },
+];
 
 interface StockAdjustSheetProps {
-  visible: boolean
-  itemName: string
-  currentQuantity: number
-  loading?: boolean
-  onConfirm: (data: StockAdjustDto) => void
-  onDismiss: () => void
+  visible: boolean;
+  itemName: string;
+  currentQuantity: number;
+  loading?: boolean;
+  onConfirm: (data: StockAdjustDto) => void;
+  onDismiss: () => void;
 }
 
 export function StockAdjustSheet({
@@ -30,31 +38,39 @@ export function StockAdjustSheet({
   onConfirm,
   onDismiss,
 }: StockAdjustSheetProps) {
-  const [type, setType] = useState<AdjustType>('restock')
-  const [quantity, setQuantity] = useState('')
-  const [notes, setNotes] = useState('')
+  const [type, setType] = useState<AdjustType>("restock");
+  const [quantity, setQuantity] = useState("");
+  const [reason, setReason] = useState("");
 
   const handleConfirm = (): void => {
-    onConfirm({ type, quantity: parseInt(quantity, 10), notes: notes || undefined })
-    setQuantity('')
-    setNotes('')
-  }
+    onConfirm({ type, quantity: parseInt(quantity, 10), reason });
+    setQuantity("");
+    setReason("");
+  };
 
   const handleDismiss = (): void => {
-    setQuantity('')
-    setNotes('')
-    onDismiss()
-  }
+    setQuantity("");
+    setReason("");
+    onDismiss();
+  };
 
-  const qty = parseInt(quantity || '0', 10)
-  const canSubmit = qty > 0 && !loading
+  const qty = parseInt(quantity || "0", 10);
+  const canSubmit = qty > 0 && reason.trim().length > 0 && !loading;
 
   return (
     <Portal>
-      <Modal visible={visible} onDismiss={handleDismiss} contentContainerStyle={styles.modal}>
+      <Modal
+        visible={visible}
+        onDismiss={handleDismiss}
+        contentContainerStyle={styles.modal}
+      >
         <Surface style={styles.surface} elevation={4}>
-          <Text variant="titleMedium" style={styles.heading}>Adjust Stock — {itemName}</Text>
-          <Text variant="bodySmall" style={styles.current}>Current: {currentQuantity}</Text>
+          <Text variant="titleMedium" style={styles.heading}>
+            Adjust Stock — {itemName}
+          </Text>
+          <Text variant="bodySmall" style={styles.current}>
+            Current: {currentQuantity}
+          </Text>
           <Divider />
           <View style={styles.body}>
             <FilterChipRow>
@@ -78,15 +94,17 @@ export function StockAdjustSheet({
             />
             <TextInput
               mode="outlined"
-              label="Notes (optional)"
-              value={notes}
-              onChangeText={setNotes}
+              label="Reason *"
+              value={reason}
+              onChangeText={setReason}
               style={styles.input}
-              accessibilityLabel="Adjustment notes"
+              accessibilityLabel="Adjustment reason"
             />
           </View>
           <View style={styles.actions}>
-            <Button onPress={handleDismiss} disabled={loading}>Cancel</Button>
+            <Button onPress={handleDismiss} disabled={loading}>
+              Cancel
+            </Button>
             <Button
               mode="contained"
               onPress={handleConfirm}
@@ -100,15 +118,25 @@ export function StockAdjustSheet({
         </Surface>
       </Modal>
     </Portal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   modal: { marginHorizontal: 20 },
-  surface: { borderRadius: 16, overflow: 'hidden' },
-  heading: { paddingHorizontal: 20, paddingTop: 20, fontWeight: '700', color: palette.zinc950 },
+  surface: { borderRadius: 16, overflow: "hidden" },
+  heading: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    fontWeight: "700",
+    color: palette.zinc950,
+  },
   current: { paddingHorizontal: 20, paddingBottom: 12, color: palette.zinc500 },
   body: { padding: 20, gap: 12 },
   input: { backgroundColor: palette.white },
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', padding: 16, gap: 8 },
-})
+  actions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    padding: 16,
+    gap: 8,
+  },
+});

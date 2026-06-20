@@ -9,6 +9,20 @@ app/(app)/pos/
 
 POS uses a single screen with `SegmentedButtons` to switch between 4 tabs rendered as conditional `View` blocks — **not** separate route files. This avoids state loss when switching tabs (cart state must persist).
 
+## POS Appbar Header Layout
+
+```
+┌─────────────────────────────────────────────────┐
+│  [Branch Name]                    [🔔] [⋮ Menu] │
+│  ← exactly ONE NotificationBell (staff.{userId}) │
+└─────────────────────────────────────────────────┘
+```
+
+- `NotificationBell` subscribes to `staff.{userId}` private channel
+- Badge hidden when unread count = 0
+- Tapping bell → `router.push('/(app)/notifications')`
+- **No** ReminderBell in the header — reminders accessed via the Reminders bottom tab
+
 ## Cart Store (already implemented in foundation)
 
 `src/store/cart.ts` — already has `items`, `student`, `isWalkIn`, `paymentMethod`, `notes` + all actions.
@@ -19,7 +33,7 @@ POS uses a single screen with `SegmentedButtons` to switch between 4 tabs render
 export const posApi = {
   // Students
   lookupStudent: (params: { type: 'qr' | 'search'; value: string }) =>
-    client.get('/pos/students/lookup', { params }),
+    client.post('/pos/students/lookup', params),
   getStudent: (id: number) =>
     client.get(`/pos/students/${id}`),
 
@@ -35,13 +49,21 @@ export const posApi = {
   deleteMenuItem: (id: number) =>
     client.delete(`/pos/menu-items/${id}`),
 
+  // Linked Stock (ingredient mapping — under /references/menu-items/)
+  getLinkedStock: (menuItemId: number) =>
+    client.get<LinkedStockItem[]>(`/references/menu-items/${menuItemId}/ingredients`),
+  attachLinkedStock: (menuItemId: number, data: AttachLinkedStockDto) =>
+    client.post(`/references/menu-items/${menuItemId}/ingredients`, data),
+  detachLinkedStock: (menuItemId: number, inventoryItemId: number) =>
+    client.delete(`/references/menu-items/${menuItemId}/ingredients/${inventoryItemId}`),
+
   // Orders
   checkout: (payload: CheckoutPayload) =>
     client.post<Order>('/pos/checkout', payload),
   transactions: (params: TransactionParams) =>
-    client.get('/pos/transactions', { params }),
+    client.get('/orders', { params }),
   voidOrder: (id: number, reason: string) =>
-    client.post(`/pos/transactions/${id}/void`, { reason }),
+    client.post(`/orders/${id}/void`, { reason }),
 
   // Inline reload (top-up from POS)
   inlineReload: (data: InlineReloadDto) =>
@@ -58,6 +80,33 @@ export const posApi = {
 ## Types (`src/types/pos.ts`)
 
 ```typescript
+export type MenuCategory = 'meal' | 'snack' | 'drink' | 'extra'
+export type InventoryStatus = 'OK' | 'LOW' | 'OUT' | 'OVER'
+
+export interface PosMenuItem {
+  id: number
+  name: string
+  price: number
+  category: MenuCategory
+  is_available: boolean
+  is_subscription_item: boolean | null  // null = not configured; greyed out on POS
+  sort_order: number
+  has_inventory_mapping: boolean        // false = "Not linked" orange badge
+  inventory_status: InventoryStatus     // worst status of linked inventory items
+}
+
+export interface LinkedStockItem {
+  id: number                 // inventory_item id
+  name: string               // inventory item name
+  unit: string               // e.g. "piece", "pack"
+  quantity_used: number      // units deducted per 1 sale of this menu item
+}
+
+export interface AttachLinkedStockDto {
+  inventory_item_id: number
+  quantity_used: number      // must be a positive whole number
+}
+
 export interface CheckoutPayload {
   student_id?: number
   payment_method: OrderPaymentMethod
@@ -78,19 +127,33 @@ export interface TransactionParams {
 }
 
 export interface CreateMenuItemDto {
-  name: string; price: number; category: MenuCategory; sort_order?: number
+  name: string
+  price: number
+  category: MenuCategory
+  is_subscription_item: boolean | null  // null = Not configured, true = Yes, false = No
+  sort_order?: number
 }
 export type UpdateMenuItemDto = Partial<CreateMenuItemDto>
 
 export interface StockAdjustDto {
-  type: 'restock' | 'waste' | 'manual'
-  quantity: number; notes?: string
+  type: 'restock' | 'waste' | 'manual'  // Sale is system-only — never accepted here
+  quantity: number
+  reason: string                          // required; API rejects blank reason
 }
 
 export interface InlineReloadDto {
   student_id: number; amount: number
   payment_method: 'cash' | 'gcash' | 'bank_transfer'
   reference_number?: string; note?: string
+}
+
+export interface PosInventoryItem {
+  id: number
+  name: string
+  quantity: number
+  unit: string
+  restock_threshold: number
+  status: InventoryStatus            // computed: OK | LOW | OUT | OVER
 }
 ```
 
@@ -108,6 +171,11 @@ export function useCreateMenuItem()          // mutation → invalidates menu it
 export function useUpdateMenuItem()          // mutation → invalidates menu items
 export function useDeleteMenuItem()          // mutation → invalidates menu items
 export function useAdjustStock()             // mutation → invalidates pos-inventory
+
+// Linked Stock (ingredient mapping)
+export function useLinkedStock(menuItemId: number)  // queryKey: ['pos-linked-stock', menuItemId]
+export function useAttachLinkedStock()              // mutation → invalidates ['pos-linked-stock', menuItemId] + ['pos-menu-items']
+export function useDetachLinkedStock()              // mutation → invalidates ['pos-linked-stock', menuItemId] + ['pos-menu-items']
 ```
 
 ## Screen Layout (`app/(app)/pos/index.tsx`)
@@ -156,7 +224,93 @@ export function useAdjustStock()             // mutation → invalidates pos-inv
 | `ReceiptModal` | Full-screen receipt after checkout |
 | `TransactionRow` | Single transaction row in history tab |
 | `VoidOrderSheet` | Reason input for void action |
-| `StockAdjustSheet` | Type + qty + notes for inventory adjustment |
+| `StockAdjustSheet` | Type (Restock/Waste/Manual) + qty + reason (required) + live New Total preview |
+| `LinkedStockSheet` | Bottom sheet: linked inventory items table + Add Link form + Remove per row |
+
+## Menu Management Tab — Item Card & Linked Stock Layout
+
+### Item Card (Menu Mgmt tab)
+
+```
+┌──────────────────────────────┐
+│  Subscription Meal Tray      │  ← text-sm font-bold
+│     ₱135.00                  │  ← text-xl font-extrabold primary color
+│     [meal]                   │  ← category badge
+│  ⚠ Not linked                │  ← orange badge when has_inventory_mapping = false
+│                              │
+│  [ON ●]  [Link Stock]  [✕]  │  ← availability Switch + Link Stock btn + delete
+└──────────────────────────────┘
+```
+
+- Category badge colors: meal=`primary/10`, snack=`amber`, drink=`blue`, extra=`muted`
+- "Not linked" badge: orange — `has_inventory_mapping = false`
+- Unavailable cards shown at 50% opacity
+- "Link Stock" button: opens `LinkedStockSheet` bottom sheet
+- Delete `[✕]`: confirmation dialog before delete
+
+### Add New Item Form (top of tab, above card grid)
+
+```
+┌─── Add New Item ─── (dashed border) ──────────┐
+│  Item Name *         Price (₱) *               │
+│  [________________]  [________]                │
+│  Category *          Subscription Eligible *    │
+│  [meal ▾         ]   [Not configured ▾]        │
+│                              [+ Add Item]       │
+└────────────────────────────────────────────────┘
+```
+
+Subscription Eligible select options:
+- "Not configured" → `is_subscription_item: null`
+- "Yes — covered by subscription" → `is_subscription_item: true`
+- "No — regular only" → `is_subscription_item: false`
+
+### LinkedStockSheet (bottom sheet, per menu item)
+
+```
+┌──── Linked Stock: Subscription Meal Tray ──────┐
+│  Inventory Item       Qty per Sale   Action     │
+│  ─────────────────────────────────────────────  │
+│  Juice Tetra Pack     1 piece        [Remove]   │
+│  Graham Crackers      1 pack         [Remove]   │
+│                                                 │
+│  + Add Link                                     │
+│  [Select inventory item ▾]  Qty: [1]  [Add Link]│
+│                                                 │
+│  ⚠ All menu items must have at least one stock  │
+│    item linked before they can be sold.         │
+└─────────────────────────────────────────────────┘
+```
+
+- `useLinkedStock(menuItemId)` provides the list
+- `useAttachLinkedStock()` / `useDetachLinkedStock()` for mutations
+- Inventory item selector populated from `posInventory()` active items
+- `quantity_used` must be a positive whole number (≥ 1)
+
+### POS Menu Grid — Subscription & Stock Badges
+
+```
+┌──────────────────────┐   ┌──────────────────────┐
+│  Subscription        │   │  Snack A              │
+│  Meal Tray           │   │  (Bread/Pastry)       │
+│  ₱135.00  [meal]     │   │  ₱15.00   [snack]     │
+│  [● Subscription]    │   │  [⚠ Low Stock]        │
+└──────────────────────┘   └──────────────────────┘
+┌──────────────────────┐   ┌──────────────────────┐
+│  Bread Roll          │   │  Special Snack        │
+│  ₱15.00   [snack]    │   │  ₱30.00   [snack]     │
+│  [✕ Out of Stock]    │   │  (greyed, unselectable)│
+│  (greyed out)        │   │  (is_subscription_item │
+│                      │   │   = null)              │
+└──────────────────────┘   └──────────────────────┘
+```
+
+Badge priorities on POS grid:
+1. `is_subscription_item = null` — greyed out, unselectable (no badge, just opacity)
+2. `inventory_status = OUT` — greyed out, unselectable, red "Out of Stock" badge
+3. `has_inventory_mapping = false` — greyed out, unselectable, orange "Not linked" badge
+4. `inventory_status = LOW` — selectable, yellow "Low Stock" badge
+5. `is_subscription_item = true` — selectable, blue "Subscription" badge
 
 ## QR Detection Logic (USB HID Scanner)
 
